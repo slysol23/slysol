@@ -40,7 +40,7 @@ export default function Header() {
   };
 
   return (
-    <div className="border-b shadow-md fixed top-0 w-full z-10">
+    <div className="border-b shadow-md fixed top-0 w-full z-10 bg-white">
       <ContainerLayout>
         <nav
           className="
@@ -48,9 +48,8 @@ export default function Header() {
               items-center
               justify-between
               w-full
-              py-8
+              py-4
               text-lg text-gray-700
-              bg-white
             "
         >
           <div>
