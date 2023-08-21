@@ -11,6 +11,8 @@ const config: Config = {
     extend: {
       colors: {
         primary: '#2B304B',
+        blue: '#393E58',
+        slate: '#EBEDE8',
       },
       fontFamily: {
         sans: ['var(--font-neue)'],

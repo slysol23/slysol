@@ -2,6 +2,7 @@ import Header from '@/components/Header';
 import './globals.css';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
+import Footer from '@/components/Footer';
 
 const NeueMachina = localFont({
   src: [
@@ -36,6 +37,7 @@ export default function RootLayout({
       <body className={`${NeueMachina.variable} font-sans]`}>
         <Header />
         <main className="mt-[100px]">{children}</main>
+        <Footer />
       </body>
     </html>
   );

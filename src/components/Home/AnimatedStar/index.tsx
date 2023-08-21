@@ -1,18 +1,23 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { Variants, motion } from 'framer-motion';
-import Image from 'next/image';
 
-const AnimatedStar = () => {
-  const [screenSize, setScreenSize] = useState<number>(window.innerWidth);
+interface AnimatedStarProps {
+  children: ReactNode;
+}
+const AnimatedStar = ({ children }: AnimatedStarProps) => {
+  const [screenSize, setScreenSize] = useState<number>(0);
+
   useEffect(() => {
     function handleResize() {
       setScreenSize(window.innerWidth);
     }
+
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  });
+  }, []);
+
   const introPictureVariants: Variants = {
     hide: {
       opacity: 0,
@@ -33,7 +38,7 @@ const AnimatedStar = () => {
           ? 135
           : 160,
       transition: {
-        duration: 2,
+        duration: 1,
       },
     },
   };
@@ -45,12 +50,7 @@ const AnimatedStar = () => {
       exit="hide"
       variants={introPictureVariants}
     >
-      <Image
-        src="/images/home/star-vector.png"
-        alt="united hands"
-        width={120}
-        height={120}
-      />
+      {children}
     </motion.div>
   );
 };
