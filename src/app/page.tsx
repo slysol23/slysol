@@ -9,7 +9,7 @@ import WhatWeDo from '@/components/Home/WhatWeDo';
 export default function Home() {
   return (
     <>
-      <ContainerLayout className="md:py-10 py-5">
+      <ContainerLayout className="py-5">
         <div className="grid md:grid-cols-[40%_60%] gap-5">
           <div className="md:my-auto">
             <h1 className="lg:text-5xl md:text-4xl text-3xl font-bold text-[#6F83DC]">
@@ -40,6 +40,20 @@ export default function Home() {
           </div>
         </div>
       </ContainerLayout>
+
+      {/* Faciltating the formation */}
+      <div className="bg-blue">
+        <ContainerLayout className="md:py-20 py-10">
+          <h1
+            className="md:leading-[60px] lg:text-[48px] md:text-4xl text-3xl text-center
+           text-white lg:px-40 md:px-32"
+          >
+            Faciltating the formation of more robust teams, we empower both
+            businesses and individuals to swiftly cultivate improved software
+            and quality systems.
+          </h1>
+        </ContainerLayout>
+      </div>
 
       {/* CUSTOM SOFTWARE SOLUTIONS */}
       <div
@@ -78,18 +92,6 @@ export default function Home() {
 
       {/* WHY US SECTION */}
       <WhyUs />
-      <div className="bg-blue">
-        <ContainerLayout className="md:py-20 py-10">
-          <h1
-            className="md:leading-[60px] lg:text-[48px] md:text-4xl text-3xl text-center
-           text-white lg:px-40 md:px-32"
-          >
-            Faciltating the formation of more robust teams, we empower both
-            businesses and individuals to swiftly cultivate improved software
-            and quality systems.
-          </h1>
-        </ContainerLayout>
-      </div>
     </>
   );
 }
