@@ -1,49 +1,55 @@
-// import React, { ReactNode } from 'react';
-// import Slider from 'react-slick';
-// import 'slick-carousel/slick/slick.css';
-// import 'slick-carousel/slick/slick-theme.css';
+'use client';
 
-// interface SlickSliderProps {
-//   children: ReactNode;
-// }
+import dynamic from 'next/dynamic';
+import 'owl.carousel/dist/assets/owl.carousel.css';
+import 'owl.carousel/dist/assets/owl.theme.default.css';
+import React, { ReactNode } from 'react';
 
-// const SlickSlider = ({ children }: SlickSliderProps) => {
-//   const settings = {
-//     dots: true,
-//     infinite: false,
-//     speed: 500,
-//     slidesToShow: 4,
-//     slidesToScroll: 4,
-//     initialSlide: 0,
-//     responsive: [
-//       {
-//         breakpoint: 1024,
-//         settings: {
-//           slidesToShow: 3,
-//           slidesToScroll: 3,
-//           infinite: true,
-//           dots: true,
-//         },
-//       },
-//       {
-//         breakpoint: 600,
-//         settings: {
-//           slidesToShow: 2,
-//           slidesToScroll: 2,
-//           initialSlide: 2,
-//         },
-//       },
-//       {
-//         breakpoint: 480,
-//         settings: {
-//           slidesToShow: 1,
-//           slidesToScroll: 1,
-//         },
-//       },
-//     ],
-//   };
+interface OwlCarouselProps {
+  children: ReactNode;
+  className?: string;
+}
 
-//   return <Slider {...settings}>{children}</Slider>;
-// };
+const OwlCarousel = dynamic(() => import('react-owl-carousel'), {
+  ssr: false,
+});
 
-// export default SlickSlider;
+var $ = require('jquery');
+if (typeof window !== 'undefined') {
+  window.$ = window.jQuery = require('jquery');
+}
+
+export default function Carousal({
+  children,
+  className = '',
+}: OwlCarouselProps) {
+  const Responsive = {
+    0: {
+      items: 1,
+    },
+    768: {
+      items: 2,
+    },
+    1024: {
+      items: 3,
+    },
+  };
+
+  return (
+    <OwlCarousel
+      items={3}
+      margin={20}
+      responsive={Responsive}
+      nav={true}
+      dots={false}
+      loop
+      navText={[
+        `<img src='/images/home/arrow-left.png' class='md:mr-5 mr-2 md:w-12 w-8'>`,
+        `<img src='/images/home/arrow-right.png' class='md:w-12 w-8 text-end'>`,
+      ]}
+      className={className}
+    >
+      {children}
+    </OwlCarousel>
+  );
+}

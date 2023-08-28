@@ -14,3 +14,24 @@ body {
   font-family: 'NeueMachina';
   color: #000 !important;
 }
+
+.owl-nav {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+
+@media screen and (max-width: 768px) {
+  .owl-nav {
+    position: relative;
+    justify-content: center;
+    transform: none;
+    margin-top: 20px;
+    top: auto;
+    left: auto;
+  }
+}

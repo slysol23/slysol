@@ -15,7 +15,8 @@ const config: Config = {
         slate: '#EBEDE8',
       },
       fontFamily: {
-        sans: ['var(--font-neue)'],
+        // sans: ['var(--font-neue)'],
+        neue: ['var(--font-neue)'],
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
