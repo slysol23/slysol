@@ -36,7 +36,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${NeueMachina.variable} font-sans]`}>
         <Header />
-        <main className="mt-[100px]">{children}</main>
+        <main className="mt-[69px]">{children}</main>
         <Footer />
       </body>
     </html>

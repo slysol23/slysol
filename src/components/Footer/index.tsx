@@ -17,12 +17,12 @@ const Footer = () => {
           </p>
           <Button
             text="CONTACT US"
-            className="py-3 bg-gradient-to-r from-[#CBFFD8] to-[#94B9FF]"
+            className="py-3 bg-gradient-to-r from-[#b9ffcb] to-[#6fa2ff]"
           />
           <p className="font-bold md:mt-10 mt-5 mb-2">PHONE</p>
           <p className="text-sm">{`(123) 456-7890`}</p>
           <p className="font-bold mt-3 mb-2">EMAIL</p>
-          <p className="text-sm">{`sheikhhariszahid@slysol.com`}</p>
+          <p className="text-sm">{`sheikh.haris.zahid@slysol.com`}</p>
           <p className="font-bold mt-3 mb-2">PHONE</p>
           <p className="text-sm">{`(123) 456-7890`}</p>
         </div>

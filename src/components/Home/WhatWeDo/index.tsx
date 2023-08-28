@@ -1,7 +1,8 @@
+'use client';
 import ContainerLayout from '@/components/ContainerLayout';
 import React from 'react';
 import Card from './card';
-// import SlickSlider from '@/components/Slider';
+import Slider from '@/components/Slider';
 
 const WhatWeDo = () => {
   const cardsData = [
@@ -23,21 +24,27 @@ const WhatWeDo = () => {
       description:
         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi, excepturi.',
     },
+    {
+      imageSrc: '/images/home/card1.png',
+      heading: 'Mobile App Development',
+      description:
+        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi, excepturi.',
+    },
   ];
 
   return (
-    <div className="bg-blue md:py-20 py-10">
-      <ContainerLayout className="grid grid-cols-3 gap-10">
-        {/* <SlickSlider>
+    <div className="bg-blue md:py-20 py-10 text-white">
+      <ContainerLayout>
+        <Slider className="md:px-20">
           {cardsData.map((data, index) => (
             <Card
-              key={`cardsData-${index}`}
               imageSrc={data.imageSrc}
               heading={data.heading}
               description={data.description}
+              key={`slider-card-${index}`}
             />
           ))}
-        </SlickSlider> */}
+        </Slider>
       </ContainerLayout>
     </div>
   );
