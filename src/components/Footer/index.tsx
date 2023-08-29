@@ -6,7 +6,7 @@ import Image from 'next/image';
 
 const Footer = () => {
   return (
-    <div className="bg-blue md:py-10 py-5">
+    <div className="bg-blue md:py-10 pb-5 pt-10">
       <ContainerLayout className="grid md:grid-cols-[40%_60%] gap-5">
         <div className="text-white my-auto">
           <h1 className="lg:text-4xl text-2xl font-bold lg:mb-4 mb-3">
