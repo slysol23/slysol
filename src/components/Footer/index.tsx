@@ -27,11 +27,11 @@ const Footer = () => {
             text="CONTACT US"
             className="py-3 bg-gradient-to-r from-[#b9ffcb] to-[#6fa2ff]"
           />
-          <p className="font-bold md:mt-10 mt-5 mb-2 font-neue">PHONE</p>
+          <p className="font-bold md:mt-10 mt-5 mb-1 font-neue">PHONE</p>
           <p className="text-sm">123-456789</p>
-          <p className="font-bold mt-3 mb-2 font-neue">EMAIL</p>
+          <p className="font-bold mt-5 mb-1 font-neue">EMAIL</p>
           <p className="text-sm">{`sheikh.haris.zahid@slysol.com`}</p>
-          <p className="font-bold mt-3 mb-2 font-neue">SOCIAL MEDIA</p>
+          <p className="font-bold mt-5 mb-1 font-neue">SOCIAL MEDIA</p>
           <div className="flex">
             {socialIcons.map((socialIcon) => (
               <Link

@@ -93,7 +93,7 @@ export default function Home() {
             className="md:leading-[60px] lg:text-[48px] md:text-4xl text-3xl text-center
            text-white lg:px-40 md:px-32 font-neue"
           >
-            Faciltating the formation of more robust teams, we empower both
+            Faciltating the formation of more robust teams, Slysol empower both
             businesses and individuals to swiftly cultivate improved software
             and quality systems.
           </h1>
