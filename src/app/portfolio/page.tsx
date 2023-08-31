@@ -1,8 +1,14 @@
+import Container from '@/components/Container';
+import Layout from '@/components/Layout';
 import React from 'react';
 
 const Portfolio = () => {
   return (
-    <div className="text-5xl font-bold text-center py-20">Coming Soon...</div>
+    <Layout>
+      <Container className="text-5xl font-bold text-center py-20 font-neue">
+        Coming Soon...
+      </Container>
+    </Layout>
   );
 };
 

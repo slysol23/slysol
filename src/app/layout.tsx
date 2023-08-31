@@ -1,9 +1,7 @@
-import Header from '@/components/Header';
 import './globals.css';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import { Basic } from 'next/font/google';
-import Footer from '@/components/Footer';
 
 const NeueMachina = localFont({
   src: [
@@ -31,7 +29,42 @@ const basic = Basic({
 
 export const metadata: Metadata = {
   title: 'Home | Slysol',
-  description: 'Slysol home page',
+  generator: 'Next.js',
+  applicationName: 'Slysol',
+  category: 'technology',
+  referrer: 'origin-when-cross-origin',
+  keywords: ['Slysol', 'Web Development', 'App Development'],
+  authors: [{ name: 'Slysol' }, { name: 'Slysol', url: 'https://slysol.com' }],
+  colorScheme: 'light',
+  creator: 'Umer Riaz',
+  publisher: 'Slysol',
+  openGraph: {
+    url: 'https://slysol.com',
+    siteName: 'Slysol',
+    locale: 'en_US',
+    type: 'website',
+  },
+  formatDetection: {
+    email: true,
+    address: true,
+    telephone: true,
+  },
+  icons: {
+    icon: '/icon.png',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    nocache: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      noimageindex: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
 };
 
 export default function RootLayout({
@@ -42,9 +75,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${NeueMachina.variable} ${basic.variable}`}>
-        <Header />
-        <main className="mt-[69px] font-basic">{children}</main>
-        <Footer />
+        {children}
       </body>
     </html>
   );

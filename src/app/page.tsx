@@ -1,4 +1,4 @@
-import ContainerLayout from '@/components/ContainerLayout';
+import Container from '@/components/Container';
 import Button from '@/components/Button';
 import Image from 'next/image';
 import AnimatedStar from '@/components/Home/AnimatedStar';
@@ -6,11 +6,18 @@ import WhyUs from '@/components/Home/WhyUs';
 import ScrollAnimation from '@/components/ScrollAnimation';
 import WhatWeDo from '@/components/Home/WhatWeDo';
 import Slider from '@/components/Home/ClientFeedback/Slider';
+import { Metadata } from 'next';
+import Layout from '@/components/Layout';
+
+export const metadata: Metadata = {
+  description:
+    'Welcome to SlySol - Your Ultimate IT Solution Provider. Elevate your business with our expert Web Development, Application Development, and Internal App Development services. Unlock innovative solutions tailored to your needs and drive digital transformation with SlySol by your side.',
+};
 
 export default function Home() {
   return (
-    <>
-      <ContainerLayout className="py-5 pt-10 md:pt-5">
+    <Layout>
+      <Container className="py-5 pt-10 md:pt-5">
         <div className="grid md:grid-cols-[40%_60%] gap-5">
           <div className="md:my-auto">
             <h1
@@ -43,14 +50,14 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </ContainerLayout>
+      </Container>
 
       {/* CUSTOM SOFTWARE SOLUTIONS */}
       <div
         className="bg-gradient-to-r from-[#CBFCD8] via-[#B9E6E6] to-[#96BCFD]
         md:py-20 py-10"
       >
-        <ContainerLayout className="grid md:grid-cols-2 gap-10">
+        <Container className="grid md:grid-cols-2 gap-10">
           <ScrollAnimation startPosition={100}>
             <Image
               src="/images/home/custom-software.png"
@@ -67,14 +74,10 @@ export default function Home() {
               </h1>
             </ScrollAnimation>
             <p className="mt-5 sm:text-base text-sm">
-              Lorem ipsum dolor, sit amet consectetur adipisicing elit. Delectus
-              consectetur, saepe laudantium sint ab aliquid reiciendis enim
-              similique distinctio animi sed obcaecati nam vero magnam commodi.
-              Et, vel. At cum maxime perferendis nesciunt impedit nulla
-              doloribus placeat incidunt culpa distinctio?
+              {`When it comes to custom software solutions, look no further. Slysol is your dedicated partner in turning your unique ideas into reality. With a proven track record of delivering innovative and efficient software tailored to your specific needs, we take pride in our ability to transform challenges into opportunities. Our team of experts is committed to understanding your vision and crafting a bespoke software solution that not only meets but exceeds your expectations. Experience the power of personalized software with us, and let's embark on a journey to reshape the way you do business. Your aspirations, our expertise – together, we build the extraordinary.`}
             </p>
           </div>
-        </ContainerLayout>
+        </Container>
       </div>
 
       {/* WHAT WE DO SECTION */}
@@ -85,7 +88,7 @@ export default function Home() {
 
       {/* Faciltating the formation */}
       <div className="bg-blue">
-        <ContainerLayout className="md:py-20 py-10">
+        <Container className="md:py-20 py-10">
           <h1
             className="md:leading-[60px] lg:text-[48px] md:text-4xl text-3xl text-center
            text-white lg:px-40 md:px-32 font-neue"
@@ -94,11 +97,11 @@ export default function Home() {
             businesses and individuals to swiftly cultivate improved software
             and quality systems.
           </h1>
-        </ContainerLayout>
+        </Container>
       </div>
 
       {/* Clients Feedback */}
       <Slider />
-    </>
+    </Layout>
   );
 }
