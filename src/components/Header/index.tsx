@@ -7,7 +7,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 import { Bars3Icon } from '@heroicons/react/20/solid';
-import ContainerLayout from '../ContainerLayout';
 
 export default function Header() {
   const [isOpen, setOpen] = React.useState<boolean>(false);
@@ -25,7 +24,7 @@ export default function Header() {
   }) => {
     const isActive =
       pageTitle === item.path.split('/')[1]
-        ? `${className} font-bold underline decoration-2`
+        ? `${className} font-bold decoration-2`
         : className;
     return (
       <Link
@@ -41,13 +40,13 @@ export default function Header() {
 
   return (
     <div className="border-b shadow-md fixed top-0 w-full z-10 bg-white">
-      <ContainerLayout>
+      <div className="max-w-6xl m-auto px-[14px]">
         <nav
           className="
               flex flex-wrap
               items-center
               justify-between
-              w-full
+              w-full font-neue
               py-4
               text-lg text-gray-700
             "
@@ -92,7 +91,7 @@ export default function Header() {
             </ul>
           </div>
         </nav>
-      </ContainerLayout>
+      </div>
     </div>
   );
 }

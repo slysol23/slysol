@@ -2,16 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-@font-face {
-  font-family: 'NeueMachina';
-  src: url('../../public/fonts/NeueMachina-Light.otf');
-  src: url('../../public/fonts/NeueMachina-Regular.otf');
-  src: url('../../public/fonts/NeueMachina-Ultrabold.otf');
-}
-
 html,
 body {
-  font-family: 'NeueMachina';
   color: #000 !important;
 }
 
