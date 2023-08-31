@@ -1,5 +1,5 @@
 'use client';
-import ContainerLayout from '@/components/ContainerLayout';
+import Container from '@/components/Container';
 import React from 'react';
 import Card from './card';
 import Slider from '@/components/Slider';
@@ -10,31 +10,28 @@ const WhatWeDo = () => {
       imageSrc: '/images/home/card1.png',
       heading: 'Mobile App Development',
       description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi, excepturi.',
+        'Experience our user-centric mobile apps, perfect for boosting your brand.',
     },
     {
       imageSrc: '/images/home/card2.png',
       heading: 'Web App Development',
       description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi, excepturi.',
+        'From concept to reality, we create engaging web apps that captivate audiences.',
     },
     {
       imageSrc: '/images/home/card3.png',
       heading: 'Internal App Development',
       description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi, excepturi.',
-    },
-    {
-      imageSrc: '/images/home/card1.png',
-      heading: 'Mobile App Development',
-      description:
-        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Nisi, excepturi.',
+        'Tailored apps that optimize workflows, enhancing business efficiency.',
     },
   ];
 
   return (
     <div className="bg-blue md:py-20 py-10 text-white">
-      <ContainerLayout>
+      <Container>
+        <h2 className="text-center md:text-4xl text-3xl md:mb-10 mb-5 font-neue">
+          What We Can <br className="md:hidden" /> Do For You
+        </h2>
         <Slider className="md:px-20">
           {cardsData.map((data, index) => (
             <Card
@@ -45,7 +42,7 @@ const WhatWeDo = () => {
             />
           ))}
         </Slider>
-      </ContainerLayout>
+      </Container>
     </div>
   );
 };

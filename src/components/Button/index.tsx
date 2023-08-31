@@ -7,7 +7,8 @@ interface ButtonProps {
 const Button = ({ text, className = '' }: ButtonProps) => {
   return (
     <button
-      className={`bg-primary text-white text-sm lg:text-base py-2 px-8 rounded-full ${className}`}
+      className={`bg-primary text-white text-sm lg:text-base
+       py-2 px-8 rounded-full font-neue ${className}`}
     >
       {text}
     </button>

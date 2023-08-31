@@ -17,6 +17,7 @@ const config: Config = {
       fontFamily: {
         // sans: ['var(--font-neue)'],
         neue: ['var(--font-neue)'],
+        basic: ['var(--font-basic)'],
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
