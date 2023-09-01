@@ -1,11 +1,20 @@
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { ReactNode } from 'react';
+import Container from '../Container';
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+interface LayoutProps {
+  children: ReactNode;
+  container?: boolean;
+}
+
+export default function Layout({ children, container = false }: LayoutProps) {
   return (
     <>
       <Header />
-      <main className="mt-[69px] font-basic">{children}</main>
+      <main className="mt-[69px] font-basic">
+        {container ? <Container>{children}</Container> : children}
+      </main>
       <Footer />
     </>
   );
