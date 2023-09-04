@@ -74,6 +74,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <meta
+          name="google-site-verification"
+          content="WSFplsjjbt13v0ikzPDoAG_kE1hkZhqI1kD2wv5WpiM"
+        />
+      </head>
       <body className={`${NeueMachina.variable} ${basic.variable}`}>
         {children}
       </body>
