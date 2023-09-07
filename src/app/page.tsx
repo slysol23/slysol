@@ -28,7 +28,12 @@ export default function Home() {
               To Clever <br /> IT Solutions
             </h1>
             <ScrollAnimation>
-              <Button text="REQUEST A CONSULTATION" className="md:mt-10 mt-5" />
+              <a href="mailto:sheikh.haris.zahid@slysol.com">
+                <Button
+                  text="REQUEST A CONSULTATION"
+                  className="md:mt-10 mt-5"
+                />
+              </a>
             </ScrollAnimation>
           </div>
           <div className="flex items-center md:justify-end justify-center            md:-translate-x-0 -translate-x-[5%]">

@@ -11,7 +11,7 @@ interface SliderCardProps {
 const SliderCard = ({ src, alt, text, companyName }: SliderCardProps) => {
   return (
     <>
-      <div className="grid md:grid-cols-[70%_30%] gap-10 bg-blue text-white text-justify md:p-20 p-10 rounded-xl">
+      <div className="grid md:grid-cols-[70%_30%] md:gap-10 bg-blue text-white text-justify md:p-20 p-10 rounded-xl md:max-h-[300px] md:min-h-[300px] max-h-[550px] min-h-[550px]">
         <div className="md:order-1 order-2">
           <h3 className="pb-4 italic">“{text}”</h3>
           <p className="mt-1 font-bold">{companyName}</p>
