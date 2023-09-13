@@ -23,10 +23,12 @@ const Footer = () => {
           <p className="lg:mb-4 mb-3">
             Reach out for an exploratory conversation.
           </p>
-          <Button
-            text="CONTACT US"
-            className="py-3 bg-gradient-to-r from-[#b9ffcb] to-[#6fa2ff]"
-          />
+          <a href="mailto:sheikh.haris.zahid@slysol.com">
+            <Button
+              text="CONTACT US"
+              className="py-3 bg-gradient-to-r from-[#b9ffcb] to-[#6fa2ff]"
+            />
+          </a>
           <p className="font-bold md:mt-10 mt-5 mb-1 font-neue">PHONE</p>
           <p className="text-sm">123-456789</p>
           <p className="font-bold mt-5 mb-1 font-neue">EMAIL</p>
