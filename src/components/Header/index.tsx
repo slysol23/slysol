@@ -5,10 +5,14 @@ import { MenuItemType } from 'types/types';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Bars3Icon } from '@heroicons/react/20/solid';
 
 export default function Header() {
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const [isOpen, setOpen] = React.useState<boolean>(false);
   const pathname = usePathname();
   const pageTitle = pathname.split('/')[1];
