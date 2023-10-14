@@ -8,9 +8,21 @@ import Link from 'next/link';
 
 const Footer = () => {
   const socialIcons = [
-    { name: 'facebook', icon: <BsFacebook />, link: '#' },
-    { name: 'instagram', icon: <BsInstagram />, link: '#' },
-    { name: 'linkedin', icon: <BsLinkedin />, link: '#' },
+    {
+      name: 'facebook',
+      icon: <BsFacebook />,
+      link: 'https://www.facebook.com/profile.php?id=100094073880444',
+    },
+    {
+      name: 'instagram',
+      icon: <BsInstagram />,
+      link: 'https://www.instagram.com/slysol23/',
+    },
+    {
+      name: 'linkedin',
+      icon: <BsLinkedin />,
+      link: 'https://www.linkedin.com/company/slysol/',
+    },
   ];
 
   return (
