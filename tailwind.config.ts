@@ -9,7 +9,30 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      borderRadius: {
+        fancyRadius: '31% 69% 23% 77% / 66% 18% 82% 34%',
+      },
+      keyframes: {
+        customPulse: {
+          '0%': {
+            transform: 'scale(0.6)',
+            opacity: '1',
+            boxShadow: 'inset 0px 0px 25px 3px #105AF2',
+          },
+          '100%': {
+            transform: 'scale(1)',
+            opacity: '0',
+            boxShadow: 'none',
+          },
+        },
+      },
+      animation: {
+        customPulse: 'customPulse 2s forwards infinite',
+      },
       colors: {
+        primary1: '#0FABF6',
+        primary2: '#455AB5',
+        secondary: '#EB577B',
         primary: '#2B304B',
         blue: '#393E58',
         slate: '#EBEDE8',

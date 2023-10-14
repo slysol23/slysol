@@ -3,29 +3,30 @@
 import { Variants, motion } from 'framer-motion';
 import { ReactNode } from 'react';
 
-interface ScrollAnimationProps {
+interface BannerAnimationProps {
   children: ReactNode;
   startPosition?: number;
   endPosition?: number;
+  duration?: number;
 }
 
-const ScrollAnimation = ({
+const BannerAnimation = ({
   children,
-  startPosition = 50,
-  endPosition = 0,
-}: ScrollAnimationProps) => {
+  startPosition = 450,
+  endPosition = -10,
+  duration = 10,
+}: BannerAnimationProps) => {
   const scrollVariants: Variants = {
     hide: {
       y: startPosition,
-      opacity: 0,
+      opacity: 1,
     },
     show: {
       y: endPosition,
-      opacity: 1,
+      opacity: 0,
       transition: {
-        type: 'spring',
-        stiffness: 250,
-        damping: 30,
+        duration: duration,
+        repeat: Infinity,
       },
     },
   };
@@ -42,4 +43,4 @@ const ScrollAnimation = ({
   );
 };
 
-export default ScrollAnimation;
+export default BannerAnimation;
