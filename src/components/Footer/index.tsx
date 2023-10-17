@@ -6,25 +6,25 @@ import Image from 'next/image';
 import { BsFacebook, BsInstagram, BsLinkedin } from 'react-icons/bs';
 import Link from 'next/link';
 
-const Footer = () => {
-  const socialIcons = [
-    {
-      name: 'facebook',
-      icon: <BsFacebook />,
-      link: 'https://www.facebook.com/profile.php?id=100094073880444',
-    },
-    {
-      name: 'instagram',
-      icon: <BsInstagram />,
-      link: 'https://www.instagram.com/slysol23/',
-    },
-    {
-      name: 'linkedin',
-      icon: <BsLinkedin />,
-      link: 'https://www.linkedin.com/company/slysol/',
-    },
-  ];
+export const socialIcons = [
+  {
+    name: 'facebook',
+    icon: <BsFacebook />,
+    link: 'https://www.facebook.com/profile.php?id=100094073880444',
+  },
+  {
+    name: 'instagram',
+    icon: <BsInstagram />,
+    link: 'https://www.instagram.com/slysol23/',
+  },
+  {
+    name: 'linkedin',
+    icon: <BsLinkedin />,
+    link: 'https://www.linkedin.com/company/slysol/',
+  },
+];
 
+const Footer = () => {
   return (
     <div className="bg-blue md:py-10 pb-5 pt-10">
       <Container className="grid md:grid-cols-[40%_60%] gap-5">

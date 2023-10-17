@@ -25,15 +25,21 @@ const config: Config = {
             boxShadow: 'none',
           },
         },
+        leftToRight: {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(0%)' },
+        },
       },
       animation: {
         customPulse: 'customPulse 2s forwards infinite',
+        'left-to-right': 'leftToRight 3s ease',
       },
       colors: {
         primary1: '#0FABF6',
         primary2: '#455AB5',
         secondary: '#EB577B',
         primary: '#2B304B',
+        pink: '#E62C5A',
         blue: '#393E58',
         slate: '#EBEDE8',
       },
