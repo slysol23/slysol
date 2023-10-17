@@ -76,6 +76,7 @@ const ContactForm = () => {
           placeholder="Name"
           value={formData.name}
           onChange={handleChange}
+          required
           className="border-0 border-b py-3 px-2 focus:outline-none"
         />
 
@@ -86,6 +87,7 @@ const ContactForm = () => {
           placeholder="Email"
           value={formData.email}
           onChange={handleChange}
+          required
           className="border-0 border-b py-3 px-2 focus:outline-none"
         />
 
@@ -96,6 +98,7 @@ const ContactForm = () => {
           placeholder="Subject"
           value={formData.subject}
           onChange={handleChange}
+          required
           className="border-0 border-b py-3 px-2 focus:outline-none"
         />
 
@@ -106,6 +109,7 @@ const ContactForm = () => {
           value={formData.message}
           onChange={handleChange}
           rows={5}
+          required
           className="border py-3 px-2 focus:outline-none mt-3"
         />
 
