@@ -28,7 +28,7 @@ const Contact = () => {
       </div>
       <Container
         hScreen={false}
-        className="md:py-20 py-10 grid md:grid-cols-2 lg:gap-20 md:gap-10 gap-5"
+        className="md:pt-20 pt-10 grid md:grid-cols-2 lg:gap-20 md:gap-10 gap-5"
       >
         <Form />
         <div className="pt-3">
@@ -59,15 +59,18 @@ const Contact = () => {
             ))}
           </div>
         </div>
+      </Container>
+      <Container
+        hScreen={false}
+        className="flex flex-col lg:gap-20 md:gap-10 gap-5 md:pb-20 pb-10 pt-10"
+      >
         <Calendly />
         <div className="w-full">
           <iframe
             width="100%"
             height="400"
             src="https://maps.google.com/maps?width=100%25&amp;height=400&amp;hl=en&amp;q=Icon%20shopping%20center+(Slysol)&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"
-          >
-            <a href="https://www.maps.ie/population/">Icon Center</a>
-          </iframe>
+          ></iframe>
         </div>
       </Container>
     </Layout>
