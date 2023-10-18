@@ -5,6 +5,7 @@ import Form from '@/components/Contact/Form';
 import Container from '@/components/Container';
 import { socialIcons } from '@/components/Footer';
 import Link from 'next/link';
+import Calendly from '@/components/Contact/Calendly';
 
 const Contact = () => {
   return (
@@ -47,7 +48,7 @@ const Contact = () => {
           </h2>
           <p>sheikh.haris.zahid@slysol.com</p>
           <hr className="border-t-2 border-dashed border-gray-200 my-5" />
-          <h2 className="text-pink lg:text-2xl text-xl lg:mb-3 md:mb-2 mb-1">
+          <h2 className="text-pink lg:text-2xl text-xl lg:mb-3 md:mb-2 mb-2">
             Social Media
           </h2>
           <div className="flex gap-5 text-3xl text-primary2">
@@ -59,15 +60,17 @@ const Contact = () => {
           </div>
         </div>
       </Container>
-      <Container hScreen={false} className="md:py-20 py-10">
+      <Container
+        hScreen={false}
+        className="flex flex-col lg:gap-20 md:gap-10 gap-5 md:pb-20 pb-10 pt-10"
+      >
+        <Calendly />
         <div className="w-full">
           <iframe
             width="100%"
             height="400"
             src="https://maps.google.com/maps?width=100%25&amp;height=400&amp;hl=en&amp;q=Icon%20shopping%20center+(Slysol)&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"
-          >
-            <a href="https://www.maps.ie/population/">Icon Center</a>
-          </iframe>
+          ></iframe>
         </div>
       </Container>
     </Layout>
