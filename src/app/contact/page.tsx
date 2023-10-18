@@ -5,6 +5,7 @@ import Form from '@/components/Contact/Form';
 import Container from '@/components/Container';
 import { socialIcons } from '@/components/Footer';
 import Link from 'next/link';
+import Calendly from '@/components/Contact/Calendly';
 
 const Contact = () => {
   return (
@@ -27,7 +28,7 @@ const Contact = () => {
       </div>
       <Container
         hScreen={false}
-        className="md:pt-20 pt-10 grid md:grid-cols-2 lg:gap-20 md:gap-10 gap-5"
+        className="md:py-20 py-10 grid md:grid-cols-2 lg:gap-20 md:gap-10 gap-5"
       >
         <Form />
         <div className="pt-3">
@@ -47,7 +48,7 @@ const Contact = () => {
           </h2>
           <p>sheikh.haris.zahid@slysol.com</p>
           <hr className="border-t-2 border-dashed border-gray-200 my-5" />
-          <h2 className="text-pink lg:text-2xl text-xl lg:mb-3 md:mb-2 mb-1">
+          <h2 className="text-pink lg:text-2xl text-xl lg:mb-3 md:mb-2 mb-2">
             Social Media
           </h2>
           <div className="flex gap-5 text-3xl text-primary2">
@@ -58,8 +59,7 @@ const Contact = () => {
             ))}
           </div>
         </div>
-      </Container>
-      <Container hScreen={false} className="md:py-20 py-10">
+        <Calendly />
         <div className="w-full">
           <iframe
             width="100%"
