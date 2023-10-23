@@ -35,16 +35,21 @@ const Footer = () => {
           <p className="lg:mb-4 mb-3">
             Reach out for an exploratory conversation.
           </p>
-          <a href="mailto:sheikh.haris.zahid@slysol.com">
+          <Link href="/contact">
             <Button
               text="CONTACT US"
               className="py-3 bg-gradient-to-r from-[#b9ffcb] to-[#6fa2ff]"
             />
-          </a>
+          </Link>
           <p className="font-bold md:mt-10 mt-5 mb-1 font-neue">PHONE</p>
-          <p className="text-sm">123-456789</p>
+          <Link href={'tel:+923104150111'} className="text-sm">
+            +92-3104150111
+          </Link>
           <p className="font-bold mt-5 mb-1 font-neue">EMAIL</p>
-          <p className="text-sm">{`sheikh.haris.zahid@slysol.com`}</p>
+          <Link
+            href={'mailto:sheikh.haris.zahid@slysol.com'}
+            className="text-sm"
+          >{`sheikh.haris.zahid@slysol.com`}</Link>
           <p className="font-bold mt-5 mb-1 font-neue">SOCIAL MEDIA</p>
           <div className="flex">
             {socialIcons.map((socialIcon) => (
