@@ -46,9 +46,11 @@ const ContactForm = () => {
           message: '',
         });
         setAlertMessage('success');
+      } else {
+        setAlertMessage('failed');
       }
     } catch (error) {
-      console.log(error);
+      console.log(error + 'i am error');
       setAlertMessage('failed');
     } finally {
       setLoading(false);
@@ -108,7 +110,7 @@ const ContactForm = () => {
           placeholder="Message"
           value={formData.message}
           onChange={handleChange}
-          rows={5}
+          rows={4}
           required
           className="border py-3 px-2 focus:outline-none mt-3"
         />
