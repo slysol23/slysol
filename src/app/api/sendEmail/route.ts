@@ -1,14 +1,13 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import nodemailer from 'nodemailer';
 
-export async function POST(request) {
+export async function POST(request: NextRequest) {
   try {
     const { formData } = await request.json();
     const { name, email, subject, message } = formData;
-    console.log(formData);
     var transport = nodemailer.createTransport({
       host: process.env.NEXT_PUBLIC_EMAIL_HOST,
-      port: process.env.NEXT_PUBLIC_EMAIL_PORT,
+      port: Number(process.env.NEXT_PUBLIC_EMAIL_PORT) || 0,
       auth: {
         user: process.env.NEXT_PUBLIC_EMAIL_USER,
         pass: process.env.NEXT_PUBLIC_EMAIL_PASSWORD,
@@ -18,11 +17,11 @@ export async function POST(request) {
     const mailOption = {
       from: email,
       to: process.env.NEXT_PUBLIC_EMAIL_TO,
-      subject: 'Contact Form',
+      subject,
       html: `
         <h3> Sender: ${name}</h3>
-        <li> Subject: ${subject}</li>
-        <li> Message: ${message}</li> 
+        <br/>
+        <p>${message}</p> 
         `,
     };
 
