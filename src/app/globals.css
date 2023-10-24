@@ -6,8 +6,8 @@ html,
 body {
   color: #000 !important;
   width: 100%;
-  height: auto;
-  overflow-x: hidden;
+  height: 100%;
+  overflow-x: clip;
 }
 
 .owl-nav {
