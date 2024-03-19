@@ -11,6 +11,9 @@ import { CiMail, CiPhone } from 'react-icons/ci';
 import Layout from '@/components/Layout';
 import Header from '@/components/Header';
 import SubTitle from '@/components/SubTitle';
+import Section from '@/components/Section';
+import MainHeading from '@/components/MainHeading';
+import ServicesShowcase from '@/components/Home/ServicesShowcase';
 
 export const metadata: Metadata = {
   description:
@@ -42,38 +45,55 @@ export default function Home() {
         </div>
         <Container className="h-full" hScreen={false}>
           <Header />
-          <div className="grid lg:grid-cols-2 md:gap-20 gap-10 items-center md:py-20 sm:py-10 py-5">
-            <div>
-              <SubTitle text="WELCOME TO OUR COMPANY" />
-              <p className="lg:text-5xl md:text-4xl sm:text-3xl text-2xl font-bold tracking-wide line leading-tight xl:w-2/3 lg:w-3/4 sm:w-1/2 w-2/3">
-                Clear Thinking Makes{' '}
-                <span className="text-primary2 font-semibold">
-                  Bright Future!
-                </span>
-              </p>
-              <p className="text-mute md:py-8 py-5">
-                The website design should be user-friendly, easy to navigate,
-                and aesthetically pleasing. It should be optimized for fast
-                loading times, and the layout should be consistent across all
-                pages.
-              </p>
-              <Button text="Discover More" className="py-3" />
-            </div>
-            <div className="relative lg:w-full sm:w-3/4 w-full m-auto">
-              <div className="border-[2px] animate-fancyBorder2 py-3 absolute w-full h-full -translate-x-6 translate-y-10 border-slate" />
-              <div className="border-[2px] animate-fancyBorder absolute w-full h-full border-secondary sm:translate-y-0 -translate-y-9" />
-              <div className="sm:rounded-fancyRadius2 rounded-lg sm:h-[500px] h-[400px] relative overflow-hidden">
-                <Image
-                  src="/images/home/header.png"
-                  alt="company header"
-                  fill
-                  className="object-cover"
-                />
+          <Section>
+            <div className="grid lg:grid-cols-2 md:gap-20 gap-10 items-center">
+              <div>
+                <SubTitle text="WELCOME TO OUR COMPANY" />
+                <p className="lg:text-5xl md:text-4xl sm:text-3xl text-2xl font-bold tracking-wide line leading-tight xl:w-2/3 lg:w-3/4 sm:w-1/2 w-2/3">
+                  Clear Thinking Makes{' '}
+                  <span className="text-primary2 font-semibold">
+                    Bright Future!
+                  </span>
+                </p>
+                <p className="text-mute md:py-8 py-5">
+                  The website design should be user-friendly, easy to navigate,
+                  and aesthetically pleasing. It should be optimized for fast
+                  loading times, and the layout should be consistent across all
+                  pages.
+                </p>
+                <Button text="Discover More" className="py-3" />
+              </div>
+              <div className="relative lg:w-full sm:w-3/4 w-full m-auto">
+                <div className="border-[2px] animate-fancyBorder2 py-3 absolute w-full h-full -translate-x-6 translate-y-10 border-slate" />
+                <div className="border-[2px] animate-fancyBorder absolute w-full h-full border-secondary sm:translate-y-0 -translate-y-9" />
+                <div className="sm:rounded-fancyRadius2 rounded-lg sm:h-[500px] h-[400px] relative overflow-hidden">
+                  <Image
+                    src="/images/home/header.png"
+                    alt="company header"
+                    fill
+                    className="object-cover"
+                  />
+                </div>
               </div>
             </div>
-          </div>
+          </Section>
         </Container>
       </div>
+
+      {/* Services Section */}
+      <Container hScreen={false}>
+        <Section>
+          <div className="flex flex-col gap-3 justify-center items-center">
+            <SubTitle text="OUR SERVICES" />
+            <MainHeading text="Services We Provide" />
+            <p className="text-mute w-1/2 text-center">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi
+              obortis ligula euismod sededesty am augue nisl.
+            </p>
+          </div>
+          <ServicesShowcase />
+        </Section>
+      </Container>
 
       {/* CUSTOM SOFTWARE SOLUTIONS */}
       <div
