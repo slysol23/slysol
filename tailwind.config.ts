@@ -11,6 +11,7 @@ const config: Config = {
     extend: {
       borderRadius: {
         fancyRadius: '31% 69% 23% 77% / 66% 18% 82% 34%',
+        fancyRadius2: '62% 38% 58% 42% / 52% 37% 63% 48%',
       },
       keyframes: {
         customPulse: {
@@ -29,10 +30,34 @@ const config: Config = {
           '0%': { transform: 'translateX(-100%)' },
           '100%': { transform: 'translateX(0%)' },
         },
+        fancyBorder: {
+          '0%': {
+            borderRadius: '31% 69% 23% 77% / 66% 18% 82% 34%',
+          },
+          '50%': {
+            borderRadius: '43% 57% 36% 64% / 36% 63% 37% 64%',
+          },
+          '100%': {
+            borderRadius: '31% 69% 23% 77% / 66% 18% 82% 34%',
+          },
+        },
+        fancyBorder2: {
+          '0%': {
+            borderRadius: '70% 30% 58% 42% / 34% 69% 31% 66%',
+          },
+          '50%': {
+            borderRadius: '70% 30% 83% 17% / 34% 37% 63% 66% ',
+          },
+          '100%': {
+            borderRadius: '70% 30% 58% 42% / 34% 69% 31% 66%',
+          },
+        },
       },
       animation: {
         customPulse: 'customPulse 2s forwards infinite',
         'left-to-right': 'leftToRight 3s ease',
+        fancyBorder: 'fancyBorder 2s linear infinite',
+        fancyBorder2: 'fancyBorder 2s linear infinite',
       },
       colors: {
         primary1: '#0FABF6',
@@ -42,6 +67,8 @@ const config: Config = {
         pink: '#E62C5A',
         blue: '#393E58',
         slate: '#EBEDE8',
+        dark: '#1c1c25',
+        mute: '#7b7e86',
       },
       fontFamily: {
         // sans: ['var(--font-neue)'],

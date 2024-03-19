@@ -7,6 +7,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React, { useEffect } from 'react';
 import { Bars3Icon } from '@heroicons/react/20/solid';
+import Container from '../Container';
 
 export default function Header() {
   useEffect(() => {
@@ -20,7 +21,7 @@ export default function Header() {
   const MenuItem = ({
     item,
     className = `md:ms-8 border-b md:border-0 block
-      uppercase py-3 md:p-0 group transition
+      py-3 md:p-0 group transition
       duration-300 text-black`,
   }: {
     item: MenuItemType;
@@ -43,59 +44,54 @@ export default function Header() {
   };
 
   return (
-    <div className="border-b shadow-md fixed top-0 w-full z-10 bg-white">
-      <div className="max-w-6xl m-auto px-[14px]">
-        <nav
-          className="
-              flex flex-wrap
-              items-center
-              justify-between
-              w-full font-neue
-              py-4
-              text-lg text-gray-700
-            "
-        >
-          <div>
-            <Link href="/">
-              <Image
-                src="/icons/slysol-logo.png"
-                alt="Next"
-                width={100}
-                height={100}
-              />
-            </Link>
-          </div>
-          <Bars3Icon
-            className="cursor-pointer md:hidden"
-            width={30}
-            height={30}
-            onClick={() => setOpen(!isOpen)}
-          />
-          <div
-            className={`
-              w-full
-              md:flex md:items-center md:w-auto
-              ${!isOpen && 'hidden'}
-            `}
-          >
-            <ul
-              className="
-                text-base text-gray-700 dark:text-white
-                pt-4
-                md:flex
-                md:justify-between
-                md:pt-0
+    <nav
+      className="
+                flex flex-wrap
+                items-center
+                justify-between
+                w-full h-[100px]
+                text-lg text-gray-700
               "
-            >
-              {MenuItems.map((item, index) => (
-                <li key={`MenuRoute-${index}`}>
-                  <MenuItem item={item} />
-                </li>
-              ))}
-            </ul>
-          </div>
-        </nav>
+    >
+      <Link href="/">
+        <div className="relative h-[50px] sm:w-[120px] w-[100px]">
+          <Image
+            src="/icons/slysol-logo.png"
+            alt="Next"
+            fill
+            className="object-contain aspect-square"
+          />
+        </div>
+      </Link>
+      <Bars3Icon
+        className="cursor-pointer md:hidden"
+        width={30}
+        height={30}
+        onClick={() => setOpen(!isOpen)}
+      />
+      <div
+        className={`
+                w-full
+                md:flex md:items-center md:w-auto
+                ${!isOpen && 'hidden'}
+              `}
+      >
+        <ul
+          className="
+                  text-base text-gray-700 dark:text-white
+                  pt-4
+                  md:flex
+                  md:justify-between
+                  md:pt-0
+                "
+        >
+          {MenuItems.map((item, index) => (
+            <li key={`MenuRoute-${index}`}>
+              <MenuItem item={item} />
+            </li>
+          ))}
+        </ul>
       </div>
-    </div>
+    </nav>
   );
 }

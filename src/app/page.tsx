@@ -7,7 +7,10 @@ import ScrollAnimation from '@/components/ScrollAnimation';
 import WhatWeDo from '@/components/Home/WhatWeDo';
 import Slider from '@/components/Home/ClientFeedback/Slider';
 import { Metadata } from 'next';
+import { CiMail, CiPhone } from 'react-icons/ci';
 import Layout from '@/components/Layout';
+import Header from '@/components/Header';
+import SubTitle from '@/components/SubTitle';
 
 export const metadata: Metadata = {
   description:
@@ -16,46 +19,61 @@ export const metadata: Metadata = {
 
 export default function Home() {
   return (
-    <Layout>
-      <Container className="py-5 pt-10 md:pt-5">
-        <div className="grid md:grid-cols-[40%_60%] gap-5">
-          <div className="md:my-auto">
-            <h1
-              className="lg:text-5xl md:text-4xl text-3xl font-bold
-             text-[#6F83DC] font-neue"
-            >
-              Your <br /> <span className="text-[#EB577B]">Gateway</span> <br />{' '}
-              To Clever <br /> IT Solutions
-            </h1>
-            <ScrollAnimation>
-              <a href="mailto:sheikh.haris.zahid@slysol.com">
-                <Button
-                  text="REQUEST A CONSULTATION"
-                  className="md:mt-10 mt-5"
-                />
-              </a>
-            </ScrollAnimation>
-          </div>
-          <div className="flex items-center md:justify-end justify-center            md:-translate-x-0 -translate-x-[5%]">
-            <AnimatedStar>
-              <Image
-                src="/images/home/star-vector.png"
-                alt="united hands"
-                width={120}
-                height={120}
-              />
-            </AnimatedStar>
+    <>
+      {/* Header Section */}
+      <div className="bg-gradient-to-r from-[#CBFCD8] via-[#B9E6E6] to-[#96BCFD]">
+        <div className="border-b-[1px] md:text-sm text-xs sm:py-0 py-1">
+          <Container
+            hScreen={false}
+            className="sm:h-[50px] flex sm:flex-row flex-col justify-between items-center gap-1"
+          >
+            <p>Mon-Fri: 11:00 AM - 8:00 PM</p>
+            <div className="flex sm:flex-row flex-col sm:gap-5 gap-1 items-center">
+              <div className="flex gap-1 items-center">
+                <CiPhone />
+                <p>+92-3104150111</p>
+              </div>
+              <div className="flex gap-1 items-center">
+                <CiMail />
+                <p>sheikh.haris.zahid@slysol.com</p>
+              </div>
+            </div>
+          </Container>
+        </div>
+        <Container className="h-full" hScreen={false}>
+          <Header />
+          <div className="grid lg:grid-cols-2 md:gap-20 gap-10 items-center md:py-20 sm:py-10 py-5">
             <div>
-              <Image
-                src="/images/home/header.png"
-                alt="united hands"
-                width={600}
-                height={600}
-              />
+              <SubTitle text="WELCOME TO OUR COMPANY" />
+              <p className="lg:text-5xl md:text-4xl sm:text-3xl text-2xl font-bold tracking-wide line leading-tight xl:w-2/3 lg:w-3/4 sm:w-1/2 w-2/3">
+                Clear Thinking Makes{' '}
+                <span className="text-primary2 font-semibold">
+                  Bright Future!
+                </span>
+              </p>
+              <p className="text-mute md:py-8 py-5">
+                The website design should be user-friendly, easy to navigate,
+                and aesthetically pleasing. It should be optimized for fast
+                loading times, and the layout should be consistent across all
+                pages.
+              </p>
+              <Button text="Discover More" className="py-3" />
+            </div>
+            <div className="relative lg:w-full sm:w-3/4 w-full m-auto">
+              <div className="border-[2px] animate-fancyBorder2 py-3 absolute w-full h-full -translate-x-6 translate-y-10 border-slate" />
+              <div className="border-[2px] animate-fancyBorder absolute w-full h-full border-secondary sm:translate-y-0 -translate-y-9" />
+              <div className="sm:rounded-fancyRadius2 rounded-lg sm:h-[500px] h-[400px] relative overflow-hidden">
+                <Image
+                  src="/images/home/header.png"
+                  alt="company header"
+                  fill
+                  className="object-cover"
+                />
+              </div>
             </div>
           </div>
-        </div>
-      </Container>
+        </Container>
+      </div>
 
       {/* CUSTOM SOFTWARE SOLUTIONS */}
       <div
@@ -107,6 +125,6 @@ export default function Home() {
 
       {/* Clients Feedback */}
       <Slider />
-    </Layout>
+    </>
   );
 }

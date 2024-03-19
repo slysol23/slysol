@@ -12,7 +12,7 @@ export default function Layout({ children, container = false }: LayoutProps) {
   return (
     <>
       <Header />
-      <main className="mt-[69px] font-basic">
+      <main className="font-basic">
         {container ? <Container>{children}</Container> : children}
       </main>
       <Footer />
