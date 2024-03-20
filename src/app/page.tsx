@@ -14,6 +14,7 @@ import SubTitle from '@/components/SubTitle';
 import Section from '@/components/Section';
 import MainHeading from '@/components/MainHeading';
 import ServicesShowcase from '@/components/Home/ServicesShowcase';
+import Title from '@/components/Title';
 
 export const metadata: Metadata = {
   description:
@@ -49,12 +50,12 @@ export default function Home() {
             <div className="grid lg:grid-cols-2 md:gap-20 gap-10 items-center">
               <div>
                 <SubTitle text="WELCOME TO OUR COMPANY" />
-                <p className="lg:text-5xl md:text-4xl sm:text-3xl text-2xl font-bold tracking-wide line leading-tight xl:w-2/3 lg:w-3/4 sm:w-1/2 w-2/3">
+                <Title>
                   Clear Thinking Makes{' '}
                   <span className="text-primary2 font-semibold">
                     Bright Future!
                   </span>
-                </p>
+                </Title>
                 <p className="text-mute md:py-8 py-5">
                   The website design should be user-friendly, easy to navigate,
                   and aesthetically pleasing. It should be optimized for fast
@@ -86,7 +87,7 @@ export default function Home() {
           <div className="flex flex-col gap-3 justify-center items-center">
             <SubTitle text="OUR SERVICES" />
             <MainHeading text="Services We Provide" />
-            <p className="text-mute w-1/2 text-center">
+            <p className="text-mute sm:w-1/2 text-center">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi
               obortis ligula euismod sededesty am augue nisl.
             </p>
@@ -95,6 +96,15 @@ export default function Home() {
         </Section>
       </Container>
 
+      {/* Modern Tech Section */}
+      <div className="relative w-full h-screen bg-fixed bg-center bg-no-repeat bg-cover bg-modern-tech">
+        <div className="absolute xl:left-1/4 lg:left-1/3 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          <SubTitle text="MODERN" white />
+          <Title className="text-white">
+            <h1>Tech & Software Design</h1>
+          </Title>
+        </div>
+      </div>
       {/* CUSTOM SOFTWARE SOLUTIONS */}
       <div
         className="bg-gradient-to-r from-[#CBFCD8] via-[#B9E6E6] to-[#96BCFD]
