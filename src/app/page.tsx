@@ -15,6 +15,8 @@ import Section from '@/components/Section';
 import MainHeading from '@/components/MainHeading';
 import ServicesShowcase from '@/components/Home/ServicesShowcase';
 import Title from '@/components/Title';
+import GradientText from '@/components/GradientText';
+import PerfectCenter from '@/components/PerfectCenter';
 
 export const metadata: Metadata = {
   description:
@@ -50,7 +52,7 @@ export default function Home() {
             <div className="grid lg:grid-cols-2 md:gap-20 gap-10 items-center">
               <div>
                 <SubTitle text="WELCOME TO OUR COMPANY" />
-                <Title>
+                <Title className="xl:w-2/3 lg:w-3/4 sm:w-1/2 w-2/3">
                   Clear Thinking Makes{' '}
                   <span className="text-primary2 font-semibold">
                     Bright Future!
@@ -100,11 +102,52 @@ export default function Home() {
       <div className="relative w-full h-screen bg-fixed bg-center bg-no-repeat bg-cover bg-modern-tech">
         <div className="absolute xl:left-1/4 lg:left-1/3 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
           <SubTitle text="MODERN" white />
-          <Title className="text-white">
+          <Title className="text-white xl:w-2/3 lg:w-3/4 sm:w-1/2 w-2/3">
             <h1>Tech & Software Design</h1>
           </Title>
         </div>
       </div>
+
+      {/* Developing Better Future */}
+      <div className="relative h-screen w-full">
+        <Image
+          src="/images/home/better-future.jpg"
+          alt="white wave background"
+          fill
+        />
+        <PerfectCenter className="text-center">
+          <GradientText>
+            <Title
+              className="text-center font-semibold !leading-tight"
+              text="Developing a Better Future for All Our Users."
+            />
+          </GradientText>
+          <button className="btn-outline py-3 px-10 mt-8">VIEW MORE</button>
+        </PerfectCenter>
+      </div>
+
+      {/* Innovative design approach */}
+      <div className="relative">
+        <div className="absolute w-full h-full bg-black opacity-40" />
+        <video
+          width="100%"
+          height="100vh"
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="none"
+        >
+          <source src="/videos/innovative-design.mp4" type="video/mp4" />
+        </video>
+        <PerfectCenter>
+          <Title
+            text="A Innovative & Futuristic Approach To Make Your Product Grow"
+            className="text-white text-center font-semibold"
+          />
+        </PerfectCenter>
+      </div>
+
       {/* CUSTOM SOFTWARE SOLUTIONS */}
       <div
         className="bg-gradient-to-r from-[#CBFCD8] via-[#B9E6E6] to-[#96BCFD]

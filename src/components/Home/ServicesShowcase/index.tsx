@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
 import Image from 'next/image';
+import GradientText from '@/components/GradientText';
 
 const data = [
   {
@@ -41,7 +42,7 @@ const ServicesShowcase = () => {
             key={index}
             onMouseOver={() => changeImage(item.imagePath, item.title)}
           >
-            {item.title}
+            <GradientText>{item.title}</GradientText>
             <div className="absolute left-0 top-0 w-0.5 h-0 group-hover:h-full transition-all duration-500  bg-primary2 md:block hidden" />
           </h2>
         ))}

@@ -20,6 +20,13 @@ body {
   justify-content: space-between;
 }
 
+.btn-outline {
+  color: #000;
+  border: 1px solid;
+  border-image-slice: 1;
+  border-image-source: linear-gradient(70deg, #0fabf6, #455ab5, #eb577b);
+}
+
 @media screen and (max-width: 768px) {
   .owl-nav {
     position: relative;
