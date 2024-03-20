@@ -83,6 +83,47 @@ export default function Home() {
         </Container>
       </div>
 
+      {/* Who are we */}
+      <Container hScreen={false}>
+        <Section>
+          <div className="grid lg:grid-cols-2 md:gap-20 gap-10 items-center">
+            <Image
+              src="/images/home/who-are-we.png"
+              alt="team"
+              width={1000}
+              height={800}
+              className="w-full h-auto rounded-lg lg:order-1 order-2"
+            />
+            <div className="lg:order-2 order-1">
+              <SubTitle text="WHO ARE WE" />
+              <Title text="Slysol" />
+              <p className="md:mt-8 mt-5 text-mute">
+                Lorem ipsum, dolor sit amet consectetur adipisicing elit. Veniam
+                numquam dolor incidunt, vero quasi voluptas rerum voluptatibus
+                quisquam. Commodi exercitationem nam eaque ratione distinctio
+                fugiat officia incidunt vero! Harum reiciendis alias doloribus
+                accusamus beatae. Laudantium quasi odio dolorum dicta culpa
+                tenetur dolorem illum ipsum recusandae repellendus, quibusdam
+                nesciunt sunt nam.
+              </p>
+              <button className="btn-outline md:py-3 mdpx-8 py-2 px-5 md:text-base text-sm md:mt-8 mt-5">
+                LEARN MORE
+              </button>
+            </div>
+          </div>
+        </Section>
+      </Container>
+
+      {/* Modern Tech Section */}
+      <div className="relative w-full h-screen bg-fixed bg-center bg-no-repeat bg-cover bg-modern-tech">
+        <div className="absolute xl:left-1/4 lg:left-1/3 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          <SubTitle text="MODERN" white />
+          <Title className="text-white xl:w-2/3 lg:w-3/4 sm:w-1/2 w-2/3">
+            <h1>Tech & Software Design</h1>
+          </Title>
+        </div>
+      </div>
+
       {/* Services Section */}
       <Container hScreen={false}>
         <Section>
@@ -97,16 +138,6 @@ export default function Home() {
           <ServicesShowcase />
         </Section>
       </Container>
-
-      {/* Modern Tech Section */}
-      <div className="relative w-full h-screen bg-fixed bg-center bg-no-repeat bg-cover bg-modern-tech">
-        <div className="absolute xl:left-1/4 lg:left-1/3 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-          <SubTitle text="MODERN" white />
-          <Title className="text-white xl:w-2/3 lg:w-3/4 sm:w-1/2 w-2/3">
-            <h1>Tech & Software Design</h1>
-          </Title>
-        </div>
-      </div>
 
       {/* Developing Better Future */}
       <div className="relative h-screen w-full">

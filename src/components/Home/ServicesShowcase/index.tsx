@@ -42,7 +42,10 @@ const ServicesShowcase = () => {
             key={index}
             onMouseOver={() => changeImage(item.imagePath, item.title)}
           >
-            <GradientText>{item.title}</GradientText>
+            <GradientText className="md:block hidden">
+              {item.title}
+            </GradientText>
+            <div className="md:hidden block">{item.title}</div>
             <div className="absolute left-0 top-0 w-0.5 h-0 group-hover:h-full transition-all duration-500  bg-primary2 md:block hidden" />
           </h2>
         ))}
