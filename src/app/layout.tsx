@@ -80,7 +80,7 @@ export default function RootLayout({
           content="WSFplsjjbt13v0ikzPDoAG_kE1hkZhqI1kD2wv5WpiM"
         />
       </head>
-      <body className={`${NeueMachina.variable} ${basic.variable}`}>
+      <body className={`${NeueMachina.variable} ${basic.variable} text-dark`}>
         {children}
       </body>
     </html>

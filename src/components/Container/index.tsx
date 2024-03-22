@@ -14,7 +14,7 @@ const Container = ({
   return (
     <div
       className={`lg:max-w-6xl md:max-w-3xl m-auto px-[14px] ${
-        hScreen && 'md:h-[90vh]'
+        hScreen && 'md:h-screen'
       } flex items-center`}
     >
       <div className={`${className} w-full`}>{children}</div>
