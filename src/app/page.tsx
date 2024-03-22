@@ -1,14 +1,10 @@
 import Container from '@/components/Container';
 import Button from '@/components/Button';
 import Image from 'next/image';
-import AnimatedStar from '@/components/Home/AnimatedStar';
 import WhyUs from '@/components/Home/WhyUs';
-import ScrollAnimation from '@/components/ScrollAnimation';
-import WhatWeDo from '@/components/Home/WhatWeDo';
 import Slider from '@/components/Home/ClientFeedback/Slider';
 import { Metadata } from 'next';
 import { CiMail, CiPhone } from 'react-icons/ci';
-import Layout from '@/components/Layout';
 import Header from '@/components/Header';
 import SubTitle from '@/components/SubTitle';
 import Section from '@/components/Section';
