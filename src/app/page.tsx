@@ -121,7 +121,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Services Section */}
+      {/* Services-Section */}
       <Container hScreen={false}>
         <Section>
           <div className="flex flex-col gap-3 justify-center items-center">
