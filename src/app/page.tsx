@@ -17,6 +17,7 @@ import ServicesShowcase from '@/components/Home/ServicesShowcase';
 import Title from '@/components/Title';
 import GradientText from '@/components/GradientText';
 import PerfectCenter from '@/components/PerfectCenter';
+import Footer from '@/components/Footer';
 
 export const metadata: Metadata = {
   description:
@@ -157,6 +158,9 @@ export default function Home() {
         </PerfectCenter>
       </div>
 
+      {/* WHY US SECTION */}
+      <WhyUs />
+
       {/* Innovative design approach */}
       <div className="relative">
         <div className="absolute w-full h-full bg-black opacity-40" />
@@ -179,56 +183,9 @@ export default function Home() {
         </PerfectCenter>
       </div>
 
-      {/* CUSTOM SOFTWARE SOLUTIONS */}
-      <div
-        className="bg-gradient-to-r from-[#CBFCD8] via-[#B9E6E6] to-[#96BCFD]
-        md:py-20 py-10"
-      >
-        <Container className="grid md:grid-cols-2 gap-10">
-          <ScrollAnimation startPosition={100}>
-            <Image
-              src="/images/home/custom-software.png"
-              alt="custom software creation"
-              height={400}
-              width={400}
-              className="md:mx-0 mx-auto"
-            />
-          </ScrollAnimation>
-          <div className="my-auto">
-            <ScrollAnimation>
-              <h1 className="md:text-4xl text-3xl font-bold">
-                Custom Software Solution? Count on us.
-              </h1>
-            </ScrollAnimation>
-            <p className="mt-5 sm:text-base text-sm">
-              {`When it comes to custom software solutions, look no further. Slysol is your dedicated partner in turning your unique ideas into reality. With a proven track record of delivering innovative and efficient software tailored to your specific needs, we take pride in our ability to transform challenges into opportunities. Our team of experts is committed to understanding your vision and crafting a bespoke software solution that not only meets but exceeds your expectations. Experience the power of personalized software with us, and let's embark on a journey to reshape the way you do business. Your aspirations, our expertise – together, we build the extraordinary.`}
-            </p>
-          </div>
-        </Container>
-      </div>
-
-      {/* WHAT WE DO SECTION */}
-      <WhatWeDo />
-
-      {/* WHY US SECTION */}
-      <WhyUs />
-
-      {/* Faciltating the formation */}
-      <div className="bg-blue">
-        <Container className="md:py-20 py-10">
-          <h1
-            className="md:leading-[60px] lg:text-[48px] md:text-4xl text-3xl text-center
-           text-white lg:px-40 md:px-32 font-neue"
-          >
-            Faciltating the formation of more robust teams, Slysol empower both
-            businesses and individuals to swiftly cultivate improved software
-            and quality systems.
-          </h1>
-        </Container>
-      </div>
-
       {/* Clients Feedback */}
       <Slider />
+      <Footer />
     </>
   );
 }
