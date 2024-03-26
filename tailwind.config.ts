@@ -30,6 +30,10 @@ const config: Config = {
           '0%': { transform: 'translateX(-100%)' },
           '100%': { transform: 'translateX(0%)' },
         },
+        rightToLeft: {
+          '0%': { transform: 'translateX(0%)' },
+          '100%': { transform: 'translateX(-100%)' },
+        },
         fancyBorder: {
           '0%': {
             borderRadius: '31% 69% 23% 77% / 66% 18% 82% 34%',
@@ -55,7 +59,8 @@ const config: Config = {
       },
       animation: {
         customPulse: 'customPulse 2s forwards infinite',
-        'left-to-right': 'leftToRight 3s ease',
+        'left-to-right': 'leftToRight 2s ease',
+        'right-to-left': 'rightToLeft 2s ease',
         fancyBorder: 'fancyBorder 2s linear infinite',
         fancyBorder2: 'fancyBorder 2s linear infinite',
       },
