@@ -121,12 +121,12 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Services Section */}
+      {/* Services-Section */}
       <Container hScreen={false}>
         <Section>
           <div className="flex flex-col gap-3 justify-center items-center">
             <SubTitle text="OUR SERVICES" />
-            <MainHeading text="Services We Provide" />
+            <Title text="Services We Provide" className="font-normal" />
             <p className="text-mute sm:w-1/2 text-center">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi
               obortis ligula euismod sededesty am augue nisl.
@@ -137,7 +137,7 @@ export default function Home() {
       </Container>
 
       {/* Developing Better Future */}
-      <div className="relative h-screen w-full">
+      <div className="relative md:h-screen h-[400px] w-full">
         <Image
           src="/images/home/better-future.jpg"
           alt="white wave background"
@@ -158,7 +158,7 @@ export default function Home() {
       <WhyUs />
 
       {/* Innovative design approach */}
-      <div className="relative">
+      <div className="relative md:block hidden">
         <div className="absolute w-full h-full bg-black opacity-40" />
         <video
           width="100%"

@@ -1,4 +1,5 @@
 import Container from '@/components/Container';
+import MainHeading from '@/components/MainHeading';
 import ScrollAnimation from '@/components/ScrollAnimation';
 import Section from '@/components/Section';
 import Title from '@/components/Title';
@@ -30,7 +31,7 @@ const WhyUs = () => {
   return (
     <Container>
       <Section>
-        <Title text="Why Us" className="text-center" />
+        <Title text="Why Us" className="text-center font-normal" />
         <div
           className="grid lg:grid-cols-[12.5%_25%_25%_25%_12.5%]
        md:grid-cols-3 gap-10 justify-center sm:pt-10 pt-5"
@@ -47,7 +48,9 @@ const WhyUs = () => {
                   className="mx-auto mb-5"
                 />
               </ScrollAnimation>
-              <h3 className="font-bold mb-2">{content.heading}</h3>
+              <MainHeading text={content.heading} className="mb-2" />
+
+              <h3 className="font-bold mb-2"></h3>
               <p className="text-sm">{content.description}</p>
             </div>
           ))}

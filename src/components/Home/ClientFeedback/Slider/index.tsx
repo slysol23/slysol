@@ -7,6 +7,8 @@ import React from 'react';
 
 import SliderCard from './sliderCard';
 import Container from '@/components/Container';
+import Title from '@/components/Title';
+import Section from '@/components/Section';
 
 const OwlCarousel = dynamic(() => import('react-owl-carousel'), {
   ssr: false,
@@ -46,33 +48,36 @@ export default function Slider() {
   ];
 
   return (
-    <Container className="py-10">
-      <h2 className="md:text-4xl text-3xl text-center md:mb-10 mb-5 font-neue">
-        {`Client's Feedback`}
-      </h2>
-      <OwlCarousel
-        items={1}
-        margin={20}
-        loop={true}
-        center={true}
-        autoplay={true}
-        autoplayTimeout={10000}
-        autoplaySpeed={5000}
-        smartSpeed={2500}
-        dots={false}
-        autoplayHoverPause
-      >
-        {images.map((image, index) => (
-          <div className="item" key={`slider-card-${index}`}>
-            <SliderCard
-              src={image.src}
-              alt={image.alt}
-              text={image.text}
-              companyName={image.name}
-            />
-          </div>
-        ))}
-      </OwlCarousel>
-    </Container>
+    <Section>
+      <Container hScreen={false}>
+        <Title
+          text={`Client's Feedback`}
+          className="text-center md:mb-10 mb-5 font-normal"
+        />
+        <OwlCarousel
+          items={1}
+          margin={20}
+          loop={true}
+          center={true}
+          autoplay={true}
+          autoplayTimeout={10000}
+          autoplaySpeed={5000}
+          smartSpeed={2500}
+          dots={false}
+          autoplayHoverPause
+        >
+          {images.map((image, index) => (
+            <div className="item" key={`slider-card-${index}`}>
+              <SliderCard
+                src={image.src}
+                alt={image.alt}
+                text={image.text}
+                companyName={image.name}
+              />
+            </div>
+          ))}
+        </OwlCarousel>
+      </Container>
+    </Section>
   );
 }
