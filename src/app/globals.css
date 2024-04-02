@@ -27,6 +27,16 @@ body {
   border-image-source: linear-gradient(70deg, #0fabf6, #455ab5, #eb577b);
 }
 
+.gradient-border {
+  border-image-slice: 1;
+  border-image-source: linear-gradient(
+    0deg,
+    rgba(15, 171, 246, 0.5),
+    rgba(69, 90, 181, 0.5),
+    rgba(235, 87, 123, 0.5)
+  );
+}
+
 @media screen and (max-width: 768px) {
   .owl-nav {
     position: relative;
