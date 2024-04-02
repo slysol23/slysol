@@ -33,12 +33,12 @@ const AnimatedStar = ({ children }: AnimatedStarProps) => {
         screenSize < 478
           ? 80
           : screenSize < 768
-          ? 140
-          : screenSize < 920
-          ? 115
-          : screenSize < 1024
-          ? 135
-          : 160,
+            ? 140
+            : screenSize < 920
+              ? 115
+              : screenSize < 1024
+                ? 135
+                : 160,
       transition: {
         duration: 1,
       },

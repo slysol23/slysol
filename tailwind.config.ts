@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss';
+const plugin = require('tailwindcss/plugin');
 
 const config: Config = {
   // important: true,
@@ -88,6 +89,21 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    plugin(({ matchUtilities, theme }: any) => {
+      matchUtilities(
+        {
+          'animation-delay': (value: any) => {
+            return {
+              'animation-delay': value,
+            };
+          },
+        },
+        {
+          values: theme('transitionDelay'),
+        },
+      );
+    }),
+  ],
 };
 export default config;

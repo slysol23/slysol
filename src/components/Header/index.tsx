@@ -103,10 +103,10 @@ export default function Header() {
                 md:flex md:items-center md:w-auto md:animate-none
                 w-3/4 md:relative absolute top-0 left-0 
                 ${isOpen === null && 'hidden'} ${
-          isOpen
-            ? 'animate-left-to-right'
-            : 'animate-right-to-left md:translate-x-0 -translate-x-[100%]'
-        }
+                  isOpen
+                    ? 'animate-left-to-right'
+                    : 'animate-right-to-left md:translate-x-0 -translate-x-[100%]'
+                }
               `}
       >
         <div className="relative">
