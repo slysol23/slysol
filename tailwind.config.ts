@@ -57,6 +57,10 @@ const config: Config = {
             borderRadius: '70% 30% 58% 42% / 34% 69% 31% 66%',
           },
         },
+        opacity: {
+          '0%': { opacity: '0.5' },
+          '100%': { opacity: '1' },
+        },
       },
       animation: {
         customPulse: 'customPulse 2s forwards infinite',
@@ -64,6 +68,7 @@ const config: Config = {
         'right-to-left': 'rightToLeft 2s ease',
         fancyBorder: 'fancyBorder 2s linear infinite',
         fancyBorder2: 'fancyBorder 2s linear infinite',
+        opacity: 'opacity 2s ease-in-out',
       },
       colors: {
         primary1: '#0FABF6',
