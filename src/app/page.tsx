@@ -56,10 +56,8 @@ export default function Home() {
                   </span>
                 </Title>
                 <p className="text-mute md:py-8 py-5">
-                  The website design should be user-friendly, easy to navigate,
-                  and aesthetically pleasing. It should be optimized for fast
-                  loading times, and the layout should be consistent across all
-                  pages.
+                  Where we see every digital platform as an opportunity to
+                  upscale your business
                 </p>
                 <Button text="Discover More" className="py-3" />
               </div>
@@ -95,13 +93,14 @@ export default function Home() {
               <SubTitle text="WHO ARE WE" />
               <Title text="Slysol" />
               <p className="md:mt-8 mt-5 text-mute">
-                Lorem ipsum, dolor sit amet consectetur adipisicing elit. Veniam
-                numquam dolor incidunt, vero quasi voluptas rerum voluptatibus
-                quisquam. Commodi exercitationem nam eaque ratione distinctio
-                fugiat officia incidunt vero! Harum reiciendis alias doloribus
-                accusamus beatae. Laudantium quasi odio dolorum dicta culpa
-                tenetur dolorem illum ipsum recusandae repellendus, quibusdam
-                nesciunt sunt nam.
+                {`Your strategic partner in navigating the rapidly evolving
+                landscape of digital innovation. At SlySol, we're a team of
+                experts in software development, AI integration, cloud
+                computing, IT consulting, and digital marketing. Our goal is to
+                help clients make the most of technology to reach their dreams,
+                whether that means streamlining operations, improving customer
+                experiences, or growing their business. Experience the
+                difference with SlySol.`}
               </p>
               <button className="btn-outline md:py-3 mdpx-8 py-2 px-5 md:text-base text-sm md:mt-8 mt-5">
                 LEARN MORE
@@ -128,8 +127,8 @@ export default function Home() {
             <SubTitle text="OUR SERVICES" />
             <Title text="Services We Provide" className="font-normal" />
             <p className="text-mute sm:w-1/2 text-center">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi
-              obortis ligula euismod sededesty am augue nisl.
+              We are a one stop digital shop, providing you with all the digital
+              solutions specially when the world is changing into AI.
             </p>
           </div>
           <ServicesShowcase />
