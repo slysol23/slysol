@@ -7,8 +7,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React, { useEffect, useRef } from 'react';
 import { Bars3Icon, XCircleIcon } from '@heroicons/react/20/solid';
+import SiteLogo from '../SiteLogo';
 
-export default function Header() {
+interface HeaderProps {
+  classes?: { root?: string; menuUnderline?: string; whiteLogo?: boolean };
+}
+
+export default function Header({ classes }: HeaderProps) {
   const [isOpen, setOpen] = React.useState<boolean | null>(null);
 
   const pathname = usePathname();
@@ -47,7 +52,7 @@ export default function Header() {
     item,
     className = `md:ms-8 border-b md:border-0 block
       py-3 md:p-0 group transition
-      duration-300 text-black`,
+      duration-300`,
   }: {
     item: MenuItemType;
     className?: string;
@@ -63,36 +68,32 @@ export default function Header() {
         onClick={() => setOpen(false)}
       >
         {item.name}
-        <span className="md:block hidden max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-black"></span>
+        <span
+          className={`md:block hidden max-w-0 group-hover:max-w-full transition-all duration-500 h-0.5 bg-black ${classes?.menuUnderline}`}
+        ></span>
       </Link>
     );
   };
 
   return (
     <nav
-      className="
+      className={`
                 flex flex-wrap
                 items-center
                 justify-between
-                w-full h-[100px]
-                text-lg text-gray-700
-              "
+                w-full md:h-[100px] h-[70px]
+                text-lg text-black ${classes?.root}
+              `}
     >
       <Link href="/">
-        <div className="relative h-[50px] sm:w-[120px] w-[100px]">
-          <Image
-            src="/icons/slysol-logo.png"
-            alt="Next"
-            fill
-            className="object-contain aspect-square"
-          />
-        </div>
+        <SiteLogo white={classes?.whiteLogo} />
       </Link>
       <div ref={Bar3Ref}>
         <Bars3Icon
           className="cursor-pointer md:hidden"
           width={30}
           height={30}
+          color={classes?.whiteLogo ? 'white' : ''}
           onClick={() => setOpen(!isOpen)}
         />
       </div>
@@ -103,15 +104,15 @@ export default function Header() {
                 md:flex md:items-center md:w-auto md:animate-none
                 w-3/4 md:relative absolute top-0 left-0 
                 ${isOpen === null && 'hidden'} ${
-                  isOpen
-                    ? 'animate-left-to-right'
-                    : 'animate-right-to-left md:translate-x-0 -translate-x-[100%]'
-                }
+          isOpen
+            ? 'animate-left-to-right'
+            : 'animate-right-to-left md:translate-x-0 -translate-x-[100%]'
+        }
               `}
       >
         <div className="relative">
           <Image
-            src="/icons/slysol-logo.png"
+            src="/icons/slysol.svg"
             height={50}
             width={100}
             alt="slysol logo"
@@ -125,7 +126,7 @@ export default function Header() {
           />
           <ul
             className="
-                    text-base text-gray-700 dark:text-white
+                    text-base
                     p-4
                     md:flex
                     md:justify-between
