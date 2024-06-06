@@ -45,31 +45,31 @@ const page = () => {
     {
       title: 'Software Development',
       description:
-        'Lorem ipsum dolor sit, amet consectetur adipisicing elit.Quisquam fugiat quaerat, recusandae nesciunt, exercitationem error labore, beatae perspiciatis provident cumque facere nobis nemo quibusdam similique? Soluta esse dolorum odio earum similique accusantium ea suscipit blanditiis.',
+        'We deliver high-quality, custom software solutions tailored to your business needs. Our team of experts ensures seamless integration, scalability, and performance, enabling you to achieve your goals efficiently and effectively.',
       src: '/images/services/service-1.svg',
     },
     {
       title: 'Application Development',
       description:
-        'Lorem ipsum dolor sit, amet consectetur adipisicing elit.Quisquam fugiat quaerat, recusandae nesciunt, exercitationem error labore, beatae perspiciatis provident cumque facere nobis nemo quibusdam similique? Soluta esse dolorum odio earum similique accusantium ea suscipit blanditiis.',
+        'We create robust and user-friendly applications for various platforms. From initial concept to final deployment, we ensure your app meets the highest standards of functionality, security, and usability.',
       src: '/images/services/service-2.svg',
     },
     {
       title: 'AI Integration',
       description:
-        'Lorem ipsum dolor sit, amet consectetur adipisicing elit.Quisquam fugiat quaerat, recusandae nesciunt, exercitationem error labore, beatae perspiciatis provident cumque facere nobis nemo quibusdam similique? Soluta esse dolorum odio earum similique accusantium ea suscipit blanditiis.',
+        'We integrate advanced AI technologies to enhance your business processes. Our AI solutions streamline operations, improve decision-making, and drive innovation, giving you a competitive edge in the market.',
       src: '/images/services/service-3.svg',
     },
     {
       title: 'UI / UX',
       description:
-        'Lorem ipsum dolor sit, amet consectetur adipisicing elit.Quisquam fugiat quaerat, recusandae nesciunt, exercitationem error labore, beatae perspiciatis provident cumque facere nobis nemo quibusdam similique? Soluta esse dolorum odio earum similique accusantium ea suscipit blanditiis.',
+        'We design intuitive and engaging user interfaces and experiences. Our focus is on creating visually appealing and user-centric designs that enhance user satisfaction and drive business success.',
       src: '/images/services/service-4.svg',
     },
     {
       title: 'Digital Marketing',
       description:
-        'Lorem ipsum dolor sit, amet consectetur adipisicing elit.Quisquam fugiat quaerat, recusandae nesciunt, exercitationem error labore, beatae perspiciatis provident cumque facere nobis nemo quibusdam similique? Soluta esse dolorum odio earum similique accusantium ea suscipit blanditiis.',
+        'We offer comprehensive digital marketing services to boost your online presence. Our strategies include SEO, social media, and content marketing, designed to attract and engage your target audience effectively.',
       src: '/images/services/service-5.svg',
     },
   ];

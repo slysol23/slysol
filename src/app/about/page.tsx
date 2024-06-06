@@ -51,12 +51,22 @@ const About = () => {
           <SubTitle text="WELCOME TO OUR COMPANY" />
           <Title
             text="Make Your Business Great With Slysol"
-            className="lg:my-10 my-5 font-normal lg:w-full sm:w-1/2 w-4/5"
+            className="lg:mb-10 mb-5 font-normal lg:w-full sm:w-1/2 w-4/5"
           />
-          <p className="text-gray-500 md:my-10 my-5">
-            An IT solution service company may serve clients from various
-            industries such as healthcare, finance, education, and
-            manufacturing. They may work on a project basis...
+          <p className="text-gray-500 mb-3">
+            {`Welcome to SlySol, your trusted partner in IT solutions. At SlySol,
+            we are committed to delivering high-quality, innovative, and
+            customized IT services that cater to the unique needs of your
+            business. With a team of experienced professionals, we strive to
+            provide top-notch solutions that help you achieve your business
+            goals efficiently and effectively. Whether you're looking to
+            streamline operations, enhance security, or boost productivity, we
+            are here to support you every step of the way.`}
+          </p>
+          <p className="text-gray-500 md:mb-10 mb-5">
+            Expand your business to new heights with SlySol. Our services are
+            designed to empower your organization with the latest technology and
+            best practices. Here’s why you should choose us:
           </p>
           <div className="flex flex-col sm:flex-row sm:gap-10 gap-5 md:mb-10 mb-5">
             <div>
@@ -95,9 +105,8 @@ const About = () => {
                   className="font-semibold lg:w-full sm:w-2/3"
                 />
                 <p>
-                  The goal of IT services is to provide efficient and effective
-                  technology solutions that help businesses achieve their
-                  objectives.{' '}
+                  Our goal is to provide efficient and effective technology
+                  solutions that help businesses achieve their objectives.
                 </p>
               </div>
               <div>

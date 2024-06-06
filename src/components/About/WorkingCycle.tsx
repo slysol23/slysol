@@ -15,25 +15,25 @@ const workingCycle = [
     logo: <WorkingCycle1 />,
     title: 'Project Discussion',
     description:
-      'Extensible for web iterate process before meta services impact with olisticly enable client.',
+      'We start by understanding your needs and goals through detailed discussions.',
   },
   {
     logo: <WorkingCycle2 />,
     title: 'Testing & Trying ',
     description:
-      'Extensible for web iterate process before meta services impact with olisticly enable client.',
+      'We rigorously test and refine our solutions to ensure they meet your requirements.',
   },
   {
     logo: <WorkingCycle3 />,
     title: 'Execute & install ',
     description:
-      'Extensible for web iterate process before meta services impact with olisticly enable client.',
+      'We implement and install the solution seamlessly, ensuring minimal disruption to your operations.',
   },
   {
     logo: <WorkingCycle4 />,
     title: 'We Care About ',
     description:
-      'Extensible for web iterate process before meta services impact with olisticly enable client.',
+      'We provide ongoing support and maintenance, ensuring your systems run smoothly and efficiently.',
   },
 ];
 
