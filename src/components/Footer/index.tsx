@@ -13,6 +13,8 @@ import Link from 'next/link';
 import Section from '../Section';
 import SiteLogo from '../SiteLogo';
 import GradientText from '../GradientText';
+import { GoogleTranslate } from '../GoogleTranslate';
+import { getPrefLangCookie } from 'utils/cookies';
 
 interface Links {
   name: string;
@@ -101,6 +103,8 @@ const siteLinks = [
 ];
 
 const Footer = () => {
+  const prefLangCookie = getPrefLangCookie();
+
   return (
     <div className="bg-gradient-to-r from-[#CBFCD8] via-[#B9E6E6] to-[#96BCFD]">
       <Container hScreen={false}>
@@ -165,8 +169,9 @@ const Footer = () => {
           <div className="sm:flex justify-between text-sm pt-5 text-center">
             <p>Copyright © 2024, Slysol. All Rights Reserved.</p>
             <div className="flex gap-2 sm:mt-0 mt-1 justify-center">
+              <GoogleTranslate prefLangCookie={prefLangCookie} />
               <Link href={'/privacy-policy'} className="font-semibold">
-                Privacy Policy
+                | Privacy Policy
               </Link>
               |
               <Link href={'/terms-conditions'} className="font-semibold">
