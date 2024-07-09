@@ -11,8 +11,10 @@ interface LayoutProps {
 export default function Layout({ children, container = false }: LayoutProps) {
   return (
     <>
-      <Header />
-      <main className="mt-[69px] font-basic">
+      <Container hScreen={false}>
+        <Header />
+      </Container>
+      <main className="font-basic">
         {container ? <Container>{children}</Container> : children}
       </main>
       <Footer />

@@ -2,11 +2,25 @@ import { MenuItemType } from 'types/types';
 
 export const MenuItems: MenuItemType[] = [
   {
+    name: 'Home',
+    slug: 'home',
+    path: '/',
+    title: 'home | Slysol',
+    description: 'A home page',
+  },
+  {
     name: 'About',
     slug: 'about',
     path: '/about',
     title: 'About | Slysol',
     description: 'A about page',
+  },
+  {
+    name: 'Services',
+    slug: 'services',
+    path: '/services',
+    title: 'services | Slysol',
+    description: 'A services page',
   },
   {
     name: 'Portfolio',
@@ -15,20 +29,20 @@ export const MenuItems: MenuItemType[] = [
     title: 'Portfolio | Slysol',
     description: 'A portfolio page',
   },
-  // {
-  //   name: 'Career',
-  //   slug: 'career',
-  //   path: '/career',
-  //   title: 'Career | Slysol',
-  //   description: 'A career page',
-  // },
-  // {
-  //   name: 'Blog',
-  //   slug: 'blog',
-  //   path: '/blog',
-  //   title: 'Blog | Slysol',
-  //   description: 'A blog page',
-  // },
+  {
+    name: 'Career',
+    slug: 'career',
+    path: '/career',
+    title: 'Career | Slysol',
+    description: 'A career page',
+  },
+  {
+    name: 'Blog',
+    slug: 'blog',
+    path: '/blog',
+    title: 'Blog | Slysol',
+    description: 'A blog page',
+  },
   {
     name: 'Contact',
     slug: 'contact',

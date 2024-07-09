@@ -6,8 +6,18 @@ import 'owl.carousel/dist/assets/owl.theme.default.css';
 import React, { ReactNode } from 'react';
 
 interface OwlCarouselProps {
+  autoplay?: boolean;
+  autoplayTimeout?: number | undefined;
+  autoplaySpeed?: number;
   children: ReactNode;
   className?: string;
+  responsive?: {};
+  items?: number;
+  margin?: number;
+  nav?: boolean;
+  dots?: boolean;
+  loop?: boolean;
+  navText?: Array<string> | undefined;
 }
 
 const OwlCarousel = dynamic(() => import('react-owl-carousel'), {
@@ -20,33 +30,31 @@ if (typeof window !== 'undefined') {
 }
 
 export default function Carousal({
+  autoplay = false,
+  autoplayTimeout = undefined,
+  autoplaySpeed = 5000,
   children,
   className = '',
+  responsive = {},
+  items,
+  margin = 20,
+  nav = false,
+  dots = false,
+  loop = true,
+  navText = undefined,
 }: OwlCarouselProps) {
-  const Responsive = {
-    0: {
-      items: 1,
-    },
-    768: {
-      items: 2,
-    },
-    1024: {
-      items: 3,
-    },
-  };
-
   return (
     <OwlCarousel
-      items={3}
-      margin={20}
-      responsive={Responsive}
-      nav={true}
-      dots={false}
-      loop
-      navText={[
-        `<img src='/images/home/arrow-left.png' class='md:mr-5 mr-2 md:w-12 w-8'>`,
-        `<img src='/images/home/arrow-right.png' class='md:w-12 w-8 text-end'>`,
-      ]}
+      autoplay={autoplay}
+      autoplayTimeout={autoplayTimeout}
+      autoplaySpeed={autoplaySpeed}
+      items={items}
+      margin={margin}
+      responsive={responsive}
+      nav={nav}
+      dots={dots}
+      loop={loop}
+      navText={navText}
       className={className}
     >
       {children}
