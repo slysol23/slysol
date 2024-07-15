@@ -26,9 +26,15 @@ const Contact = () => {
           Contact Us
         </button>
       </div>
+      <Container hScreen={false}>
+        <p className="md:w-1/2 sm:w-2/3 m-auto text-center md:py-20 py-10 ">
+          Please leave a brief information about yourself, your company and your
+          goals and we will get back to you on our first priority.
+        </p>
+      </Container>
       <Container
         hScreen={false}
-        className="md:pt-20 pt-10 grid md:grid-cols-2 lg:gap-20 md:gap-10 gap-5"
+        className="grid md:grid-cols-2 lg:gap-20 md:gap-10 gap-5"
       >
         <Form />
         <div className="pt-3">
