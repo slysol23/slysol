@@ -46,8 +46,8 @@ const Contact = () => {
           <Link href="tel:+923104150111">+92-3104150111</Link>
           <hr className="border-t-2 border-dashed border-gray-200 my-5" />
           <h2 className="text-pink text-xl lg:mb-3 md:mb-2 mb-1">Email</h2>
-          <Link href={'mailto:sheikh.haris.zahid@slysol.com'}>
-            sheikh.haris.zahid@slysol.com
+          <Link href={'mailto:mohammadbuksh.slysol@gmail.com'}>
+            mohammadbuksh.slysol@gmail.com
           </Link>
           <hr className="border-t-2 border-dashed border-gray-200 my-5" />
           <h2 className="text-pink text-xl lg:mb-3 md:mb-2 mb-2">
@@ -66,7 +66,7 @@ const Contact = () => {
         hScreen={false}
         className="flex flex-col lg:gap-20 md:gap-10 gap-5 md:pb-20 pb-10 pt-10"
       >
-        <Calendly />
+        {/* <Calendly /> */}
         <div className="w-full">
           <iframe
             width="100%"
