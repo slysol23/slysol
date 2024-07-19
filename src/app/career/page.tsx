@@ -56,10 +56,10 @@ const Career = () => {
           </GradientText>
           <div className="text-mute text-center flex flex-col gap-3">
             <p>
-              We have an opportunity for anyone who is passionate to learn and
+              {`We have an opportunity for anyone who is passionate to learn and
               implant their skills. Join SlySol and be part of a dynamic team
               that's shaping the future of technology with innovative software
-              solutions.
+              solutions.`}
             </p>
           </div>
         </Section>

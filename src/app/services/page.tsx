@@ -132,7 +132,10 @@ const page = () => {
             />
             <div className="flex justify-center">
               <p className="text-mute md:w-2/3">
-              We focus on creating innovative software solutions that drive success and transform industries. We specialize in software development, understanding our clients' unique challenges, and delivering customized technology to meet their needs.
+                {`We focus on creating innovative software solutions that drive
+                success and transform industries. We specialize in software
+                development, understanding our clients' unique challenges, and
+                delivering customized technology to meet their needs.`}
               </p>
             </div>
           </div>

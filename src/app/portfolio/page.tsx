@@ -45,7 +45,9 @@ const Portfolio = () => {
               />
             </GradientText>
             <p className="text-mute md:w-2/3 text-center mt-5 md:mb-20 mb-10">
-            Browse our portfolio to see how we have delivered innovative software solutions, turning challenges into opportunities for businesses in various industries.
+              Browse our portfolio to see how we have delivered innovative
+              software solutions, turning challenges into opportunities for
+              businesses in various industries.
             </p>
           </div>
           <PortfolioCard />
