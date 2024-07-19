@@ -83,8 +83,8 @@ const siteLinks = [
       },
       {
         icon: <TbMailFilled />,
-        name: 'sheikh.haris.zahid@slysol.com',
-        link: 'mailto:sheikh.haris.zahid@slysol.com',
+        name: 'mohammadbuksh.slysol@gmail.com',
+        link: 'mailto:mohammadbuksh.slysol@gmail.com',
       },
       {
         icon: <ImLocation2 />,
