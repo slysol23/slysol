@@ -132,10 +132,10 @@ const page = () => {
             />
             <div className="flex justify-center">
               <p className="text-mute md:w-2/3">
-                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Sint a
-                cumque, minima perspiciatis aliquid doloribus, et earum sunt eos
-                alias deserunt tenetur exercitationem aspernatur, nostrum esse
-                commodi dolor error beatae.
+                {`We focus on creating innovative software solutions that drive
+                success and transform industries. We specialize in software
+                development, understanding our clients' unique challenges, and
+                delivering customized technology to meet their needs.`}
               </p>
             </div>
           </div>

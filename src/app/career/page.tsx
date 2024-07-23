@@ -55,9 +55,12 @@ const Career = () => {
             />
           </GradientText>
           <div className="text-mute text-center flex flex-col gap-3">
-            <p>Are you creative, quirky, and enthusiastic?</p>
-            <p>Do you want to work with like-minded people?</p>
-            <p>Get in touch if you think you will fit in.</p>
+            <p>
+              {`We have an opportunity for anyone who is passionate to learn and
+              implant their skills. Join SlySol and be part of a dynamic team
+              that's shaping the future of technology with innovative software
+              solutions.`}
+            </p>
           </div>
         </Section>
       </Container>

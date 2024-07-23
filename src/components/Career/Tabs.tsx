@@ -19,23 +19,12 @@ const tabsData: TabsData[] = [
     title: 'Why Slysol',
     imageSrc: '/images/career/why-us.svg',
     description: `<p>
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum,
-    veniam harum reprehenderit, quaerat deleniti repudiandae amet,
-    alias doloribus ullam recusandae temporibus nesciunt beatae. Rem
-    error et beatae! Porro, voluptatem similique!
+    In 2023, we laid the foundation of SlySol with the vision of uniting technology enthusiasts under one umbrella. Since then, we have grown into a thriving community of passionate professionals committed to pushing the boundaries of innovation. 
   </p>
   <p>
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum,
-    veniam harum reprehenderit, quaerat deleniti repudiandae amet,
-    alias doloribus ullam recusandae temporibus nesciunt beatae. Rem
-    error et beatae! Porro, voluptatem similique!
+    At SlySol, we foster a culture of collaboration, where creativity and initiative are celebrated. Join us to be part of a dynamic team where your ideas make a difference, and shape the future of technology.
   </p>
-  <p>
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum,
-    veniam harum reprehenderit, quaerat deleniti repudiandae amet,
-    alias doloribus ullam recusandae temporibus nesciunt beatae. Rem
-    error et beatae! Porro, voluptatem similique!
-  </p>`,
+  `,
   },
   {
     tab: 'HOW',
@@ -117,7 +106,7 @@ const Tabs = () => {
                   text={tabData.title}
                   className="text-center md:mb-10 mb-5"
                 />
-                <div className="grid lg:grid-cols-2 gap-10">
+                <div className="grid lg:grid-cols-2 gap-10 items-center">
                   <Image
                     src={tabData.imageSrc}
                     alt={tabData.tab}

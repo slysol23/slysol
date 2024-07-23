@@ -38,7 +38,7 @@ export default function Home() {
               </div>
               <div className="flex gap-1 items-center">
                 <CiMail />
-                <p>sheikh.haris.zahid@slysol.com</p>
+                <p>mohammadbuksh.slysol@gmail.com</p>
               </div>
             </div>
           </Container>
