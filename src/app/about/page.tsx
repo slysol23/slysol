@@ -129,7 +129,7 @@ const About = () => {
         />
       </div>
       {/* Team Members */}
-      <TeamMembers />
+      {/* <TeamMembers /> */}
       <Footer />
     </>
   );

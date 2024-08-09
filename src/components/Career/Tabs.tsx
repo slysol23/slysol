@@ -31,22 +31,10 @@ const tabsData: TabsData[] = [
     title: 'How We Hire',
     imageSrc: '/images/career/why-us.svg',
     description: `<p>
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum,
-    veniam harum reprehenderit, quaerat deleniti repudiandae amet,
-    alias doloribus ullam recusandae temporibus nesciunt beatae. Rem
-    error et beatae! Porro, voluptatem similique!
+    Our hiring process is designed to identify the best and brightest talent. It begins with an initial application review, followed by interviews to understand your skills, experiences, and fit with our company culture.
   </p>
   <p>
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum,
-    veniam harum reprehenderit, quaerat deleniti repudiandae amet,
-    alias doloribus ullam recusandae temporibus nesciunt beatae. Rem
-    error et beatae! Porro, voluptatem similique!
-  </p>
-  <p>
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum,
-    veniam harum reprehenderit, quaerat deleniti repudiandae amet,
-    alias doloribus ullam recusandae temporibus nesciunt beatae. Rem
-    error et beatae! Porro, voluptatem similique!
+    We prioritize transparency and open communication throughout the process, ensuring you know what to expect at every step. We seek individuals who are not only skilled but also share our values and enthusiasm for technology and innovation.
   </p>`,
   },
   {
@@ -54,23 +42,9 @@ const tabsData: TabsData[] = [
     title: 'What To Do',
     imageSrc: '/images/career/why-us.svg',
     description: `<p>
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum,
-    veniam harum reprehenderit, quaerat deleniti repudiandae amet,
-    alias doloribus ullam recusandae temporibus nesciunt beatae. Rem
-    error et beatae! Porro, voluptatem similique!
+    Ready to take the next step in your career with SlySol? Send us your resume and a cover letter detailing your experience and why you want to join our team. Please email your application to hr@slysol.com and include the position you’re applying for in the subject line. We look forward to learning more about you and potentially welcoming you to the SlySol family!
   </p>
-  <p>
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum,
-    veniam harum reprehenderit, quaerat deleniti repudiandae amet,
-    alias doloribus ullam recusandae temporibus nesciunt beatae. Rem
-    error et beatae! Porro, voluptatem similique!
-  </p>
-  <p>
-    Lorem ipsum dolor sit amet consectetur adipisicing elit. Dolorum,
-    veniam harum reprehenderit, quaerat deleniti repudiandae amet,
-    alias doloribus ullam recusandae temporibus nesciunt beatae. Rem
-    error et beatae! Porro, voluptatem similique!
-  </p>`,
+  `,
   },
 ];
 
