@@ -21,7 +21,7 @@ const page = () => {
       title: 'A New Era Of Digital Business Platforms',
       subTitle: 'MODERN TECHNOLOGY SOLUTION',
       description:
-        'Empower your business with our cutting edge solution. We offer AI integrated solutions with current market trends, advanced cloud services and more to enhance efficiency and foster growth. Partner with us for new opportunities and achieve your business goals through innovation.',
+        'Our solutions streamline operations and enhance efficiency. With customisable and intuitive platforms. Transform your  business and stay ahead of market demands. Join us to achieve sustainable growth with ease.',
     },
     {
       src: '/images/services/service-bg-2.svg',
@@ -29,7 +29,7 @@ const page = () => {
       title: 'Seamless Integration for Scalable Growth',
       subTitle: 'INTEGRATING YOUR NEEDS',
       description:
-        'Our solutions streamline operations and enhance efficiency. With customisable and intuitive platforms. Transform your  business and stay ahead of market demands. Join us to achieve sustainable growth with ease.',
+        'Achieve scalable growth with our seamless integration solutions. Connect your systems and processes for a unified workflow. Enhance productivity and drive performance with our tailored solutions. Partner with us for a connected, efficient operation and sustainable growth.',
     },
     {
       src: '/images/services/service-bg-3.svg',
@@ -37,7 +37,7 @@ const page = () => {
       title: 'Empowering Through Cutting-Edge Solutions',
       subTitle: 'INNOVATIVE APPROACH',
       description:
-        'Achieve scalable growth with our seamless integration solutions. Connect your systems and processes for a unified workflow. Enhance productivity and drive performance with our tailored solutions. Partner with us for a connected, efficient operation and sustainable growth.',
+        'Empower your business with our cutting edge solution. We offer AI integrated solutions with current market trends, advanced cloud services and more to enhance efficiency and foster growth. Partner with us for new opportunities and achieve your business goals through innovation.',
     },
   ];
 
