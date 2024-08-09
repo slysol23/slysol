@@ -113,9 +113,6 @@ const page = () => {
                   <p className="sm:w-2/3 sm:py-8 py-5 text-mute">
                     {data.description}
                   </p>
-                  <button className="btn-outline md:px-10 md:py-3 px-7 py-2 md:text-base text-sm">
-                    VIEW MORE
-                  </button>
                 </div>
               </Container>
             </div>
