@@ -26,29 +26,31 @@ const Contact = () => {
           Contact Us
         </button>
       </div>
+      <Container hScreen={false}>
+        <p className="md:w-1/2 sm:w-2/3 m-auto text-center md:py-20 py-10 ">
+          Please leave a brief information about yourself, your company and your
+          goals and we will get back to you on our first priority.
+        </p>
+      </Container>
       <Container
         hScreen={false}
-        className="md:pt-20 pt-10 grid md:grid-cols-2 lg:gap-20 md:gap-10 gap-5"
+        className="grid md:grid-cols-2 lg:gap-20 md:gap-10 gap-5"
       >
         <Form />
         <div className="pt-3">
-          <h2 className="text-pink lg:text-2xl text-xl lg:mb-3 md:mb-2 mb-1">
-            Address
-          </h2>
+          <h2 className="text-pink text-xl lg:mb-3 md:mb-2 mb-1">Address</h2>
           <p>Office # 2, 2nd Floor, Icon Center, Beside Panorama Center</p>
           <p>48 Mall Road, Lahore, Pakistan</p>
           <hr className="border-t-2 border-dashed border-gray-200 my-5" />
-          <h2 className="text-pink lg:text-2xl text-xl lg:mb-3 md:mb-2 mb-1">
-            Phone
-          </h2>
-          <a href="tel:+923104150111">+92310-4150111</a>
+          <h2 className="text-pink text-xl lg:mb-3 md:mb-2 mb-1">Phone</h2>
+          <Link href="tel:+923104150111">+92-3104150111</Link>
           <hr className="border-t-2 border-dashed border-gray-200 my-5" />
-          <h2 className="text-pink lg:text-2xl text-xl lg:mb-3 md:mb-2 mb-1">
-            Email
-          </h2>
-          <p>sheikh.haris.zahid@slysol.com</p>
+          <h2 className="text-pink text-xl lg:mb-3 md:mb-2 mb-1">Email</h2>
+          <Link href={'mailto:mohammadbuksh.slysol@gmail.com'}>
+            mohammadbuksh.slysol@gmail.com
+          </Link>
           <hr className="border-t-2 border-dashed border-gray-200 my-5" />
-          <h2 className="text-pink lg:text-2xl text-xl lg:mb-3 md:mb-2 mb-2">
+          <h2 className="text-pink text-xl lg:mb-3 md:mb-2 mb-2">
             Social Media
           </h2>
           <div className="flex gap-5 text-3xl text-primary2">
@@ -64,7 +66,7 @@ const Contact = () => {
         hScreen={false}
         className="flex flex-col lg:gap-20 md:gap-10 gap-5 md:pb-20 pb-10 pt-10"
       >
-        <Calendly />
+        {/* <Calendly /> */}
         <div className="w-full">
           <iframe
             width="100%"

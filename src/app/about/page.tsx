@@ -1,21 +1,23 @@
 import Banner from '@/components/Banner';
 import Container from '@/components/Container';
-import Layout from '@/components/Layout';
 import React from 'react';
 import Image from 'next/image';
 import SubTitle from '@/components/SubTitle';
 import { AiFillCheckCircle } from 'react-icons/ai';
 import WorkingCycle from '@/components/About/WorkingCycle';
 import TeamMembers from '@/components/About/TeamMembers';
+import Footer from '@/components/Footer';
+import Title from '@/components/Title';
+import Section from '@/components/Section';
 
 const About = () => {
   return (
-    <Layout>
+    <>
       <Banner text="ABOUT US" />
       {/* Welcome to our company */}
       <Container
         hScreen={false}
-        className="grid lg:grid-cols-2 md:gap-20 gap-10 md:py-20 py-10 relative place-items-center"
+        className="grid lg:grid-cols-2 md:gap-20 gap-10 md:py-20 py-10 md:pb-20 pb-0 relative place-items-center"
       >
         <div className="grid grid-cols-[40%_60%] md:gap-5 max-w-fit place-items-center relative">
           <div className="flex flex-col md:gap-5 mr-3 md:mr-0">
@@ -47,13 +49,24 @@ const About = () => {
         </div>
         <div className="relative z-[1]">
           <SubTitle text="WELCOME TO OUR COMPANY" />
-          <h1 className="md:text-5xl text-3xl md:my-10 my-5">
-            Make Your Business Great With Slysol
-          </h1>
-          <p className="text-gray-500 md:my-10 my-5">
-            An IT solution service company may serve clients from various
-            industries such as healthcare, finance, education, and
-            manufacturing. They may work on a project basis...
+          <Title
+            text="Make Your Business Great With Slysol"
+            className="lg:mb-10 mb-5 font-normal lg:w-full sm:w-1/2 w-4/5"
+          />
+          <p className="text-gray-500 mb-3">
+            {`Welcome to SlySol, your trusted partner in IT solutions. At SlySol,
+            we are committed to delivering high-quality, innovative, and
+            customized IT services that cater to the unique needs of your
+            business. With a team of experienced professionals, we strive to
+            provide top-notch solutions that help you achieve your business
+            goals efficiently and effectively. Whether you're looking to
+            streamline operations, enhance security, or boost productivity, we
+            are here to support you every step of the way.`}
+          </p>
+          <p className="text-gray-500 md:mb-10 mb-5">
+            Expand your business to new heights with SlySol. Our services are
+            designed to empower your organization with the latest technology and
+            best practices. Here’s why you should choose us:
           </p>
           <div className="flex flex-col sm:flex-row sm:gap-10 gap-5 md:mb-10 mb-5">
             <div>
@@ -82,29 +95,31 @@ const About = () => {
       <WorkingCycle />
       {/* Solution Provider */}
       <div className="w-full relative lg:bg-white bg-primary2">
-        <Container className="lg:py-[100px] md:py-20 py-10" hScreen={false}>
-          <div className="grid lg:grid-cols-2 gap-20 relative z-[1]">
-            <div className="text-white flex flex-col gap-8 justify-center">
-              <SubTitle text="TECHNOLOGY SOLUTION PROVIDER" white />
-              <h1 className="md:text-5xl text-3xl">
-                The Best Technology Solution Provider.
-              </h1>
-              <p>
-                The goal of IT services is to provide efficient and effective
-                technology solutions that help businesses achieve their
-                objectives.{' '}
-              </p>
+        <Container hScreen={false}>
+          <Section>
+            <div className="grid lg:grid-cols-2 md:gap-20 gap-10 relative z-[1]">
+              <div className="text-white flex flex-col lg:gap-8 gap-5 justify-center">
+                <SubTitle text="TECHNOLOGY SOLUTION PROVIDER" white />
+                <Title
+                  text="The Best Technology Solution Provider."
+                  className="font-semibold lg:w-full sm:w-2/3"
+                />
+                <p>
+                  Our goal is to provide efficient and effective technology
+                  solutions that help businesses achieve their objectives.
+                </p>
+              </div>
+              <div>
+                <Image
+                  src="/images/about/solution-provider-01.png"
+                  width={600}
+                  height={400}
+                  alt="solution providers"
+                  className="lg:w-full sm:w-2/3 w-full m-auto"
+                />
+              </div>
             </div>
-            <div>
-              <Image
-                src="/images/about/solution-provider-01.png"
-                width={600}
-                height={400}
-                alt="solution providers"
-                className="lg:w-full w-2/3 m-auto"
-              />
-            </div>
-          </div>
+          </Section>
         </Container>
         <Image
           src="/images/about/solution-provider.png"
@@ -114,8 +129,9 @@ const About = () => {
         />
       </div>
       {/* Team Members */}
-      <TeamMembers />
-    </Layout>
+      {/* <TeamMembers /> */}
+      <Footer />
+    </>
   );
 };
 
