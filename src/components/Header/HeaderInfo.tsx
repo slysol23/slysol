@@ -23,7 +23,7 @@ const HeaderInfo = ({ classes }: HeaderInfoProps) => {
           </div>
           <div className="flex gap-1 items-center">
             <CiMail />
-            <p>mohammadbuksh.slysol@gmail.com</p>
+            <p>m.buksh@slysol.com</p>
           </div>
         </div>
       </Container>
