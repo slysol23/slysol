@@ -83,8 +83,8 @@ const siteLinks = [
       },
       {
         icon: <TbMailFilled />,
-        name: 'mohammadbuksh.slysol\n@gmail.com',
-        link: 'mailto:mohammadbuksh.slysol@gmail.com',
+        name: 'm.buksh@slysol.com',
+        link: 'mailto:m.buksh@slysol.com',
       },
       {
         icon: <ImLocation2 />,
