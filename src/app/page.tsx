@@ -14,6 +14,7 @@ import Title from '@/components/Title';
 import GradientText from '@/components/GradientText';
 import PerfectCenter from '@/components/PerfectCenter';
 import Footer from '@/components/Footer';
+import DevelopingBetterFuture from '@/components/Home/DevelopingBetterFuture';
 
 export const metadata: Metadata = {
   description:
@@ -140,24 +141,7 @@ export default function Home() {
       </Container>
 
       {/* Developing Better Future */}
-      <div className="relative md:h-screen h-[400px] w-full">
-        <Image
-          src="/images/home/better-future.webp"
-          alt="white wave background"
-          fill
-        />
-        <PerfectCenter className="text-center">
-          <GradientText>
-            <Title
-              className="text-center font-semibold !leading-tight"
-              text="Developing a Better Future for All Our Users."
-            />
-          </GradientText>
-          <a href="/services">
-            <button className="btn-outline py-3 px-10 mt-8">VIEW MORE</button>
-          </a>
-        </PerfectCenter>
-      </div>
+      <DevelopingBetterFuture />
 
       {/* WHY US SECTION */}
       <WhyUs />
