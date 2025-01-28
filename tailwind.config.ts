@@ -64,8 +64,8 @@ const config: Config = {
       },
       animation: {
         customPulse: 'customPulse 2s forwards infinite',
-        'left-to-right': 'leftToRight 2s ease',
-        'right-to-left': 'rightToLeft 2s ease',
+        'left-to-right': 'leftToRight 0.5s ease',
+        'right-to-left': 'rightToLeft 0.5s ease',
         fancyBorder: 'fancyBorder 2s linear infinite',
         fancyBorder2: 'fancyBorder 2s linear infinite',
         opacity: 'opacity 2s ease-in-out',
@@ -90,7 +90,7 @@ const config: Config = {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic':
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
-        'modern-tech': `url('/images/home/modern-tech.png')`,
+        'modern-tech': `url('/images/home/modern-tech.webp')`,
       },
     },
   },

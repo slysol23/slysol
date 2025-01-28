@@ -7,19 +7,19 @@ import Slider from '@/components/Slider';
 const WhatWeDo = () => {
   const cardsData = [
     {
-      imageSrc: '/images/home/card1.png',
+      imageSrc: '/images/home/card1.webp',
       heading: 'Mobile App Development',
       description:
         'Experience our user-centric mobile apps, perfect for boosting your brand.',
     },
     {
-      imageSrc: '/images/home/card2.png',
+      imageSrc: '/images/home/card2.webp',
       heading: 'Web App Development',
       description:
         'From concept to reality, we create engaging web apps that captivate audiences.',
     },
     {
-      imageSrc: '/images/home/card3.png',
+      imageSrc: '/images/home/card3.webp',
       heading: 'Internal App Development',
       description:
         'Tailored apps that optimize workflows, enhancing business efficiency.',

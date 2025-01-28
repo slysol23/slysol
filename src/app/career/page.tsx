@@ -40,7 +40,7 @@ const Career = () => {
       <div
         className="md:h-[600px] h-[450px]"
         style={{
-          backgroundImage: `url('/images/career/career-bg.svg')`,
+          backgroundImage: `url('/images/career/career-bg.webp')`,
           backgroundRepeat: 'no-repeat',
           backgroundSize: 'cover',
           backgroundPosition: 'top',
@@ -89,14 +89,14 @@ const Career = () => {
           <div className="grid gap-5">
             <div className="grid grid-cols-2 gap-5">
               <Image
-                src="/images/career/perks-1.svg"
+                src="/images/career/perks-1.webp"
                 alt="subsidized meals at slysol"
                 height={300}
                 width={400}
                 className="w-full h-auto rounded-lg"
               />
               <Image
-                src="/images/career/perks-3.svg"
+                src="/images/career/perks-3.webp"
                 alt="subsidized meals at slysol"
                 height={300}
                 width={400}
@@ -104,7 +104,7 @@ const Career = () => {
               />
             </div>
             <Image
-              src="/images/career/perks-2.svg"
+              src="/images/career/perks-2.webp"
               alt="subsidized meals at slysol"
               height={600}
               width={400}

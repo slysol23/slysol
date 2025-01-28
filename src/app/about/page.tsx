@@ -38,7 +38,7 @@ const About = () => {
           </div>
           <div>
             <Image
-              src="/images/about/welcome-to-company3.jpg"
+              src="/images/about/welcome-to-company3.webp"
               alt="welcome to company"
               className="w-full rounded-xl h-full object-cover"
               width={200}
@@ -111,7 +111,7 @@ const About = () => {
               </div>
               <div>
                 <Image
-                  src="/images/about/solution-provider-01.png"
+                  src="/images/about/solution-provider-01.webp"
                   width={600}
                   height={400}
                   alt="solution providers"
@@ -122,7 +122,7 @@ const About = () => {
           </Section>
         </Container>
         <Image
-          src="/images/about/solution-provider.png"
+          src="/images/about/solution-provider.webp"
           fill
           alt="solution providers bg"
           className="lg:block hidden"

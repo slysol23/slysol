@@ -7,7 +7,7 @@ import Title from '../Title';
 
 const teamMembers = [
   {
-    imageSrc: '/images/about/team-member-01.jpg',
+    imageSrc: '/images/about/team-member-01.webp',
     name: 'Muhammad Buksh',
     designation: 'Marketing & Sales Manager',
   },
