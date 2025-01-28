@@ -66,7 +66,7 @@ export default function Home() {
               <div className="relative lg:w-full sm:w-3/4 w-full m-auto">
                 <div className="border-[2px] animate-fancyBorder2 py-3 absolute w-full h-full -translate-x-6 translate-y-10 border-slate" />
                 <div className="border-[2px] animate-fancyBorder absolute w-full h-full border-secondary sm:translate-y-0 -translate-y-9" />
-                <div className="sm:rounded-fancyRadius2 rounded-lg sm:h-[500px] h-[400px] relative overflow-hidden">
+                <div className="rounded-fancyRadius2 sm:h-[500px] h-[400px] relative overflow-hidden">
                   <Image
                     src="/images/home/header.webp"
                     alt="company header"
