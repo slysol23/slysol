@@ -17,7 +17,7 @@ const tabsData: TabsData[] = [
   {
     tab: 'WHY',
     title: 'Why Slysol',
-    imageSrc: '/images/career/why-us.svg',
+    imageSrc: '/images/career/why-us.webp',
     description: `<p>
     In 2023, we laid the foundation of SlySol with the vision of uniting technology enthusiasts under one umbrella. Since then, we have grown into a thriving community of passionate professionals committed to pushing the boundaries of innovation. 
   </p>
@@ -29,7 +29,7 @@ const tabsData: TabsData[] = [
   {
     tab: 'HOW',
     title: 'How We Hire',
-    imageSrc: '/images/career/why-us.svg',
+    imageSrc: '/images/career/why-us.webp',
     description: `<p>
     Our hiring process is designed to identify the best and brightest talent. It begins with an initial application review, followed by interviews to understand your skills, experiences, and fit with our company culture.
   </p>
@@ -40,7 +40,7 @@ const tabsData: TabsData[] = [
   {
     tab: 'WHAT',
     title: 'What To Do',
-    imageSrc: '/images/career/why-us.svg',
+    imageSrc: '/images/career/why-us.webp',
     description: `<p>
     Ready to take the next step in your career with SlySol? Send us your resume and a cover letter detailing your experience and why you want to join our team. Please email your application to hr@slysol.com and include the position you’re applying for in the subject line. We look forward to learning more about you and potentially welcoming you to the SlySol family!
   </p>
