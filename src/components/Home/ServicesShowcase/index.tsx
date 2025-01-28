@@ -7,27 +7,32 @@ const data = [
   {
     title: 'Software Development',
     imagePath: '/images/home/software-development.webp',
-    desc: 'We provide custom software development services to help businesses automate processes and improve efficiency.',
+    desc: 'Software development services tailored to your business needs. Automate processes, improve efficiency, and scale your operations with our expert software solutions.',
   },
   {
     title: 'AI Integration',
     imagePath: '/images/home/ai-integration.webp',
-    desc: 'Integrate AI solutions to enhance your business operations and gain a competitive edge in the market.',
+    desc: 'Integrate cutting-edge AI solutions into your business. Enhance operations, gain a competitive edge, and drive innovation with our AI integration expertise.',
   },
   {
     title: 'Cloud Computing',
     imagePath: '/images/home/cloud-computing.webp',
-    desc: 'Leverage the power of cloud computing to scale your business and improve data accessibility and security.',
+    desc: 'Scalable and secure cloud computing solutions. Improve data accessibility, enhance collaboration, and reduce IT costs with our cloud expertise.',
   },
   {
     title: 'IT Consultant',
     imagePath: '/images/home/it-consultant.webp',
-    desc: 'Our IT consultants provide expert advice to help you navigate the complexities of technology and achieve your business goals.',
+    desc: 'Expert IT consulting services to navigate the complexities of technology. Achieve your business goals with strategic IT planning and implementation.',
   },
   {
     title: 'Digital Marketing',
     imagePath: '/images/home/digital-marketing.webp',
-    desc: 'Boost your online presence and reach your target audience with our comprehensive digital marketing services.',
+    desc: 'Boost your online presence with our comprehensive digital marketing services. Reach your target audience and drive conversions with data-driven strategies.',
+  },
+  {
+    title: 'Custom Solutions',
+    imagePath: '/images/home/custom-solutions.webp',
+    desc: 'Tailored solutions designed to meet your unique business challenges. Achieve optimal performance and growth with our bespoke custom solutions.',
   },
 ];
 
