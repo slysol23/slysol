@@ -6,14 +6,14 @@ import GradientText from '@/components/GradientText';
 const data = [
   {
     title: 'Software Development',
-    imagePath: '/images/home/software-development.png',
+    imagePath: '/images/home/software-development.webp',
   },
-  { title: 'AI Integration', imagePath: '/images/home/ai-integration.png' },
-  { title: 'Cloud Computing', imagePath: '/images/home/cloud-computing.png' },
-  { title: 'IT Consultant', imagePath: '/images/home/it-consultant.png' },
+  { title: 'AI Integration', imagePath: '/images/home/ai-integration.webp' },
+  { title: 'Cloud Computing', imagePath: '/images/home/cloud-computing.webp' },
+  { title: 'IT Consultant', imagePath: '/images/home/it-consultant.webp' },
   {
     title: 'Digital Marketing',
-    imagePath: '/images/home/digital-marketing.png',
+    imagePath: '/images/home/digital-marketing.webp',
   },
 ];
 
