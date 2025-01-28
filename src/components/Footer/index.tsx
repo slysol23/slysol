@@ -84,7 +84,7 @@ const siteLinks = [
       {
         icon: <TbMailFilled />,
         name: 'm.buksh@slysol.com',
-        link: 'mailto:mohammadbuksh.slysol@gmail.com',
+        link: 'mailto:m.buksh@slysol.com',
       },
       {
         icon: <ImLocation2 />,

@@ -20,9 +20,9 @@ const cardsData: CardData[] = [
   {
     id: 1,
     images: [
-      '/images/portfolio/orangeshine-1.png',
-      '/images/portfolio/orangeshine-2.png',
-      '/images/portfolio/orangeshine-3.png',
+      '/images/portfolio/orangeshine-1.webp',
+      '/images/portfolio/orangeshine-2.webp',
+      '/images/portfolio/orangeshine-3.webp',
     ],
     title: 'OrangeShine',
     subTitle: 'ECOMERCE PLATFORM',
@@ -55,9 +55,9 @@ const cardsData: CardData[] = [
   {
     id: 2,
     images: [
-      '/images/portfolio/alignerbase-1.jpg',
-      '/images/portfolio/alignerbase-2.jpg',
-      '/images/portfolio/alignerbase-3.png',
+      '/images/portfolio/alignerbase-1.webp',
+      '/images/portfolio/alignerbase-2.webp',
+      '/images/portfolio/alignerbase-3.webp',
     ],
     title: 'AlignerBase',
     subTitle: 'DENTAL & HEALTH CARE PLATFORM',
@@ -81,9 +81,9 @@ const cardsData: CardData[] = [
   {
     id: 3,
     images: [
-      '/images/portfolio/aligner-portal-1.png',
-      '/images/portfolio/aligner-portal-2.png',
-      '/images/portfolio/aligner-portal-3.png',
+      '/images/portfolio/aligner-portal-1.webp',
+      '/images/portfolio/aligner-portal-2.webp',
+      '/images/portfolio/aligner-portal-3.webp',
     ],
     title: 'AlignerBase Portal',
     subTitle: 'DENTAL & HEALTH CARE PORTAL',
@@ -106,9 +106,9 @@ const cardsData: CardData[] = [
   {
     id: 4,
     images: [
-      '/images/portfolio/sharove-1.png',
-      '/images/portfolio/sharove-2.png',
-      '/images/portfolio/sharove-3.png',
+      '/images/portfolio/sharove-1.webp',
+      '/images/portfolio/sharove-2.webp',
+      '/images/portfolio/sharove-3.webp',
     ],
     title: 'Sharove',
     subTitle: 'ECOMERCE PLATFORM',
@@ -140,9 +140,9 @@ const cardsData: CardData[] = [
   {
     id: 5,
     images: [
-      '/images/portfolio/degree-1.png',
-      '/images/portfolio/degree-2.png',
-      '/images/portfolio/degree-3.png',
+      '/images/portfolio/degree-1.webp',
+      '/images/portfolio/degree-2.webp',
+      '/images/portfolio/degree-3.webp',
     ],
     title: 'Degree 37',
     subTitle: 'HEALTH CARE PLATFORM',
@@ -171,8 +171,8 @@ const cardsData: CardData[] = [
     id: 6,
     images: [
       '/images/portfolio/mk-1.webp',
-      '/images/portfolio/mk-2.png',
-      '/images/portfolio/mk-3.png',
+      '/images/portfolio/mk-2.webp',
+      '/images/portfolio/mk-3.webp',
     ],
     title: 'MK Engineering',
     subTitle: 'PORTFOLIO SITE',
@@ -191,9 +191,9 @@ const cardsData: CardData[] = [
   {
     id: 7,
     images: [
-      '/images/portfolio/iblag-1.svg',
-      '/images/portfolio/iblag-2.svg',
-      '/images/portfolio/iblag-3.svg',
+      '/images/portfolio/iblag-1.webp',
+      '/images/portfolio/iblag-2.webp',
+      '/images/portfolio/iblag-3.webp',
     ],
     title: 'Iblag',
     subTitle: 'REAL-TIME COMMUNICATION',

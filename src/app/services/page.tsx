@@ -46,31 +46,31 @@ const page = () => {
       title: 'Software Development',
       description:
         'We deliver high-quality, custom software solutions tailored to your business needs. Our team of experts ensures seamless integration, scalability, and performance, enabling you to achieve your goals efficiently and effectively.',
-      src: '/images/services/service-1.svg',
+      src: '/images/services/service-1.webp',
     },
     {
       title: 'Application Development',
       description:
         'We create robust and user-friendly applications for various platforms. From initial concept to final deployment, we ensure your app meets the highest standards of functionality, security, and usability.',
-      src: '/images/services/service-2.svg',
+      src: '/images/services/service-2.webp',
     },
     {
       title: 'AI Integration',
       description:
         'We integrate advanced AI technologies to enhance your business processes. Our AI solutions streamline operations, improve decision-making, and drive innovation, giving you a competitive edge in the market.',
-      src: '/images/services/service-3.svg',
+      src: '/images/services/service-3.webp',
     },
     {
       title: 'UI / UX',
       description:
         'We design intuitive and engaging user interfaces and experiences. Our focus is on creating visually appealing and user-centric designs that enhance user satisfaction and drive business success.',
-      src: '/images/services/service-4.svg',
+      src: '/images/services/service-4.webp',
     },
     {
       title: 'Digital Marketing',
       description:
         'We offer comprehensive digital marketing services to boost your online presence. Our strategies include SEO, social media, and content marketing, designed to attract and engage your target audience effectively.',
-      src: '/images/services/service-5.svg',
+      src: '/images/services/service-5.webp',
     },
   ];
 

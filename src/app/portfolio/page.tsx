@@ -15,8 +15,8 @@ const Portfolio = () => {
     <>
       <div className="relative md:h-screen h-[450px]">
         <Image
-          src="/images/portfolio/portfolio-bg.svg"
-          alt="Slysol team standing folding hands"
+          src="/images/portfolio/portfolio-bg.webp"
+          alt="Slysol team meeting on project"
           fill
           className="w-full h-auto object-cover blur-[1px]"
         />

@@ -22,7 +22,7 @@ if (typeof window !== 'undefined') {
 export default function Slider() {
   const images = [
     {
-      src: '/images/home/client1.png',
+      src: '/images/home/client1.webp',
       alt: 'alignerbase',
       text: `What an amazing experience working with this company! Their expertise in integrating our client's external features and ensuring top-notch code quality was truly impressive. The outcome of the project was flawless, and we are genuinely grateful for their invaluable assistance. Without a doubt, we'll be reaching out to them for our upcoming projects.`,
       name: 'Alignerbase',

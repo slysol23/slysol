@@ -38,7 +38,7 @@ export default function Home() {
               </div>
               <div className="flex gap-1 items-center">
                 <CiMail />
-                <p>mohammadbuksh.slysol@gmail.com</p>
+                <p>m.buksh@slysol.com</p>
               </div>
             </div>
           </Container>
@@ -68,7 +68,7 @@ export default function Home() {
                 <div className="border-[2px] animate-fancyBorder absolute w-full h-full border-secondary sm:translate-y-0 -translate-y-9" />
                 <div className="sm:rounded-fancyRadius2 rounded-lg sm:h-[500px] h-[400px] relative overflow-hidden">
                   <Image
-                    src="/images/home/header.png"
+                    src="/images/home/header.webp"
                     alt="company header"
                     fill
                     className="object-cover"
@@ -85,7 +85,7 @@ export default function Home() {
         <Section>
           <div className="grid lg:grid-cols-2 md:gap-20 gap-10 items-center">
             <Image
-              src="/images/home/who-are-we.png"
+              src="/images/home/who-are-we.webp"
               alt="team"
               width={1000}
               height={800}
@@ -142,7 +142,7 @@ export default function Home() {
       {/* Developing Better Future */}
       <div className="relative md:h-screen h-[400px] w-full">
         <Image
-          src="/images/home/better-future.jpg"
+          src="/images/home/better-future.webp"
           alt="white wave background"
           fill
         />
