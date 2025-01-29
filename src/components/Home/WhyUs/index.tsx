@@ -45,12 +45,14 @@ const WhyUs = () => {
                   alt={content.heading}
                   width={200}
                   height={200}
-                  className="mx-auto mb-5"
+                  className="mx-auto mb-5 md:w-[200px] w-[100px] h-auto object-contain"
                 />
               </ScrollAnimation>
-              <MainHeading text={content.heading} className="mb-2" />
+              <MainHeading
+                text={content.heading}
+                className="mb-2 md:!text-2xl !text-lg "
+              />
 
-              <h3 className="font-bold mb-2"></h3>
               <p className="text-sm">{content.description}</p>
             </div>
           ))}

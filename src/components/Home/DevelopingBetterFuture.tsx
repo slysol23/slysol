@@ -33,7 +33,7 @@ const DevelopingBetterFuture = () => {
         </GradientText>
         <a href="/services">
           <button className="btn-outline py-2 md:py-3 px-10 mt-5 md:mt-8 text-sm md:text-base">
-            VIEW MORE
+            View More
           </button>
         </a>
       </PerfectCenter>

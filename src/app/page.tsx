@@ -84,7 +84,7 @@ export default function Home() {
       {/* Who are we */}
       <Container hScreen={false}>
         <Section>
-          <div className="grid lg:grid-cols-2 md:gap-20 gap-10 items-center">
+          <div className="grid lg:grid-cols-2 md:gap-20 gap-10 items-center mt-5">
             <Image
               src="/images/home/who-are-we.webp"
               alt="team"
@@ -107,7 +107,7 @@ export default function Home() {
               </p>
               <a href="/about">
                 <button className="btn-outline md:py-3 mdpx-8 py-2 px-5 md:text-base text-sm md:mt-8 mt-5">
-                  LEARN MORE
+                  Learn More
                 </button>
               </a>
             </div>
@@ -128,7 +128,7 @@ export default function Home() {
       {/* Services-Section */}
       <Container hScreen={false}>
         <Section>
-          <div className="flex flex-col gap-3 justify-center items-center">
+          <div className="flex flex-col gap-3 justify-center items-center mt-5">
             <SubTitle text="OUR SERVICES" />
             <Title text="Services We Provide" className="font-normal" />
             <p className="text-mute sm:w-1/2 text-center">
