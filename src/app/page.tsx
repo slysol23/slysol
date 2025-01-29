@@ -15,6 +15,7 @@ import GradientText from '@/components/GradientText';
 import PerfectCenter from '@/components/PerfectCenter';
 import Footer from '@/components/Footer';
 import DevelopingBetterFuture from '@/components/Home/DevelopingBetterFuture';
+import InnovationDesign from '@/components/Home/InnovationDesign';
 
 export const metadata: Metadata = {
   description:
@@ -147,26 +148,7 @@ export default function Home() {
       <WhyUs />
 
       {/* Innovative design approach */}
-      <div className="relative md:block hidden">
-        <div className="absolute w-full h-full bg-black opacity-40" />
-        <video
-          width="100%"
-          height="100vh"
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="none"
-        >
-          <source src="/videos/innovative-design.mp4" type="video/mp4" />
-        </video>
-        <PerfectCenter>
-          <Title
-            text="A Innovative & Futuristic Approach To Make Your Product Grow"
-            className="text-white text-center font-semibold"
-          />
-        </PerfectCenter>
-      </div>
+      <InnovationDesign />
 
       {/* Clients Feedback */}
       <Slider />
