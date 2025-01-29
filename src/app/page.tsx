@@ -8,12 +8,11 @@ import { CiMail, CiPhone } from 'react-icons/ci';
 import Header from '@/components/Header';
 import SubTitle from '@/components/SubTitle';
 import Section from '@/components/Section';
-import MainHeading from '@/components/MainHeading';
 import ServicesShowcase from '@/components/Home/ServicesShowcase';
 import Title from '@/components/Title';
-import GradientText from '@/components/GradientText';
-import PerfectCenter from '@/components/PerfectCenter';
 import Footer from '@/components/Footer';
+import DevelopingBetterFuture from '@/components/Home/DevelopingBetterFuture';
+import InnovationDesign from '@/components/Home/InnovationDesign';
 
 export const metadata: Metadata = {
   description:
@@ -66,7 +65,7 @@ export default function Home() {
               <div className="relative lg:w-full sm:w-3/4 w-full m-auto">
                 <div className="border-[2px] animate-fancyBorder2 py-3 absolute w-full h-full -translate-x-6 translate-y-10 border-slate" />
                 <div className="border-[2px] animate-fancyBorder absolute w-full h-full border-secondary sm:translate-y-0 -translate-y-9" />
-                <div className="sm:rounded-fancyRadius2 rounded-lg sm:h-[500px] h-[400px] relative overflow-hidden">
+                <div className="rounded-fancyRadius2 sm:h-[500px] h-[400px] relative overflow-hidden">
                   <Image
                     src="/images/home/header.webp"
                     alt="company header"
@@ -83,7 +82,7 @@ export default function Home() {
       {/* Who are we */}
       <Container hScreen={false}>
         <Section>
-          <div className="grid lg:grid-cols-2 md:gap-20 gap-10 items-center">
+          <div className="grid lg:grid-cols-2 md:gap-20 gap-10 items-center mt-5">
             <Image
               src="/images/home/who-are-we.webp"
               alt="team"
@@ -105,8 +104,8 @@ export default function Home() {
                 difference with SlySol.`}
               </p>
               <a href="/about">
-                <button className="btn-outline md:py-3 mdpx-8 py-2 px-5 md:text-base text-sm md:mt-8 mt-5">
-                  LEARN MORE
+                <button className="btn-outline md:py-3 md:px-8 py-2 px-5 md:text-base text-sm md:mt-8 mt-5">
+                  Learn More
                 </button>
               </a>
             </div>
@@ -127,7 +126,7 @@ export default function Home() {
       {/* Services-Section */}
       <Container hScreen={false}>
         <Section>
-          <div className="flex flex-col gap-3 justify-center items-center">
+          <div className="flex flex-col gap-3 justify-center items-center mt-5">
             <SubTitle text="OUR SERVICES" />
             <Title text="Services We Provide" className="font-normal" />
             <p className="text-mute sm:w-1/2 text-center">
@@ -140,49 +139,13 @@ export default function Home() {
       </Container>
 
       {/* Developing Better Future */}
-      <div className="relative md:h-screen h-[400px] w-full">
-        <Image
-          src="/images/home/better-future.webp"
-          alt="white wave background"
-          fill
-        />
-        <PerfectCenter className="text-center">
-          <GradientText>
-            <Title
-              className="text-center font-semibold !leading-tight"
-              text="Developing a Better Future for All Our Users."
-            />
-          </GradientText>
-          <a href="/services">
-            <button className="btn-outline py-3 px-10 mt-8">VIEW MORE</button>
-          </a>
-        </PerfectCenter>
-      </div>
+      <DevelopingBetterFuture />
 
       {/* WHY US SECTION */}
       <WhyUs />
 
       {/* Innovative design approach */}
-      <div className="relative md:block hidden">
-        <div className="absolute w-full h-full bg-black opacity-40" />
-        <video
-          width="100%"
-          height="100vh"
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="none"
-        >
-          <source src="/videos/innovative-design.mp4" type="video/mp4" />
-        </video>
-        <PerfectCenter>
-          <Title
-            text="A Innovative & Futuristic Approach To Make Your Product Grow"
-            className="text-white text-center font-semibold"
-          />
-        </PerfectCenter>
-      </div>
+      <InnovationDesign />
 
       {/* Clients Feedback */}
       <Slider />

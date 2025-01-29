@@ -56,7 +56,7 @@ const siteLinks = [
       { name: 'About', link: '/about' },
       { name: 'Services', link: '/services' },
       { name: 'Portfolio', link: '/portfolio' },
-      { name: 'Blog', link: '/blog' },
+      // { name: 'Blog', link: '/blog' },
       { name: 'Career', link: '/career' },
       { name: 'Contact', link: '/contact' },
     ],
@@ -96,7 +96,7 @@ const siteLinks = [
   {
     title: 'HELP',
     links: [
-      { name: 'FAQ', link: '#faq' },
+      // { name: 'FAQ', link: '#faq' },
       { name: 'Support', link: '/contact' },
     ],
   },
@@ -104,6 +104,7 @@ const siteLinks = [
 
 const Footer = () => {
   const prefLangCookie = getPrefLangCookie();
+  const year = new Date().getFullYear();
 
   return (
     <div className="bg-gradient-to-r from-[#CBFCD8] via-[#B9E6E6] to-[#96BCFD]">
@@ -167,7 +168,7 @@ const Footer = () => {
             ))}
           </div>
           <div className="sm:flex justify-between text-sm pt-5 text-center">
-            <p>Copyright © 2024, Slysol. All Rights Reserved.</p>
+            <p>Copyright © {year}, Slysol. All Rights Reserved.</p>
             <div className="flex gap-2 sm:mt-0 mt-1 justify-center">
               <GoogleTranslate prefLangCookie={prefLangCookie} />
               <Link href={'/privacy-policy'} className="font-semibold">
