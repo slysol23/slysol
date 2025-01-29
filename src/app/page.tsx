@@ -8,11 +8,8 @@ import { CiMail, CiPhone } from 'react-icons/ci';
 import Header from '@/components/Header';
 import SubTitle from '@/components/SubTitle';
 import Section from '@/components/Section';
-import MainHeading from '@/components/MainHeading';
 import ServicesShowcase from '@/components/Home/ServicesShowcase';
 import Title from '@/components/Title';
-import GradientText from '@/components/GradientText';
-import PerfectCenter from '@/components/PerfectCenter';
 import Footer from '@/components/Footer';
 import DevelopingBetterFuture from '@/components/Home/DevelopingBetterFuture';
 import InnovationDesign from '@/components/Home/InnovationDesign';
@@ -107,7 +104,7 @@ export default function Home() {
                 difference with SlySol.`}
               </p>
               <a href="/about">
-                <button className="btn-outline md:py-3 mdpx-8 py-2 px-5 md:text-base text-sm md:mt-8 mt-5">
+                <button className="btn-outline md:py-3 md:px-8 py-2 px-5 md:text-base text-sm md:mt-8 mt-5">
                   Learn More
                 </button>
               </a>

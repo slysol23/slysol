@@ -5,7 +5,6 @@ import Image from 'next/image';
 import SubTitle from '@/components/SubTitle';
 import { AiFillCheckCircle } from 'react-icons/ai';
 import WorkingCycle from '@/components/About/WorkingCycle';
-import TeamMembers from '@/components/About/TeamMembers';
 import Footer from '@/components/Footer';
 import Title from '@/components/Title';
 import Section from '@/components/Section';
@@ -128,8 +127,6 @@ const About = () => {
           className="lg:block hidden"
         />
       </div>
-      {/* Team Members */}
-      {/* <TeamMembers /> */}
       <Footer />
     </>
   );

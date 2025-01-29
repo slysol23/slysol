@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   keywords: ['Slysol', 'Web Development', 'App Development'],
   authors: [{ name: 'Slysol' }, { name: 'Slysol', url: 'https://slysol.com' }],
   colorScheme: 'light',
-  creator: 'Umer Riaz',
+  creator: 'SlySol',
   publisher: 'Slysol',
   openGraph: {
     url: 'https://slysol.com',
