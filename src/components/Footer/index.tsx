@@ -70,7 +70,7 @@ const siteLinks = [
       { name: 'Digital Marketing', link: '/services' },
       { name: 'Cloud Computing', link: '/services' },
       { name: 'Content Creation', link: '/services' },
-      { name: 'Sofware Designing', link: '/services' },
+      { name: 'Software Designing', link: '/services' },
     ],
   },
   {
@@ -169,14 +169,13 @@ const Footer = () => {
           </div>
           <div className="sm:flex justify-between text-sm pt-5 text-center">
             <p>Copyright © {year}, Slysol. All Rights Reserved.</p>
-            <div className="flex gap-2 sm:mt-0 mt-1 justify-center">
+            <div className="flex flex-col sm:flex-row gap-2 sm:mt-0 mt-3 justify-center">
               <GoogleTranslate prefLangCookie={prefLangCookie} />
               <Link href={'/privacy-policy'} className="font-semibold">
-                | Privacy Policy
+                <span className="hidden sm:inline">|</span> Privacy Policy
               </Link>
-              |
               <Link href={'/terms-conditions'} className="font-semibold">
-                Terms & Conditions
+                <span className="hidden sm:inline">|</span> Terms & Conditions
               </Link>
             </div>
           </div>

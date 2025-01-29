@@ -9,7 +9,7 @@ interface HeaderInfoProps {
 const HeaderInfo = ({ classes }: HeaderInfoProps) => {
   return (
     <div
-      className={`border-b-[1px] md:text-sm text-xs sm:py-0 py-1 ${classes?.root}`}
+      className={`border-b-[1px] md:text-sm text-xs sm:py-0 py-1 ${classes?.root} hidden md:block`}
     >
       <Container
         hScreen={false}

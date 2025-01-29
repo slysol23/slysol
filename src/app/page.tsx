@@ -13,6 +13,7 @@ import Title from '@/components/Title';
 import Footer from '@/components/Footer';
 import DevelopingBetterFuture from '@/components/Home/DevelopingBetterFuture';
 import InnovationDesign from '@/components/Home/InnovationDesign';
+import HeaderInfo from '@/components/Header/HeaderInfo';
 
 export const metadata: Metadata = {
   description:
@@ -24,24 +25,7 @@ export default function Home() {
     <>
       {/* Header Section */}
       <div className="bg-gradient-to-r from-[#CBFCD8] via-[#B9E6E6] to-[#96BCFD]">
-        <div className="border-b-[1px] md:text-sm text-xs sm:py-0 py-1">
-          <Container
-            hScreen={false}
-            className="sm:h-[50px] flex sm:flex-row flex-col justify-between items-center gap-1"
-          >
-            <p>Mon-Fri: 11:00 AM - 8:00 PM</p>
-            <div className="flex sm:flex-row flex-col sm:gap-5 gap-1 items-center">
-              <div className="flex gap-1 items-center">
-                <CiPhone />
-                <p>+92-3104150111</p>
-              </div>
-              <div className="flex gap-1 items-center">
-                <CiMail />
-                <p>m.buksh@slysol.com</p>
-              </div>
-            </div>
-          </Container>
-        </div>
+        <HeaderInfo />
         <Container className="h-full" hScreen={false}>
           <Header />
           <Section>

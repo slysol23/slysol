@@ -5,7 +5,6 @@ import Form from '@/components/Contact/Form';
 import Container from '@/components/Container';
 import { socialIcons } from '@/components/Footer';
 import Link from 'next/link';
-import Calendly from '@/components/Contact/Calendly';
 
 const Contact = () => {
   return (

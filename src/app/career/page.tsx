@@ -2,7 +2,6 @@ import Tabs from '@/components/Career/Tabs';
 import Container from '@/components/Container';
 import GradientText from '@/components/GradientText';
 import Layout from '@/components/Layout';
-import MainHeading from '@/components/MainHeading';
 import Section from '@/components/Section';
 import Title from '@/components/Title';
 import Image from 'next/image';
