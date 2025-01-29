@@ -50,6 +50,7 @@ export const sendMailAPI = async ({
     // When you have an EU-domain, you must specify the endpoint:
     // url: "https://api.eu.mailgun.net/v3"
   });
+  const currentYear = new Date().getFullYear();
 
   try {
     const data = await mg.messages.create(
@@ -59,7 +60,10 @@ export const sendMailAPI = async ({
         to: [process.env.NEXT_PUBLIC_EMAIL_TO || ''],
         subject: subject,
         template: template || '',
-        'h:X-Mailgun-Variables': JSON.stringify(templateVariables || {}),
+        'h:X-Mailgun-Variables': JSON.stringify({
+          ...templateVariables,
+          year: currentYear,
+        }),
       },
     );
     console.log(data); // logs response data
