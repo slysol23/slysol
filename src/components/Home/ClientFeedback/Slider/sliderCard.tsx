@@ -10,28 +10,21 @@ interface SliderCardProps {
 
 const SliderCard = ({ src, alt, text, companyName }: SliderCardProps) => {
   return (
-    <>
-      <div className="grid md:grid-cols-[70%_30%] md:gap-10 bg-blue text-white text-justify md:p-20 p-10 rounded-xl md:max-h-[300px] md:min-h-[300px] max-h-[550px] min-h-[550px]">
-        <div className="md:order-1 order-2">
-          <h3 className="pb-4 italic">“{text}”</h3>
-          <p className="mt-1 font-bold">{companyName}</p>
-        </div>
-        <div className="md:order-2 order-1">
-          <div
-            className="w-[130px] h-[130px] m-auto bg-white rounded-full
-          flex items-center p-3"
-          >
-            <Image
-              src={src}
-              alt={alt}
-              width={100}
-              height={100}
-              className="object-scale-down h-[100px]"
-            />
-          </div>
-        </div>
+    <div className=" text-white text-justify p-5 rounded-xl shadow-[0px_0px_9px_-5px_black] transform transition-all duration-300 flex flex-col items-center gap-7 justify-between mb-5 mt-[60px]">
+      <div className="h-[100px] w-[100px] absolute flex items-center justify-center shadow-[0px_0px_9px_-5px_black] rounded-full bg-white overflow-hidden p-2 -top-[50px] left-1/2 -translate-x-1/2">
+        <Image
+          src={src}
+          alt={alt}
+          width={100}
+          height={100}
+          className="max-h-full max-w-full h-auto w-auto object-cover"
+        />
       </div>
-    </>
+      <h3 className="mt-[50px] italic font-serif md:text-lg text-dark h-[170px] overflow-hidden text-ellipsis line-clamp-6">
+        “{text}”
+      </h3>
+      <p className="font-bold md:text-lg text-dark">{companyName}</p>
+    </div>
   );
 };
 

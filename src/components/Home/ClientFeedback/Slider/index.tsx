@@ -55,7 +55,18 @@ export default function Slider() {
           className="text-center md:mb-10 mb-5 font-normal"
         />
         <OwlCarousel
-          items={1}
+          items={3}
+          responsive={{
+            0: {
+              items: 1,
+            },
+            768: {
+              items: 2,
+            },
+            1024: {
+              items: 3,
+            },
+          }}
           margin={20}
           loop={true}
           center={true}
@@ -64,6 +75,7 @@ export default function Slider() {
           autoplaySpeed={5000}
           smartSpeed={2500}
           dots={false}
+          slideBy={1}
           autoplayHoverPause
         >
           {images.map((image, index) => (
