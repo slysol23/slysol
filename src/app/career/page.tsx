@@ -13,26 +13,26 @@ const Career = () => {
       src: '/images/career/competitive-salary.svg',
       title: 'Competitive Salary',
     },
-    // { src: '/images/career/provident-fund.svg', title: 'Provident Fund' },
-    // {
-    //   src: '/images/career/inpatient-medical.svg',
-    //   title: 'Inpatient Medical Facility',
-    // },
+    { src: '/images/career/provident-fund.svg', title: 'Provident Fund' },
+    {
+      src: '/images/career/inpatient-medical.svg',
+      title: 'Inpatient Medical Facility',
+    },
     { src: '/images/career/work-life.svg', title: 'Work/life Balance' },
-    // {
-    //   src: '/images/career/outpatent-medical.svg',
-    //   title: 'Outpatient Medical Facility',
-    // },
+    {
+      src: '/images/career/outpatent-medical.svg',
+      title: 'Outpatient Medical Facility',
+    },
     { src: '/images/career/remote-work.svg', title: 'Remote Work When Needed' },
-    // { src: '/images/career/subzidized-lunch.svg', title: 'Subsidized Lunch' },
+    { src: '/images/career/subzidized-lunch.svg', title: 'Subsidized Lunch' },
     {
       src: '/images/career/conference-traning.svg',
       title: 'Conferences & Training',
     },
-    // {
-    //   src: '/images/career/transportation.svg',
-    //   title: 'Transportation Allowance for Females',
-    // },
+    {
+      src: '/images/career/transportation.svg',
+      title: 'Transportation Allowance for Females',
+    },
   ];
   return (
     <Layout>
