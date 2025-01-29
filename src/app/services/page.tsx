@@ -82,7 +82,7 @@ const page = () => {
         <Header />
       </Container>
       <Carousal
-        autoplay={true}
+        // autoplay={true}
         autoplayTimeout={8000}
         autoplaySpeed={2000}
         items={1}
@@ -101,16 +101,19 @@ const page = () => {
                 src={data.src}
                 alt={data.alt}
                 fill
-                className="object-cover animate-bgZoom"
+                className="object-cover animate-bgZoom md:opacity-100 opacity-0"
               />
-              <div className="absolute w-full h-full bg-white md:hidden opacity-20"></div>
+              {/* <div className="absolute w-full h-full bg-white md:hidden opacity-50"></div> */}
               <Container hScreen={false} className="relative">
-                <div className="lg:w-[60%] md:w-[70%] sm:w-[80%] w-[90%] relative">
+                <div className="lg:w-[60%] md:w-[70%] md:block flex flex-col items-center relative">
                   <SubTitle text={data.subTitle} />
                   <GradientText className="mt-2">
-                    <Title text={data.title} className="lg:text-6xl" />
+                    <Title
+                      text={data.title}
+                      className="lg:text-6xl md:text-start text-center"
+                    />
                   </GradientText>
-                  <p className="sm:w-2/3 sm:py-8 py-5 text-mute">
+                  <p className="sm:w-2/3 sm:py-8 py-5 text-mute md:text-start text-center">
                     {data.description}
                   </p>
                 </div>

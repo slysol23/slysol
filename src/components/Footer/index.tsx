@@ -56,7 +56,7 @@ const siteLinks = [
       { name: 'About', link: '/about' },
       { name: 'Services', link: '/services' },
       { name: 'Portfolio', link: '/portfolio' },
-      { name: 'Blog', link: '/blog' },
+      // { name: 'Blog', link: '/blog' },
       { name: 'Career', link: '/career' },
       { name: 'Contact', link: '/contact' },
     ],
@@ -96,7 +96,7 @@ const siteLinks = [
   {
     title: 'HELP',
     links: [
-      { name: 'FAQ', link: '#faq' },
+      // { name: 'FAQ', link: '#faq' },
       { name: 'Support', link: '/contact' },
     ],
   },
