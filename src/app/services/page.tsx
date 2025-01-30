@@ -36,7 +36,7 @@ const ServicesPage = () => {
       title: 'A New Era Of Digital Business Platforms',
       subTitle: 'MODERN TECHNOLOGY SOLUTION',
       description:
-        'Our solutions streamline operations and enhance efficiency. With customisable and intuitive platforms. Transform your  business and stay ahead of market demands. Join us to achieve sustainable growth with ease.',
+        'Our solutions streamline operations and enhance efficiency. With customizable and intuitive platforms. Transform your  business and stay ahead of market demands. Join us to achieve sustainable growth with ease.',
     },
     {
       src: '/images/services/service-bg-2.svg',

@@ -5,7 +5,6 @@ import GradientText from '@/components/GradientText';
 import Header from '@/components/Header';
 import HeaderInfo from '@/components/Header/HeaderInfo';
 import Layout from '@/components/Layout';
-import MainHeading from '@/components/MainHeading';
 import Section from '@/components/Section';
 import Title from '@/components/Title';
 import Image from 'next/image';
@@ -83,7 +82,7 @@ const Career = () => {
       <Section>
         <Container hScreen={false} className="grid lg:grid-cols-2 gap-10">
           <div>
-            <Title text="Perks & Benifits" />
+            <Title text="Perks & Benefits" />
             <div className="grid sm:grid-cols-2 gap-5 mt-10">
               {perksBenefits.map((perk, index) => (
                 <div

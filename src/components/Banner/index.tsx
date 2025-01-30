@@ -20,7 +20,7 @@ const Banner = ({ text }: BannerProps) => {
           <Header />
         </Container>
         <div className="md:h-[500px] h-[300px] flex items-center justify-center relative">
-          <GradientText className="mb-[100px]">
+          <GradientText className="md:mb-[100px]">
             <Title text={text} />
           </GradientText>
           <div className="md:block hidden w-full absolute h-full bottom-0">
@@ -42,7 +42,7 @@ const Banner = ({ text }: BannerProps) => {
           </div>
           <Image
             src="/images/banner/banner-wave-line.svg"
-            className="w-full h-full bottom-0 z-[1] hidden xl:block text-primary2"
+            className="w-full h-full bottom-0 z-[1] text-primary2"
             fill
             alt="banner-wave"
           />

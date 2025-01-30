@@ -5,7 +5,6 @@ import Image from 'next/image';
 import SubTitle from '@/components/SubTitle';
 import { AiFillCheckCircle } from 'react-icons/ai';
 import WorkingCycle from '@/components/About/WorkingCycle';
-import TeamMembers from '@/components/About/TeamMembers';
 import Footer from '@/components/Footer';
 import Title from '@/components/Title';
 import Section from '@/components/Section';
@@ -70,7 +69,7 @@ const About = () => {
           </p>
           <div className="flex flex-col sm:flex-row sm:gap-10 gap-5 md:mb-10 mb-5">
             <div>
-              <h1 className="text-7xl font-bold text-primary2">2019</h1>
+              <h1 className="text-7xl font-bold text-primary2">2022</h1>
               <p className="font-bold text-sm mt-2">STARTED JOURNEY</p>
             </div>
             <div>
@@ -128,8 +127,6 @@ const About = () => {
           className="lg:block hidden"
         />
       </div>
-      {/* Team Members */}
-      {/* <TeamMembers /> */}
       <Footer />
     </>
   );

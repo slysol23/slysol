@@ -192,11 +192,10 @@ const Footer = () => {
             <div className="flex gap-2 sm:mt-0 mt-1 justify-center">
               {/* <GoogleTranslate prefLangCookie={prefLangCookie} /> */}
               <Link href={'/privacy-policy'} className="font-semibold">
-                | Privacy Policy
+                <span className="hidden sm:inline">|</span> Privacy Policy
               </Link>
-              |
               <Link href={'/terms-conditions'} className="font-semibold">
-                Terms & Conditions
+                <span className="hidden sm:inline">|</span> Terms & Conditions
               </Link>
             </div>
           </div>

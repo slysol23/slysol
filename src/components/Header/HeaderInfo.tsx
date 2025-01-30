@@ -1,6 +1,7 @@
 import React from 'react';
 import Container from '../Container';
 import { CiMail, CiPhone } from 'react-icons/ci';
+import Link from 'next/link';
 
 interface HeaderInfoProps {
   classes?: { root?: string };
@@ -9,7 +10,7 @@ interface HeaderInfoProps {
 const HeaderInfo = ({ classes }: HeaderInfoProps) => {
   return (
     <div
-      className={`border-b-[1px] md:text-sm text-xs sm:py-0 py-1 ${classes?.root}`}
+      className={`border-b-[1px] md:text-sm text-xs sm:py-0 py-1 ${classes?.root} hidden md:block`}
     >
       <Container
         hScreen={false}
@@ -19,11 +20,11 @@ const HeaderInfo = ({ classes }: HeaderInfoProps) => {
         <div className="flex sm:flex-row flex-col sm:gap-5 gap-1 items-center">
           <div className="flex gap-1 items-center">
             <CiPhone />
-            <p>+92-3104150111</p>
+            <Link href={'tel:+92-3104150111'}>+92-3104150111</Link>
           </div>
           <div className="flex gap-1 items-center">
             <CiMail />
-            <p>m.buksh@slysol.com</p>
+            <Link href={'mailto:m.buksh@slysol.com'}>m.buksh@slysol.com</Link>
           </div>
         </div>
       </Container>

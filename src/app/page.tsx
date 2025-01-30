@@ -4,19 +4,16 @@ import Image from 'next/image';
 import WhyUs from '@/components/Home/WhyUs';
 import Slider from '@/components/Home/ClientFeedback/Slider';
 import { Metadata } from 'next';
-import { CiMail, CiPhone } from 'react-icons/ci';
 import Header from '@/components/Header';
 import SubTitle from '@/components/SubTitle';
 import Section from '@/components/Section';
-import MainHeading from '@/components/MainHeading';
 import ServicesShowcase from '@/components/Home/ServicesShowcase';
 import Title from '@/components/Title';
-import GradientText from '@/components/GradientText';
-import PerfectCenter from '@/components/PerfectCenter';
 import Footer from '@/components/Footer';
 import DevelopingBetterFuture from '@/components/Home/DevelopingBetterFuture';
 import InnovationDesign from '@/components/Home/InnovationDesign';
 import Link from 'next/link';
+import HeaderInfo from '@/components/Header/HeaderInfo';
 
 export const metadata: Metadata = {
   description:
@@ -28,26 +25,7 @@ export default function Home() {
     <>
       {/* Header Section */}
       <div className="bg-gradient-to-r from-[#CBFCD8] via-[#B9E6E6] to-[#96BCFD]">
-        <div className="border-b-[1px] md:text-sm text-xs sm:py-0 py-1">
-          <Container
-            hScreen={false}
-            className="sm:h-[50px] flex sm:flex-row flex-col justify-between items-center gap-1"
-          >
-            <p>Mon-Fri: 11:00 AM - 8:00 PM</p>
-            <div className="flex sm:flex-row flex-col sm:gap-5 gap-1 items-center">
-              <div className="flex gap-1 items-center">
-                <CiPhone />
-                <Link href={'tel:+92-3104150111'}>+92-3104150111</Link>
-              </div>
-              <div className="flex gap-1 items-center">
-                <CiMail />
-                <Link href={'mailto:m.buksh@slysol.com'}>
-                  m.buksh@slysol.com
-                </Link>
-              </div>
-            </div>
-          </Container>
-        </div>
+        <HeaderInfo />
         <Container className="h-full" hScreen={false}>
           <Header />
           <Section>
@@ -110,7 +88,7 @@ export default function Home() {
                 difference with SlySol.`}
               </p>
               <a href="/about">
-                <button className="btn-outline md:py-3 mdpx-8 py-2 px-5 md:text-base text-sm md:mt-8 mt-5">
+                <button className="btn-outline md:py-3 md:px-8 py-2 px-5 md:text-base text-sm md:mt-8 mt-5">
                   Learn More
                 </button>
               </a>
