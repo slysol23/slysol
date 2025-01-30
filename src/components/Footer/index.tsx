@@ -1,3 +1,4 @@
+'use client';
 import React, { ReactNode } from 'react';
 import Container from '../Container';
 import {
@@ -13,7 +14,6 @@ import Link from 'next/link';
 import Section from '../Section';
 import SiteLogo from '../SiteLogo';
 import GradientText from '../GradientText';
-import { GoogleTranslate } from '../GoogleTranslate';
 import { getPrefLangCookie } from 'utils/cookies';
 
 interface Links {
@@ -64,13 +64,34 @@ const siteLinks = [
   {
     title: 'SERVICES',
     links: [
-      { name: 'Software Development', link: '/services' },
-      { name: 'Artificial Intelligence', link: '/services' },
-      { name: 'IT Consultant', link: '/services' },
-      { name: 'Digital Marketing', link: '/services' },
-      { name: 'Cloud Computing', link: '/services' },
-      { name: 'Content Creation', link: '/services' },
-      { name: 'Sofware Designing', link: '/services' },
+      {
+        name: 'Software Development',
+        link: '/services?section=software-development',
+      },
+      {
+        name: 'Artificial Intelligence',
+        link: '/services?section=ai-integration',
+      },
+      {
+        name: 'IT Consultant',
+        link: '/services?section=software-development',
+      },
+      {
+        name: 'Digital Marketing',
+        link: '/services?section=digital-marketing',
+      },
+      {
+        name: 'Cloud Computing',
+        link: '/services?section=software-development',
+      },
+      {
+        name: 'Content Creation',
+        link: '/services?section=digital-marketing',
+      },
+      {
+        name: 'Software Designing',
+        link: '/services?section=ui-ux',
+      },
     ],
   },
   {
@@ -103,7 +124,7 @@ const siteLinks = [
 ];
 
 const Footer = () => {
-  const prefLangCookie = getPrefLangCookie();
+  // const prefLangCookie = getPrefLangCookie();
   const year = new Date().getFullYear();
 
   return (
@@ -170,7 +191,7 @@ const Footer = () => {
           <div className="sm:flex justify-between text-sm pt-5 text-center">
             <p>Copyright © {year}, Slysol. All Rights Reserved.</p>
             <div className="flex gap-2 sm:mt-0 mt-1 justify-center">
-              <GoogleTranslate prefLangCookie={prefLangCookie} />
+              {/* <GoogleTranslate prefLangCookie={prefLangCookie} /> */}
               <Link href={'/privacy-policy'} className="font-semibold">
                 | Privacy Policy
               </Link>
