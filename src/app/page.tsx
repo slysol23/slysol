@@ -16,6 +16,7 @@ import PerfectCenter from '@/components/PerfectCenter';
 import Footer from '@/components/Footer';
 import DevelopingBetterFuture from '@/components/Home/DevelopingBetterFuture';
 import InnovationDesign from '@/components/Home/InnovationDesign';
+import Link from 'next/link';
 
 export const metadata: Metadata = {
   description:
@@ -36,11 +37,13 @@ export default function Home() {
             <div className="flex sm:flex-row flex-col sm:gap-5 gap-1 items-center">
               <div className="flex gap-1 items-center">
                 <CiPhone />
-                <p>+92-3104150111</p>
+                <Link href={'tel:+92-3104150111'}>+92-3104150111</Link>
               </div>
               <div className="flex gap-1 items-center">
                 <CiMail />
-                <p>m.buksh@slysol.com</p>
+                <Link href={'mailto:m.buksh@slysol.com'}>
+                  m.buksh@slysol.com
+                </Link>
               </div>
             </div>
           </Container>
