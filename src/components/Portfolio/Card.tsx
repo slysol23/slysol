@@ -27,7 +27,7 @@ const cardsData: CardData[] = [
     title: 'OrangeShine',
     subTitle: 'ECOMERCE PLATFORM',
     description:
-      'Orange Shine is an e-commerce platform based in the United States that accommodates numerous vendors and clients. The platform boasts an extensive collection of products ranging from clothing to essential apparel, offering a diverse selection for consumers.',
+      'OrangeShine is an e-commerce platform based in the United States, designed to support a wide range of vendors and clients. The platform offers an extensive collection of products, ranging from clothing to essential apparel, catering to a diverse selection of consumer needs.',
     date: '27-May-2024',
     TechStacks: [
       'ReactJS',
@@ -87,7 +87,7 @@ const cardsData: CardData[] = [
     ],
     title: 'AlignerBase Portal',
     subTitle: 'DENTAL & HEALTH CARE PORTAL',
-    description: `The AlignerBase Portal is a comprehensive web portal designed specifically for dental professionals to facilitate efficient tracking and management of treatment plans throughout the design workflow. With this platform, dental professionals can monitor their patient's treatment progress and communicate directly with their design team to request revisions and adjustments as needed to achieve the desired results.`,
+    description: `AlignerBase Portal, a user-friendly web portal designed specifically for dental professionals to streamline the tracking and management of treatment plans throughout the design workflow. This platform enables dental professionals to efficiently monitor patient progress and facilitates direct communication with their design team to request revisions and adjustments, ensuring optimal treatment outcomes.`,
     date: '27-May-2024',
     TechStacks: [
       'React.js',
@@ -112,7 +112,7 @@ const cardsData: CardData[] = [
     ],
     title: 'Sharove',
     subTitle: 'ECOMERCE PLATFORM',
-    description: `Sharove is the 2.0 version of the OrangeShine.com E-Commerce platform. The scope is to expanded the platform's capabilities to serve both business (B2B) and individual (B2C) customers.`,
+    description: `The 2.0 update of the OrangeShine.com website was a significant upgrade that expanded the platform’s capabilities to serve both business (B2B) and individual (B2C) customers. This project involved enhancing the site's functionality while ensuring a seamless user experience for both customer segments.`,
     date: '27-May-2024',
     TechStacks: [
       'ReactJS',
@@ -147,7 +147,7 @@ const cardsData: CardData[] = [
     title: 'Degree 37',
     subTitle: 'HEALTH CARE PLATFORM',
     description:
-      'Degree37 is a dynamic company dedicated to revolutionizing the blood donation landscape. With a heartfelt commitment to saving lives, Degree37 streamlines the donation process, making it more accessible and rewarding for donors. The organization tirelessly works to bridge gaps between blood centers and donors by leveraging cutting-edge technologies, fostering educational outreach, and hosting engaging blood drives.',
+      'Degree37 is an organization focused on improving the blood donation process through an efficient ERP platform. The platform makes it easier for donors and blood centers to connect, streamlining the donation process and creating a more rewarding experience for donors.',
     date: '27-May-2024',
     TechStacks: [
       'ReactJS',
@@ -177,7 +177,7 @@ const cardsData: CardData[] = [
     title: 'MK Engineering',
     subTitle: 'PORTFOLIO SITE',
     description:
-      'MK Engineering is an Engineering firm based in Pakistan. The scope of this project was to provide a platform where the company can display their portfolio, products and the accomplishments.',
+      'A professional and responsive website for MK Engineering, an engineering firm. The platform serves as a digital hub for the company to showcase its portfolio, products, and accomplishments, enhancing its online presence and credibility.',
     date: '27-May-2024',
     TechStacks: [
       'ReactJS',
@@ -198,9 +198,107 @@ const cardsData: CardData[] = [
     title: 'Iblag',
     subTitle: 'REAL-TIME COMMUNICATION',
     description:
-      'Iblagh is an end-to-end encryption-based chat application for members of the organization. This chat app lets you start discussions one on one and between group members as well. Members can also create and share surveys in the chat groups. The election module is also introduced in later development for multi-hierarchy departments.',
+      'Iblagh is a secure, end-to-end encryption-based chat application designed specifically for organization members. The platform facilitates both one-on-one and group discussions, ensuring safe and private communication within teams.',
     date: '27-May-2024',
     TechStacks: ['PHP', 'CodeIgnitor', 'Kotlin', 'AWS', 'Restful API', 'MySQL'],
+  },
+  {
+    id: 8,
+    images: [
+      '/images/portfolio/pashione-1.webp',
+      '/images/portfolio/pashione-2.webp',
+      '/images/portfolio/pashione-3.webp',
+    ],
+    title: 'Pashione',
+    subTitle: 'MULTI VENDOR ECOMERCE PLATFORM',
+    description:
+      'Pashione is a social commerce platform designed to transform the fashion landscape for Africans and beyond. Built to bridge the gap in access to global fashion brands, Pashione offers a seamless, scalable, and feature-rich e-commerce experience.',
+    date: '27-May-2024',
+    TechStacks: [
+      'ReactJS',
+      'NextJS',
+      'Django',
+      'DRF',
+      'Redis',
+      'AWS',
+      'Stripe',
+      'OneApp',
+      'PostgreSQL',
+      'Celery',
+      'RabbitMQ',
+      'Swagger API',
+    ],
+  },
+  {
+    id: 9,
+    images: [
+      '/images/portfolio/merlin-1.webp',
+      '/images/portfolio/merlin-2.webp',
+      '/images/portfolio/merlin-3.webp',
+    ],
+    title: 'Merlin Models',
+    subTitle: 'AI-Powered Financial Analysis & Forecasting',
+    description:
+      'This AI-powered tool enables users to upload various types of financial data, including images, PDFs, text files, and Excel sheets containing income statements, profit and loss reports, and balance sheets. The system intelligently detects the input type, extracts relevant financial information, and processes it using a custom AI model to predict future growth through financial forecasting.',
+    date: '27-May-2024',
+    TechStacks: [
+      'ReactJS',
+      'NextJS',
+      'Django',
+      'DRF',
+      'Redis',
+      'AWS',
+      'PostgreSQL',
+      'Celery',
+      'Pyxl',
+    ],
+  },
+  {
+    id: 10,
+    images: [
+      '/images/portfolio/nejo-ai-1.webp',
+      '/images/portfolio/nejo-ai-2.webp',
+      '/images/portfolio/nejo-ai-3.webp',
+    ],
+    title: 'Nejo AI',
+    subTitle:
+      'AI-Powered Tool for Turning Documents into Engaging Audio Summaries',
+    description:
+      'An innovative AI-powered tool that transforms lengthy documents into engaging, podcast-style audio. Designed to enhance learning efficiency, this solution extracts key insights and summaries from documents, converting them into high-quality spoken content.',
+    date: '27-May-2024',
+    TechStacks: [
+      'ReactJS',
+      'NextJS',
+      'Django',
+      'DRF',
+      'Redis',
+      'AWS',
+      'PostgreSQL',
+      'Celery',
+      'Docker',
+      'Stripe',
+    ],
+  },
+  {
+    id: 11,
+    images: [
+      '/images/portfolio/neuronus-1.webp',
+      '/images/portfolio/neuronus-2.webp',
+      '/images/portfolio/neuronus-3.webp',
+    ],
+    title: 'Neuronus Computing',
+    subTitle: 'Portfolio for Neuronus, Powered by Strapi CMS',
+    description:
+      'A fully animated and responsive portfolio website for Neuronus, designed to showcase their projects, blogs, and company details in an engaging and dynamic manner. The platform is powered by Strapi CMS, enabling seamless content management and updates.',
+    date: '27-May-2024',
+    TechStacks: [
+      'ReactJS',
+      'NextJS',
+      'TailwindCSS',
+      'Strapi Integration',
+      'Custom Animations',
+      'AWS',
+    ],
   },
 ];
 
@@ -558,13 +656,7 @@ const Card = () => {
                 <MainHeading text={card.title} />
                 <p className="text-mute text-sm">{card.date}</p>
                 <p className="text-mute text-xs mt-5">
-                  {card.TechStacks.length
-                    ? card.TechStacks.map((techStack, index) =>
-                        index > 0 && index <= card.TechStacks.length
-                          ? `${techStack} | `
-                          : techStack,
-                      )
-                    : ''}
+                  {card.TechStacks.join(' | ')}
                 </p>
               </div>
             </div>
