@@ -4,26 +4,8 @@ import Image from 'next/image';
 import Form from '@/components/Contact/Form';
 import Container from '@/components/Container';
 import Link from 'next/link';
+import { socialIcons } from '@/components/Footer';
 import Calendly from '@/components/Contact/Calendly';
-import { BsFacebook, BsInstagram, BsLinkedin } from 'react-icons/bs';
-
-const socialIcons = [
-  {
-    name: 'facebook',
-    icon: <BsFacebook />,
-    link: 'https://www.facebook.com/profile.php?id=100094073880444',
-  },
-  {
-    name: 'instagram',
-    icon: <BsInstagram />,
-    link: 'https://www.instagram.com/slysol23/',
-  },
-  {
-    name: 'linkedin',
-    icon: <BsLinkedin />,
-    link: 'https://www.linkedin.com/company/slysol/',
-  },
-];
 
 const Contact = () => {
   return (
