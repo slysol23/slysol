@@ -103,13 +103,13 @@ const siteLinks = [
       },
       {
         icon: <TbMailFilled />,
-        name: 'm.buksh@slysol.com',
-        link: 'mailto:m.buksh@slysol.com',
+        name: 'info@slysol.com',
+        link: 'mailto:info@slysol.com',
       },
       {
         icon: <ImLocation2 />,
-        name: 'Office # 2, 2nd Floor, Icon Center, Beside Panorama Center 48 Mall Road, Lahore, Pakistan',
-        link: 'https://www.google.com/maps/dir//Icon+shopping+center+H86C%2BP8H+Shahrah-e-Quaid-e-Azam+Garhi+Shahu,+Lahore,+Punjab+54000/@31.5618226,74.3208612,14z/data=!4m5!4m4!1m0!1m2!1m1!1s0x39191bcfa3aaa041:0x2507b8f020014662',
+        name: 'H98J+3F6, Shalimar Link Road, Gunj Bazar, Shalimar Link Road, Lahore, 54840',
+        link: 'https://maps.app.goo.gl/CrzkkEVcg61sKVGM6',
       },
     ],
   },

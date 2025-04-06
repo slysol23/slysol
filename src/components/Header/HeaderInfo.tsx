@@ -16,7 +16,7 @@ const HeaderInfo = ({ classes }: HeaderInfoProps) => {
         hScreen={false}
         className="sm:h-[50px] flex sm:flex-row flex-col justify-between items-center gap-1"
       >
-        <p>Mon-Fri: 11:00 AM - 8:00 PM</p>
+        <p>Mon-Fri: 10:00 AM - 7:00 PM</p>
         <div className="flex sm:flex-row flex-col sm:gap-5 gap-1 items-center">
           <div className="flex gap-1 items-center">
             <CiPhone />
@@ -24,7 +24,7 @@ const HeaderInfo = ({ classes }: HeaderInfoProps) => {
           </div>
           <div className="flex gap-1 items-center">
             <CiMail />
-            <Link href={'mailto:m.buksh@slysol.com'}>m.buksh@slysol.com</Link>
+            <Link href={'mailto:info@slysol.com'}>info@slysol.com</Link>
           </div>
         </div>
       </Container>
