@@ -13,7 +13,6 @@ import Link from 'next/link';
 import Section from '../Section';
 import SiteLogo from '../SiteLogo';
 import GradientText from '../GradientText';
-import { GoogleTranslate } from '../GoogleTranslate';
 import { getPrefLangCookie } from 'utils/cookies';
 
 interface Links {
@@ -64,13 +63,34 @@ const siteLinks = [
   {
     title: 'SERVICES',
     links: [
-      { name: 'Software Development', link: '/services' },
-      { name: 'Artificial Intelligence', link: '/services' },
-      { name: 'IT Consultant', link: '/services' },
-      { name: 'Digital Marketing', link: '/services' },
-      { name: 'Cloud Computing', link: '/services' },
-      { name: 'Content Creation', link: '/services' },
-      { name: 'Software Designing', link: '/services' },
+      {
+        name: 'Software Development',
+        link: '/services?section=software-development',
+      },
+      {
+        name: 'Artificial Intelligence',
+        link: '/services?section=ai-integration',
+      },
+      {
+        name: 'IT Consultant',
+        link: '/services?section=software-development',
+      },
+      {
+        name: 'Digital Marketing',
+        link: '/services?section=digital-marketing',
+      },
+      {
+        name: 'Cloud Computing',
+        link: '/services?section=software-development',
+      },
+      {
+        name: 'Content Creation',
+        link: '/services?section=digital-marketing',
+      },
+      {
+        name: 'Software Designing',
+        link: '/services?section=ui-ux',
+      },
     ],
   },
   {
@@ -83,13 +103,13 @@ const siteLinks = [
       },
       {
         icon: <TbMailFilled />,
-        name: 'm.buksh@slysol.com',
-        link: 'mailto:m.buksh@slysol.com',
+        name: 'info@slysol.com',
+        link: 'mailto:info@slysol.com',
       },
       {
         icon: <ImLocation2 />,
-        name: 'Office # 2, 2nd Floor, Icon Center, Beside Panorama Center 48 Mall Road, Lahore, Pakistan',
-        link: 'https://www.google.com/maps/dir//Icon+shopping+center+H86C%2BP8H+Shahrah-e-Quaid-e-Azam+Garhi+Shahu,+Lahore,+Punjab+54000/@31.5618226,74.3208612,14z/data=!4m5!4m4!1m0!1m2!1m1!1s0x39191bcfa3aaa041:0x2507b8f020014662',
+        name: 'H98J+3F6, Shalimar Link Road, Gunj Bazar, Shalimar Link Road, Lahore, 54840',
+        link: 'https://maps.app.goo.gl/CrzkkEVcg61sKVGM6',
       },
     ],
   },
@@ -103,7 +123,7 @@ const siteLinks = [
 ];
 
 const Footer = () => {
-  const prefLangCookie = getPrefLangCookie();
+  // const prefLangCookie = getPrefLangCookie();
   const year = new Date().getFullYear();
 
   return (
@@ -169,8 +189,8 @@ const Footer = () => {
           </div>
           <div className="sm:flex justify-between text-sm pt-5 text-center">
             <p>Copyright © {year}, Slysol. All Rights Reserved.</p>
-            <div className="flex flex-col sm:flex-row gap-2 sm:mt-0 mt-3 justify-center">
-              <GoogleTranslate prefLangCookie={prefLangCookie} />
+            <div className="flex gap-2 sm:mt-0 mt-1 justify-center">
+              {/* <GoogleTranslate prefLangCookie={prefLangCookie} /> */}
               <Link href={'/privacy-policy'} className="font-semibold">
                 <span className="hidden sm:inline">|</span> Privacy Policy
               </Link>

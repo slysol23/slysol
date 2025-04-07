@@ -4,7 +4,6 @@ import Image from 'next/image';
 import WhyUs from '@/components/Home/WhyUs';
 import Slider from '@/components/Home/ClientFeedback/Slider';
 import { Metadata } from 'next';
-import { CiMail, CiPhone } from 'react-icons/ci';
 import Header from '@/components/Header';
 import SubTitle from '@/components/SubTitle';
 import Section from '@/components/Section';
@@ -13,6 +12,7 @@ import Title from '@/components/Title';
 import Footer from '@/components/Footer';
 import DevelopingBetterFuture from '@/components/Home/DevelopingBetterFuture';
 import InnovationDesign from '@/components/Home/InnovationDesign';
+import Link from 'next/link';
 import HeaderInfo from '@/components/Header/HeaderInfo';
 
 export const metadata: Metadata = {

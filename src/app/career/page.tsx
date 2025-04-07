@@ -1,6 +1,9 @@
 import Tabs from '@/components/Career/Tabs';
 import Container from '@/components/Container';
+import Footer from '@/components/Footer';
 import GradientText from '@/components/GradientText';
+import Header from '@/components/Header';
+import HeaderInfo from '@/components/Header/HeaderInfo';
 import Layout from '@/components/Layout';
 import Section from '@/components/Section';
 import Title from '@/components/Title';
@@ -35,16 +38,28 @@ const Career = () => {
     },
   ];
   return (
-    <Layout>
-      <div
-        className="md:h-[600px] h-[450px]"
-        style={{
-          backgroundImage: `url('/images/career/career-bg.webp')`,
-          backgroundRepeat: 'no-repeat',
-          backgroundSize: 'cover',
-          backgroundPosition: 'top',
-        }}
-      />
+    <>
+      <div className="relative md:h-[600px] h-[400px]">
+        <Image
+          src="/images/career/career-bg.webp"
+          alt="Slysol team meeting on project"
+          fill
+          className="w-full h-auto object-cover object-top"
+        />
+        <div className="absolute w-full h-full bg-black top-0 opacity-30 z-[1]" />
+        <div className="relative z-[2]">
+          <HeaderInfo classes={{ root: 'text-white' }} />
+        </div>
+        <Container className="h-full z-[2]" hScreen={false}>
+          <Header
+            classes={{
+              root: 'md:text-white',
+              menuUnderline: 'md:bg-white',
+              whiteLogo: true,
+            }}
+          />
+        </Container>
+      </div>
       <Container hScreen={false}>
         <Section>
           <GradientText className="pb-5">
@@ -112,7 +127,8 @@ const Career = () => {
           </div>
         </Container>
       </Section>
-    </Layout>
+      <Footer />
+    </>
   );
 };
 

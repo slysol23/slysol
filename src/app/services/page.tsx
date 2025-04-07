@@ -1,4 +1,6 @@
-import React from 'react';
+'use client';
+import React, { useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import SubTitle from '@/components/SubTitle';
 import Title from '@/components/Title';
@@ -12,8 +14,21 @@ import MainHeading from '@/components/MainHeading';
 import GradientBg from '@/components/GradientBg';
 import PerfectCenter from '@/components/PerfectCenter';
 import Footer from '@/components/Footer';
+import { idText } from 'typescript';
 
-const page = () => {
+const ServicesPage = () => {
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const section = searchParams.get('section');
+    if (section) {
+      const element = document.getElementById(section);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }, [searchParams]);
+
   const headerData = [
     {
       src: '/images/services/service-bg-1.svg',
@@ -47,30 +62,35 @@ const page = () => {
       description:
         'We deliver high-quality, custom software solutions tailored to your business needs. Our team of experts ensures seamless integration, scalability, and performance, enabling you to achieve your goals efficiently and effectively.',
       src: '/images/services/service-1.webp',
+      id: 'software-development',
     },
     {
       title: 'Application Development',
       description:
         'We create robust and user-friendly applications for various platforms. From initial concept to final deployment, we ensure your app meets the highest standards of functionality, security, and usability.',
       src: '/images/services/service-2.webp',
+      id: 'application-development',
     },
     {
       title: 'AI Integration',
       description:
         'We integrate advanced AI technologies to enhance your business processes. Our AI solutions streamline operations, improve decision-making, and drive innovation, giving you a competitive edge in the market.',
       src: '/images/services/service-3.webp',
+      id: 'ai-integration',
     },
     {
       title: 'UI / UX',
       description:
         'We design intuitive and engaging user interfaces and experiences. Our focus is on creating visually appealing and user-centric designs that enhance user satisfaction and drive business success.',
       src: '/images/services/service-4.webp',
+      id: 'ui-ux',
     },
     {
       title: 'Digital Marketing',
       description:
         'We offer comprehensive digital marketing services to boost your online presence. Our strategies include SEO, social media, and content marketing, designed to attract and engage your target audience effectively.',
       src: '/images/services/service-5.webp',
+      id: 'digital-marketing',
     },
   ];
 
@@ -141,9 +161,11 @@ const page = () => {
           </div>
           {servicesData.map((service, index) => {
             const even = (index + 1) % 2 === 0;
+            const sectionId = service.id;
             return (
               <>
                 <div
+                  id={sectionId}
                   className={`grid md:grid-cols-2 md:gap-0 gap-10 md:mb-0 mb-10 ${
                     index === 0 && 'md:pt-20 pt-10'
                   } ${index === servicesData.length - 1 && 'mb-0'}`}
@@ -204,4 +226,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default ServicesPage;
