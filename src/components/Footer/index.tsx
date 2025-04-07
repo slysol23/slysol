@@ -73,20 +73,12 @@ const siteLinks = [
         link: '/services?section=ai-integration',
       },
       {
-        name: 'IT Consultant',
-        link: '/services?section=software-development',
-      },
-      {
         name: 'Digital Marketing',
         link: '/services?section=digital-marketing',
       },
       {
         name: 'Cloud Computing',
         link: '/services?section=software-development',
-      },
-      {
-        name: 'Content Creation',
-        link: '/services?section=digital-marketing',
       },
       {
         name: 'Software Designing',
