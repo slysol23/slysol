@@ -1,8 +1,10 @@
 import Tabs from '@/components/Career/Tabs';
 import Container from '@/components/Container';
+import Footer from '@/components/Footer';
 import GradientText from '@/components/GradientText';
+import Header from '@/components/Header';
+import HeaderInfo from '@/components/Header/HeaderInfo';
 import Layout from '@/components/Layout';
-import MainHeading from '@/components/MainHeading';
 import Section from '@/components/Section';
 import Title from '@/components/Title';
 import Image from 'next/image';
@@ -14,38 +16,50 @@ const Career = () => {
       src: '/images/career/competitive-salary.svg',
       title: 'Competitive Salary',
     },
-    // { src: '/images/career/provident-fund.svg', title: 'Provident Fund' },
-    // {
-    //   src: '/images/career/inpatient-medical.svg',
-    //   title: 'Inpatient Medical Facility',
-    // },
+    { src: '/images/career/provident-fund.svg', title: 'Provident Fund' },
+    {
+      src: '/images/career/inpatient-medical.svg',
+      title: 'Inpatient Medical Facility',
+    },
     { src: '/images/career/work-life.svg', title: 'Work/life Balance' },
-    // {
-    //   src: '/images/career/outpatent-medical.svg',
-    //   title: 'Outpatient Medical Facility',
-    // },
+    {
+      src: '/images/career/outpatent-medical.svg',
+      title: 'Outpatient Medical Facility',
+    },
     { src: '/images/career/remote-work.svg', title: 'Remote Work When Needed' },
-    // { src: '/images/career/subzidized-lunch.svg', title: 'Subsidized Lunch' },
+    { src: '/images/career/subzidized-lunch.svg', title: 'Subsidized Lunch' },
     {
       src: '/images/career/conference-traning.svg',
       title: 'Conferences & Training',
     },
-    // {
-    //   src: '/images/career/transportation.svg',
-    //   title: 'Transportation Allowance for Females',
-    // },
+    {
+      src: '/images/career/transportation.svg',
+      title: 'Transportation Allowance for Females',
+    },
   ];
   return (
-    <Layout>
-      <div
-        className="md:h-[600px] h-[450px]"
-        style={{
-          backgroundImage: `url('/images/career/career-bg.webp')`,
-          backgroundRepeat: 'no-repeat',
-          backgroundSize: 'cover',
-          backgroundPosition: 'top',
-        }}
-      />
+    <>
+      <div className="relative md:h-[600px] h-[400px]">
+        <Image
+          src="/images/career/career-bg.webp"
+          alt="Slysol team meeting on project"
+          fill
+          className="w-full h-auto object-cover object-top"
+        />
+        <div className="absolute w-full h-full bg-black top-0 opacity-30 z-[1]" />
+        <div className="relative z-[2]">
+          <HeaderInfo classes={{ root: 'text-white' }} />
+        </div>
+        <Container className="h-full z-[2]" hScreen={false}>
+          <Header
+            classes={{
+              root: 'md:text-white',
+              menuUnderline: 'md:bg-white',
+              whiteLogo: true,
+            }}
+          />
+        </Container>
+      </div>
       <Container hScreen={false}>
         <Section>
           <GradientText className="pb-5">
@@ -113,7 +127,8 @@ const Career = () => {
           </div>
         </Container>
       </Section>
-    </Layout>
+      <Footer />
+    </>
   );
 };
 

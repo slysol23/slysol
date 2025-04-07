@@ -29,7 +29,7 @@ const tabsData: TabsData[] = [
   {
     tab: 'HOW',
     title: 'How We Hire',
-    imageSrc: '/images/career/why-us.webp',
+    imageSrc: '/images/career/how-we-hire.webp',
     description: `<p>
     Our hiring process is designed to identify the best and brightest talent. It begins with an initial application review, followed by interviews to understand your skills, experiences, and fit with our company culture.
   </p>
@@ -40,9 +40,9 @@ const tabsData: TabsData[] = [
   {
     tab: 'WHAT',
     title: 'What To Do',
-    imageSrc: '/images/career/why-us.webp',
+    imageSrc: '/images/career/what-to-do.webp',
     description: `<p>
-    Ready to take the next step in your career with SlySol? Send us your resume and a cover letter detailing your experience and why you want to join our team. Please email your application to hr@slysol.com and include the position you’re applying for in the subject line. We look forward to learning more about you and potentially welcoming you to the SlySol family!
+    Ready to take the next step in your career with SlySol? Send us your resume and a cover letter detailing your experience and why you want to join our team. Please email your application to <a class="underline" href="mailto:info@slysol.com">info@slysol.com</a> and include the position you’re applying for in the subject line. We look forward to learning more about you and potentially welcoming you to the SlySol family!
   </p>
   `,
   },

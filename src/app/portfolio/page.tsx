@@ -9,16 +9,17 @@ import Title from '@/components/Title';
 import React from 'react';
 import Image from 'next/image';
 import Section from '@/components/Section';
+import PerfectCenter from '@/components/PerfectCenter';
 
 const Portfolio = () => {
   return (
     <>
-      <div className="relative md:h-screen h-[450px]">
+      <div className="relative md:h-[600px] h-[400px]">
         <Image
           src="/images/portfolio/portfolio-bg.webp"
           alt="Slysol team meeting on project"
           fill
-          className="w-full h-auto object-cover blur-[1px]"
+          className="w-full h-auto object-cover object-left-top"
         />
         <div className="absolute w-full h-full bg-black top-0 opacity-30 z-[1]" />
         <div className="relative z-[2]">
@@ -32,6 +33,9 @@ const Portfolio = () => {
               whiteLogo: true,
             }}
           />
+          <PerfectCenter>
+            <Title text="PORTFOLIO" className="text-center text-white" />
+          </PerfectCenter>
         </Container>
       </div>
       <Section>

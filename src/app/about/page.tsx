@@ -69,7 +69,7 @@ const About = () => {
           </p>
           <div className="flex flex-col sm:flex-row sm:gap-10 gap-5 md:mb-10 mb-5">
             <div>
-              <h1 className="text-7xl font-bold text-primary2">2019</h1>
+              <h1 className="text-7xl font-bold text-primary2">2022</h1>
               <p className="font-bold text-sm mt-2">STARTED JOURNEY</p>
             </div>
             <div>
