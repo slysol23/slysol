@@ -3,16 +3,36 @@ import {
   text,
   timestamp,
   boolean,
-  uuid,
   integer,
 } from 'drizzle-orm/pg-core';
 
-export const userSchema = pgTable('users', {
+export const userSchema = pgTable('user', {
   id: integer('id').primaryKey().unique().notNull().generatedAlwaysAsIdentity(),
   name: text('name').notNull(),
   email: text('email').notNull().unique(),
   password: text('password').notNull(),
   isAdmin: boolean('is_admin').default(false).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+export const blogSchema = pgTable('blog', {
+  id: integer('id').primaryKey().unique().notNull().generatedAlwaysAsIdentity(),
+  authorId: integer('author_id')
+    .notNull()
+    .references(() => authorSchema.id),
+  title: text('title').notNull(),
+  content: text('content').notNull(),
+  image: text('image').notNull(),
+  description: text('description').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const authorSchema = pgTable('author', {
+  id: integer('id').primaryKey().unique().notNull().generatedAlwaysAsIdentity(),
+  firstName: text('first_name').notNull(),
+  lastName: text('last_name').notNull(),
+  email: text('email').notNull().unique(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
