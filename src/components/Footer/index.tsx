@@ -14,6 +14,7 @@ import Section from '../Section';
 import SiteLogo from '../SiteLogo';
 import GradientText from '../GradientText';
 import { getPrefLangCookie } from 'utils/cookies';
+import { GoogleTranslate } from '../GoogleTranslate';
 
 interface Links {
   name: string;
@@ -72,20 +73,12 @@ const siteLinks = [
         link: '/services?section=ai-integration',
       },
       {
-        name: 'IT Consultant',
-        link: '/services?section=software-development',
-      },
-      {
         name: 'Digital Marketing',
         link: '/services?section=digital-marketing',
       },
       {
         name: 'Cloud Computing',
         link: '/services?section=software-development',
-      },
-      {
-        name: 'Content Creation',
-        link: '/services?section=digital-marketing',
       },
       {
         name: 'Software Designing',
@@ -123,7 +116,7 @@ const siteLinks = [
 ];
 
 const Footer = () => {
-  // const prefLangCookie = getPrefLangCookie();
+  const prefLangCookie = getPrefLangCookie();
   const year = new Date().getFullYear();
 
   return (
@@ -190,7 +183,7 @@ const Footer = () => {
           <div className="sm:flex justify-between text-sm pt-5 text-center">
             <p>Copyright © {year}, Slysol. All Rights Reserved.</p>
             <div className="flex gap-2 sm:mt-0 mt-1 justify-center">
-              {/* <GoogleTranslate prefLangCookie={prefLangCookie} /> */}
+              <GoogleTranslate prefLangCookie={prefLangCookie} />
               <Link href={'/privacy-policy'} className="font-semibold">
                 <span className="hidden sm:inline">|</span> Privacy Policy
               </Link>
