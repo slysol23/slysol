@@ -8,6 +8,7 @@ import Link from 'next/link';
 import React, { useEffect, useRef } from 'react';
 import { Bars3Icon, XCircleIcon } from '@heroicons/react/20/solid';
 import SiteLogo from '../SiteLogo';
+import { useUser } from 'hooks/useUser';
 
 interface HeaderProps {
   classes?: { root?: string; menuUnderline?: string; whiteLogo?: boolean };
@@ -15,6 +16,7 @@ interface HeaderProps {
 
 export default function Header({ classes }: HeaderProps) {
   const [isOpen, setOpen] = React.useState<boolean | null>(null);
+  const { user } = useUser();
 
   const pathname = usePathname();
   const pageTitle = pathname.split('/')[1];
@@ -138,6 +140,19 @@ export default function Header({ classes }: HeaderProps) {
                 <MenuItem item={item} />
               </li>
             ))}
+            {!!user && (
+              <li key={`MenuRoute-Dashboard`}>
+                <MenuItem
+                  item={{
+                    name: 'Dashboard',
+                    path: '/dashboard',
+                    slug: 'dashboard',
+                    description: 'Slysol dashboard',
+                    title: 'Dashboard | Slysol',
+                  }}
+                />
+              </li>
+            )}
           </ul>
         </div>
       </div>
