@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic';
 import 'owl.carousel/dist/assets/owl.carousel.css';
 import 'owl.carousel/dist/assets/owl.theme.default.css';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import SliderCard from './sliderCard';
 import Container from '@/components/Container';
@@ -14,12 +14,14 @@ const OwlCarousel = dynamic(() => import('react-owl-carousel'), {
   ssr: false,
 });
 
-var $ = require('jquery');
-if (typeof window !== 'undefined') {
-  window.$ = window.jQuery = require('jquery');
-}
-
 export default function Slider() {
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const $ = require('jquery');
+      window.$ = window.jQuery = $;
+    }
+  }, []);
+
   const images = [
     {
       src: '/images/home/client1.webp',
