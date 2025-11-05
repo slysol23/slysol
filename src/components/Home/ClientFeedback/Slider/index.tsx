@@ -1,9 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import 'owl.carousel/dist/assets/owl.carousel.css';
-import 'owl.carousel/dist/assets/owl.theme.default.css';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import SliderCard from './sliderCard';
 import Container from '@/components/Container';
@@ -15,7 +13,10 @@ const OwlCarousel = dynamic(() => import('react-owl-carousel'), {
 });
 
 export default function Slider() {
+  const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
+    setMounted(true);
     if (typeof window !== 'undefined') {
       const $ = require('jquery');
       window.$ = window.jQuery = $;
@@ -49,6 +50,20 @@ export default function Slider() {
     },
   ];
 
+  if (!mounted) {
+    return (
+      <Section>
+        <Container hScreen={false}>
+          <Title
+            text={`Client's Feedback`}
+            className="text-center md:mb-10 mb-5 font-normal"
+          />
+          <div className="min-h-[400px]" />
+        </Container>
+      </Section>
+    );
+  }
+
   return (
     <Section>
       <Container hScreen={false}>
@@ -57,6 +72,7 @@ export default function Slider() {
           className="text-center md:mb-10 mb-5 font-normal"
         />
         <OwlCarousel
+          className="owl-theme"
           items={3}
           responsive={{
             0: {

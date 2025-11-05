@@ -1,9 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import 'owl.carousel/dist/assets/owl.carousel.css';
-import 'owl.carousel/dist/assets/owl.theme.default.css';
-import React, { ReactNode, useEffect } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 
 interface OwlCarouselProps {
   autoplay?: boolean;
@@ -38,12 +36,17 @@ export default function Carousal({
   loop = true,
   navText = undefined,
 }: OwlCarouselProps) {
+  const [mounted, setMounted] = useState(false);
+
   useEffect(() => {
+    setMounted(true);
     if (typeof window !== 'undefined') {
       const $ = require('jquery');
       window.$ = window.jQuery = $;
     }
   }, []);
+
+  if (!mounted) return null;
 
   return (
     <OwlCarousel
