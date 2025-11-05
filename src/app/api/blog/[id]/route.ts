@@ -70,7 +70,7 @@ export async function GET(
 }
 
 // 🟡 PUT - Update blog by ID
-export async function PUT(
+export async function PATCH(
   req: Request,
   { params }: { params: { id: string } },
 ) {
@@ -106,16 +106,12 @@ export async function PUT(
       .returning();
 
     if (!updatedBlog) {
-      return NextResponse.json(
-        { error: 'Blog not found or update failed.' },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: 'Blog not found.' }, { status: 404 });
     }
 
     return NextResponse.json(
       {
         message: 'Blog updated successfully',
-        success: true,
         data: updatedBlog,
       },
       { status: 200 },
@@ -125,7 +121,6 @@ export async function PUT(
     return NextResponse.json(
       {
         error: 'Internal server error',
-        success: false,
         details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 },

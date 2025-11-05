@@ -12,11 +12,6 @@ export async function GET() {
       .select({
         id: blogSchema.id,
         title: blogSchema.title,
-        description: blogSchema.description,
-        content: blogSchema.content,
-        image: blogSchema.image,
-        createdAt: blogSchema.createdAt,
-        updatedAt: blogSchema.updatedAt,
         author: {
           id: authorSchema.id,
           firstName: authorSchema.firstName,
@@ -25,6 +20,11 @@ export async function GET() {
           createdAt: authorSchema.createdAt,
           updatedAt: authorSchema.updatedAt,
         },
+        description: blogSchema.description,
+        content: blogSchema.content,
+        image: blogSchema.image,
+        createdAt: blogSchema.createdAt,
+        updatedAt: blogSchema.updatedAt,
       })
       .from(blogSchema)
       .leftJoin(authorSchema, eq(blogSchema.authorId, authorSchema.id))
@@ -77,7 +77,7 @@ export async function POST(req: Request) {
       .returning();
 
     return NextResponse.json(
-      { message: 'Blog created successfully', success: true, blog: newBlog },
+      { message: 'Blog created successfully', data: newBlog },
       { status: 201 },
     );
   } catch (error) {
