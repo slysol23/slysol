@@ -35,6 +35,7 @@ export const metadata: Metadata = {
   category: 'technology',
   referrer: 'origin-when-cross-origin',
   keywords: ['Slysol', 'Web Development', 'App Development'],
+  metadataBase: new URL('https://slysol.com'),
   authors: [{ name: 'Slysol' }, { name: 'Slysol', url: 'https://slysol.com' }],
   colorScheme: 'light',
   creator: 'SlySol',
