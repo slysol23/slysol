@@ -2,7 +2,7 @@ import Container from '@/components/Container';
 import Button from '@/components/Button';
 import Image from 'next/image';
 import WhyUs from '@/components/Home/WhyUs';
-import Slider from '@/components/Home/ClientFeedback/Slider';
+// import Slider from '@/components/Home/ClientFeedback/Slider';
 import { Metadata } from 'next';
 import Header from '@/components/Header';
 import SubTitle from '@/components/SubTitle';
@@ -132,7 +132,7 @@ export default function Home() {
       <InnovationDesign />
 
       {/* Clients Feedback */}
-      <Slider />
+      {/* <Slider /> */}
       <Footer />
     </>
   );

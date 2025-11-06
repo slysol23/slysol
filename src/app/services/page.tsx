@@ -4,7 +4,7 @@ import SubTitle from '@/components/SubTitle';
 import Title from '@/components/Title';
 import GradientText from '@/components/GradientText';
 import Container from '@/components/Container';
-import Carousal from '@/components/Slider';
+// import Carousal from '@/components/Slider';
 import HeaderInfo from '@/components/Header/HeaderInfo';
 import Header from '@/components/Header';
 import Section from '@/components/Section';
@@ -87,12 +87,10 @@ const ServicesPage = () => {
         <ScrollHandler />
       </Suspense>
       <HeaderInfo />
-      <HeaderInfo />
       <Container hScreen={false}>
         <Header />
       </Container>
-      <Carousal
-        // autoplay={true}
+      {/* <Carousal
         autoplayTimeout={8000}
         autoplaySpeed={2000}
         items={1}
@@ -113,7 +111,6 @@ const ServicesPage = () => {
                 fill
                 className="object-cover animate-bgZoom md:opacity-100 opacity-0"
               />
-              {/* <div className="absolute w-full h-full bg-white md:hidden opacity-50"></div> */}
               <Container hScreen={false} className="relative">
                 <div className="lg:w-[60%] md:w-[70%] md:block flex flex-col items-center relative">
                   <SubTitle text={data.subTitle} />
@@ -131,7 +128,7 @@ const ServicesPage = () => {
             </div>
           </div>
         ))}
-      </Carousal>
+      </Carousal> */}
       <Container hScreen={false}>
         <Section className="md:py-20 py-0">
           <div className="text-center flex flex-col items-center">
