@@ -68,7 +68,7 @@ export default function BlogPage() {
     <div>
       <Container hScreen={false}>
         <Header />
-        <Title text="Blogs" className="pt-10" />
+        <Title text="Blogs" className="py-10" />
 
         {!blogs || blogs.length === 0 ? (
           <p className="text-center text-gray-400">No blogs found.</p>
@@ -125,7 +125,7 @@ export default function BlogPage() {
             </div>
 
             {/* 🧭 Pagination Controls */}
-            <div className="flex justify-center items-center gap-4 pb-10">
+            <div className="flex justify-center items-center gap-4 pb-20">
               <button
                 onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
                 disabled={page === 1 || isFetching}
