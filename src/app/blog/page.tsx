@@ -97,7 +97,10 @@ export default function BlogPage() {
                   </h2>
 
                   <p className="text-sm font-bold text-gray-400 mb-2">
-                    By: {getAuthorName(b.authorId)}{' '}
+                    By:
+                    {b.author
+                      ? `${b.author.firstName} ${b.author.lastName}`
+                      : `Author #${b.authorId}`}
                     <span className="ml-2">
                       {new Date(b.createdAt).toLocaleDateString('en-GB', {
                         day: '2-digit',
