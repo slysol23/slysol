@@ -3,20 +3,26 @@
 import React, { useState } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { blog } from 'lib/blog';
+import { author } from 'lib/author';
 import Container from '@/components/Container';
 import Link from 'next/link';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import Title from '@/components/Title';
-import { IBlog, ApiResponse } from 'lib/type';
+import { IBlog, ApiResponse, IAuthor } from 'lib/type';
 
 export default function BlogPage() {
   const [page, setPage] = useState(1);
   const limit = 6;
 
-  const { data, isLoading, isError, error, isFetching } = useQuery<
-    ApiResponse<IBlog[]>
-  >({
+  // 🟢 Fetch blogs with pagination
+  const {
+    data: blogData,
+    isLoading,
+    isError,
+    error,
+    isFetching,
+  } = useQuery<ApiResponse<IBlog[]>>({
     queryKey: ['blogs', page],
     queryFn: async () => {
       const res = await blog.getAll(page, limit);
@@ -24,6 +30,16 @@ export default function BlogPage() {
     },
     placeholderData: keepPreviousData,
     staleTime: 2 * 60 * 1000,
+  });
+
+  // 🟢 Fetch all authors (no pagination)
+  const { data: authorData } = useQuery<ApiResponse<IAuthor[]>>({
+    queryKey: ['authors'],
+    queryFn: async () => {
+      const res = await author.getAll();
+      return res;
+    },
+    staleTime: 5 * 60 * 1000,
   });
 
   if (isLoading)
@@ -35,15 +51,24 @@ export default function BlogPage() {
       </div>
     );
 
-  const blogs = data?.data ?? [];
-  const total = data?.count ?? 0;
+  const blogs = blogData?.data ?? [];
+  const total = blogData?.count ?? 0;
   const totalPages = Math.ceil(total / limit);
+  const authors = authorData?.data ?? [];
+
+  // 🧩 Helper to find author name
+  const getAuthorName = (authorId: number) => {
+    const found = authors.find((a) => a.id === authorId);
+    return found
+      ? `${found.firstName} ${found.lastName}`
+      : `Author #${authorId}`;
+  };
 
   return (
     <div>
       <Container hScreen={false}>
         <Header />
-        <Title text="Blogs" className="py-10" />
+        <Title text="Blogs" className="pt-10" />
 
         {!blogs || blogs.length === 0 ? (
           <p className="text-center text-gray-400">No blogs found.</p>
@@ -67,14 +92,12 @@ export default function BlogPage() {
                     />
                   )}
 
-                  <h2 className="text-2xl font-bold text-black mb-2 truncate">
+                  <h2 className="text-2xl font-bold text-blue mb-2 truncate">
                     {b.title}
                   </h2>
-                  <p className="text-sm font-bold text-gray-300 mb-2">
-                    By:{' '}
-                    {b.author
-                      ? `${b.author.firstName} ${b.author.lastName}`
-                      : `Author #${b.authorId}`}{' '}
+
+                  <p className="text-sm font-bold text-gray-400 mb-2">
+                    By: {getAuthorName(b.authorId)}{' '}
                     <span className="ml-2">
                       {new Date(b.createdAt).toLocaleDateString('en-GB', {
                         day: '2-digit',
@@ -84,21 +107,22 @@ export default function BlogPage() {
                     </span>
                   </p>
 
-                  <p className="text-gray-400 line-clamp-3 mb-3">
+                  <p className="text-gray-300 line-clamp-3 mb-3">
                     {b.description}
                   </p>
+
                   <Link
                     href={`/blog/${b.id}`}
                     className="text-blue-500 hover:text-blue-400 hover:underline"
                   >
-                    Read More
+                    Read More →
                   </Link>
                 </article>
               ))}
             </div>
 
-            {/* Pagination Controls */}
-            <div className="flex justify-center items-center gap-4 pb-20">
+            {/* 🧭 Pagination Controls */}
+            <div className="flex justify-center items-center gap-4 pb-10">
               <button
                 onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
                 disabled={page === 1 || isFetching}
