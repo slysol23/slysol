@@ -4,7 +4,7 @@ import SubTitle from '@/components/SubTitle';
 import Title from '@/components/Title';
 import GradientText from '@/components/GradientText';
 import Container from '@/components/Container';
-// import Carousal from '@/components/Slider';
+import Carousal from '@/components/Slider';
 import HeaderInfo from '@/components/Header/HeaderInfo';
 import Header from '@/components/Header';
 import Section from '@/components/Section';
@@ -90,7 +90,7 @@ const ServicesPage = () => {
       <Container hScreen={false}>
         <Header />
       </Container>
-      {/* <Carousal
+      <Carousal
         autoplayTimeout={8000}
         autoplaySpeed={2000}
         items={1}
@@ -128,7 +128,7 @@ const ServicesPage = () => {
             </div>
           </div>
         ))}
-      </Carousal> */}
+      </Carousal>
       <Container hScreen={false}>
         <Section className="md:py-20 py-0">
           <div className="text-center flex flex-col items-center">
