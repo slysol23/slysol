@@ -2,7 +2,7 @@ import './globals.css';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import { Basic } from 'next/font/google';
-import { AppContextsProvider } from 'providers';
+// import { AppContextsProvider } from 'providers';
 
 const NeueMachina = localFont({
   src: [
@@ -83,7 +83,9 @@ export default function RootLayout({
         />
       </head>
       <body className={`${NeueMachina.variable} ${basic.variable} text-dark`}>
-        <AppContextsProvider>{children}</AppContextsProvider>
+        {/* <AppContextsProvider> */}
+        {children}
+        {/* </AppContextsProvider> */}
       </body>
     </html>
   );
