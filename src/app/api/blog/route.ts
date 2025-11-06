@@ -1,13 +1,25 @@
 import { NextResponse } from 'next/server';
 import { db } from '../../../db/index';
 import { blogSchema, authorSchema } from '../../../db/schema';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 
 /**
- * 🟢 GET - Fetch all blogs with author info inline
+ * 🟢 GET - Fetch paginated blogs with author info
+ * Example: /api/blogs?page=1&limit=6
  */
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const { searchParams } = new URL(req.url);
+    const page = parseInt(searchParams.get('page') || '1', 10);
+    const limit = parseInt(searchParams.get('limit') || '6', 10);
+    const offset = (page - 1) * limit;
+
+    // Fetch total blog count for pagination
+    const [{ count }] = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(blogSchema);
+
+    // Fetch paginated blogs with author info
     const blogs = await db
       .select({
         id: blogSchema.id,
@@ -28,11 +40,17 @@ export async function GET() {
       })
       .from(blogSchema)
       .leftJoin(authorSchema, eq(blogSchema.authorId, authorSchema.id))
-      .orderBy(blogSchema.createdAt);
+      .orderBy(blogSchema.createdAt)
+      .limit(limit)
+      .offset(offset);
 
     return NextResponse.json(
       {
         message: 'Blogs fetched successfully',
+        page,
+        limit,
+        total: count,
+        totalPages: Math.ceil(count / limit),
         count: blogs.length,
         data: blogs,
       },
