@@ -10,6 +10,7 @@ import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import Title from '@/components/Title';
 import { IBlog, ApiResponse, IAuthor } from 'lib/type';
+import Image from 'next/image';
 
 export default function BlogPage() {
   const [page, setPage] = useState(1);
@@ -81,13 +82,15 @@ export default function BlogPage() {
                   className="backdrop-blur p-6 rounded-3xl shadow-md hover:scale-[1.02] transition-all duration-300"
                 >
                   {b.image && (
-                    <img
+                    <Image
                       src={
                         b.image.startsWith('http')
                           ? b.image
                           : `/uploads/${b.image}`
                       }
                       alt={b.title}
+                      width={400}
+                      height={400}
                       className="w-full h-56 object-cover rounded-2xl mb-4"
                     />
                   )}

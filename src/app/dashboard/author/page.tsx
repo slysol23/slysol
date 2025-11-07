@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import DashboardLayout from '../page';
 import { author } from 'lib/author';
 import { IAuthor } from 'lib/type';
 import { FaPen, FaTrash, FaPlus } from 'react-icons/fa';
@@ -40,7 +39,7 @@ export default function AuthorsDashboardPage() {
   };
 
   return (
-    <DashboardLayout>
+    <>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-black">Manage Authors</h1>
         <Link
@@ -99,6 +98,6 @@ export default function AuthorsDashboardPage() {
           </table>
         </div>
       )}
-    </DashboardLayout>
+    </>
   );
 }

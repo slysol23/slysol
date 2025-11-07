@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import DashboardLayout from '../page';
 import { blog } from 'lib/blog';
 import { IBlog } from 'lib/type';
 import { FaPen, FaTrash, FaPlus } from 'react-icons/fa';
@@ -38,7 +37,7 @@ export default function BlogDashboardPage() {
   };
 
   return (
-    <DashboardLayout>
+    <>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-black">Manage Blogs</h1>
         <Link
@@ -101,6 +100,6 @@ export default function BlogDashboardPage() {
           </table>
         </div>
       )}
-    </DashboardLayout>
+    </>
   );
 }

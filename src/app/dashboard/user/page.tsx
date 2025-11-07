@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import DashboardLayout from '../page';
 import { IUser } from 'lib/type';
 import { FaTrash, FaPlus } from 'react-icons/fa';
 import Link from 'next/link';
@@ -40,7 +39,7 @@ export default function UsersDashboardPage() {
   };
 
   return (
-    <DashboardLayout>
+    <>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-black">Manage Users</h1>
         <Link
@@ -91,6 +90,6 @@ export default function UsersDashboardPage() {
           </table>
         </div>
       )}
-    </DashboardLayout>
+    </>
   );
 }

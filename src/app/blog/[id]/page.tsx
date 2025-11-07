@@ -9,6 +9,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Title from '@/components/Title';
 import MainHeading from '@/components/MainHeading';
+import Image from 'next/image';
 
 export default function BlogDetailsPage() {
   const params = useParams();
@@ -51,9 +52,11 @@ export default function BlogDetailsPage() {
         <Header />
         <div className="pt-10 pb-20">
           {b?.image && (
-            <img
+            <Image
               src={b.image.startsWith('http') ? b.image : `/uploads/${b.image}`}
               alt={b.title}
+              width={500}
+              height={500}
               className="w-full h-96 object-cover rounded-3xl my-6"
             />
           )}
