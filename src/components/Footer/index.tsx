@@ -13,8 +13,8 @@ import Link from 'next/link';
 import Section from '../Section';
 import SiteLogo from '../SiteLogo';
 import GradientText from '../GradientText';
-import { getPrefLangCookie } from 'utils/cookies';
-import { GoogleTranslate } from '../GoogleTranslate';
+// import { getPrefLangCookie } from 'utils/cookies';
+// import { GoogleTranslate } from '../GoogleTranslate';
 
 interface Links {
   name: string;
@@ -116,7 +116,7 @@ const siteLinks = [
 ];
 
 const Footer = () => {
-  const prefLangCookie = getPrefLangCookie();
+  // const prefLangCookie = getPrefLangCookie();
   const year = new Date().getFullYear();
 
   return (
@@ -183,7 +183,7 @@ const Footer = () => {
           <div className="sm:flex justify-between text-sm pt-5 text-center">
             <p>Copyright © {year}, Slysol. All Rights Reserved.</p>
             <div className="flex gap-2 sm:mt-0 mt-1 justify-center">
-              <GoogleTranslate prefLangCookie={prefLangCookie} />
+              {/* <GoogleTranslate prefLangCookie={prefLangCookie} /> */}
               <Link href={'/privacy-policy'} className="font-semibold">
                 <span className="hidden sm:inline">|</span> Privacy Policy
               </Link>

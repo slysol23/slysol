@@ -7,7 +7,7 @@ import {
   integer,
 } from 'drizzle-orm/pg-core';
 
-export const userSchema = pgTable('users', {
+export const userSchema = pgTable('user', {
   id: integer('id').primaryKey().unique().notNull().generatedAlwaysAsIdentity(),
   name: text('name').notNull(),
   email: text('email').notNull().unique(),
