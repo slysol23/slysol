@@ -103,8 +103,8 @@ const siteLinks = [
       },
       {
         icon: <TbMailFilled />,
-        name: 'info@slysol.com',
-        link: 'mailto:info@slysol.com',
+        name: 'hello@slysol.com',
+        link: 'mailto:hello@slysol.com',
       },
       {
         icon: <ImLocation2 />,

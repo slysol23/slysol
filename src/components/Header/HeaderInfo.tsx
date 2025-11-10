@@ -24,7 +24,7 @@ const HeaderInfo = ({ classes }: HeaderInfoProps) => {
           </div>
           <div className="flex gap-1 items-center">
             <CiMail />
-            <Link href={'mailto:info@slysol.com'}>info@slysol.com</Link>
+            <Link href={'mailto:hello@slysol.com'}>hello@slysol.com</Link>
           </div>
         </div>
       </Container>

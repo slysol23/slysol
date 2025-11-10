@@ -45,7 +45,7 @@ const Contact = () => {
           <Link href="tel:+923104150111">+92-3104150111</Link>
           <hr className="border-t-2 border-dashed border-gray-200 my-5" />
           <h2 className="text-pink text-xl lg:mb-3 md:mb-2 mb-1">Email</h2>
-          <Link href={'mailto:info@slysol.com'}>info@slysol.com</Link>
+          <Link href={'mailto:hello@slysol.com'}>hello@slysol.com</Link>
           <hr className="border-t-2 border-dashed border-gray-200 my-5" />
           <h2 className="text-pink text-xl lg:mb-3 md:mb-2 mb-2">
             Social Media
