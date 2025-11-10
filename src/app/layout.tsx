@@ -2,6 +2,7 @@ import './globals.css';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import { Basic } from 'next/font/google';
+// import { AppContextsProvider } from 'providers';
 
 const NeueMachina = localFont({
   src: [
@@ -34,6 +35,7 @@ export const metadata: Metadata = {
   category: 'technology',
   referrer: 'origin-when-cross-origin',
   keywords: ['Slysol', 'Web Development', 'App Development'],
+  metadataBase: new URL('https://slysol.com'),
   authors: [{ name: 'Slysol' }, { name: 'Slysol', url: 'https://slysol.com' }],
   colorScheme: 'light',
   creator: 'SlySol',
@@ -81,7 +83,9 @@ export default function RootLayout({
         />
       </head>
       <body className={`${NeueMachina.variable} ${basic.variable} text-dark`}>
+        {/* <AppContextsProvider> */}
         {children}
+        {/* </AppContextsProvider> */}
       </body>
     </html>
   );

@@ -13,7 +13,8 @@ import Link from 'next/link';
 import Section from '../Section';
 import SiteLogo from '../SiteLogo';
 import GradientText from '../GradientText';
-import { getPrefLangCookie } from 'utils/cookies';
+// import { getPrefLangCookie } from 'utils/cookies';
+// import { GoogleTranslate } from '../GoogleTranslate';
 
 interface Links {
   name: string;
@@ -72,20 +73,12 @@ const siteLinks = [
         link: '/services?section=ai-integration',
       },
       {
-        name: 'IT Consultant',
-        link: '/services?section=software-development',
-      },
-      {
         name: 'Digital Marketing',
         link: '/services?section=digital-marketing',
       },
       {
         name: 'Cloud Computing',
         link: '/services?section=software-development',
-      },
-      {
-        name: 'Content Creation',
-        link: '/services?section=digital-marketing',
       },
       {
         name: 'Software Designing',
