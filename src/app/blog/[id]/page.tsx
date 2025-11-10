@@ -1,50 +1,41 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
 import { blog } from 'lib/blog';
-import { IBlog } from 'lib/type';
 import Container from '@/components/Container';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import Title from '@/components/Title';
 import MainHeading from '@/components/MainHeading';
 import Image from 'next/image';
+import { IBlog } from 'lib/type';
 
 export default function BlogDetailsPage() {
   const params = useParams();
   const id = Number(params.id);
 
-  const [b, setB] = useState<IBlog>();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const {
+    data: b,
+    isLoading,
+    error,
+  } = useQuery<IBlog>({
+    queryKey: ['blog', id],
+    queryFn: async () => {
+      if (isNaN(id)) throw new Error('Invalid blog ID');
+      const res = await blog.getById(id);
+      if (!res?.data) throw new Error('Blog not found');
+      return res.data;
+    },
+    enabled: !isNaN(id),
+  });
 
-  useEffect(() => {
-    const fetchBlog = async () => {
-      try {
-        const res = await blog.getById(id);
-        if (res?.data) {
-          setB(res.data);
-        } else {
-          setError('Blog not found');
-        }
-      } catch (err) {
-        console.error(err);
-        setError('Error loading blog. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (!isNaN(id)) fetchBlog();
-    else setError('Invalid blog ID');
-  }, [id]);
-
-  if (loading)
+  if (isLoading)
     return <div className="text-center text-black py-20">Loading blog...</div>;
 
-  if (error)
-    return <div className="text-center text-red-500 py-20">{error}</div>;
+  if (error instanceof Error)
+    return (
+      <div className="text-center text-red-500 py-20">{error.message}</div>
+    );
 
   return (
     <div>
@@ -52,15 +43,19 @@ export default function BlogDetailsPage() {
         <Header />
         <div className="pt-10 pb-20">
           {b?.image && (
-            <Image
-              src={b.image.startsWith('http') ? b.image : `/uploads/${b.image}`}
-              alt={b.title}
-              width={500}
-              height={500}
-              className="w-full h-96 object-cover rounded-3xl my-6"
-            />
+            <div className="w-full h-96 relative rounded-3xl overflow-hidden my-6 bg-gray-100">
+              <Image
+                src={`/uploads/${b.image}`}
+                alt={b.title}
+                // height={1124}
+                // width={384}
+                fill
+                className="object-cover"
+                sizes="100vw"
+              />
+            </div>
           )}
-          <MainHeading text={b?.title ?? 'Untitiled'} className="font-bold" />
+          <MainHeading text={b?.title ?? 'Untitled'} className="font-bold" />
           {b ? (
             <p className="text-sm text-gray-400 mb-2 mt-2">
               Published by{' '}
@@ -74,22 +69,13 @@ export default function BlogDetailsPage() {
                     month: 'long',
                     year: 'numeric',
                   })
-                : 'Unknown date'}
+                : ''}
             </p>
           ) : (
             <p className="text-sm text-gray-400 mb-2">
               Blog information not available
             </p>
           )}
-
-          {/* <p className="text-gray-400 text-sm mt-5 mb-5">
-            Published on{' '}
-            {new Date(b?.createdAt || '').toLocaleDateString('en-GB', {
-              day: '2-digit',
-              month: 'long',
-              year: 'numeric',
-            })}
-          </p> */}
 
           <div className="text-black leading-relaxed whitespace-pre-line">
             {b?.content}

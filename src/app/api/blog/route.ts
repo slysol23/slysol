@@ -4,9 +4,7 @@ import { blogSchema, authorSchema } from '../../../db/schema';
 import { eq, sql } from 'drizzle-orm';
 
 /**
- * 🟢 GET - Fetch paginated blogs with author info
- * Example: /api/blogs?page=1&limit=6
- */
+ * 🟢 GET - Fetch paginated blogs with author info */
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -61,7 +59,6 @@ export async function GET(req: Request) {
     return NextResponse.json(
       {
         error: 'Internal server error',
-        success: false,
         details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 },
@@ -103,7 +100,6 @@ export async function POST(req: Request) {
     return NextResponse.json(
       {
         error: 'Internal server error',
-        success: false,
         details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 },

@@ -82,17 +82,16 @@ export default function BlogPage() {
                   className="backdrop-blur p-6 rounded-3xl shadow-md hover:scale-[1.02] transition-all duration-300"
                 >
                   {b.image && (
-                    <Image
-                      src={
-                        b.image.startsWith('http')
-                          ? b.image
-                          : `/uploads/${b.image}`
-                      }
-                      alt={b.title}
-                      width={400}
-                      height={400}
-                      className="w-full h-56 object-cover rounded-2xl mb-4"
-                    />
+                    <div className="relative w-full h-56 mb-4 bg-gray-800 rounded-2xl overflow-hidden">
+                      <Image
+                        src={`/uploads/${b.image}`}
+                        height={800}
+                        width={500}
+                        alt={b.title}
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      />
+                    </div>
                   )}
 
                   <h2 className="text-2xl font-bold text-blue mb-2 truncate">
@@ -121,7 +120,7 @@ export default function BlogPage() {
                     href={`/blog/${b.id}`}
                     className="text-blue-500 hover:text-blue-400 hover:underline"
                   >
-                    Read More →
+                    Read More
                   </Link>
                 </article>
               ))}

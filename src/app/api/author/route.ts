@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '../../../db';
 import { authorSchema } from '../../../db/schema';
+import { eq } from 'drizzle-orm';
 
 /**
  * 🟢 GET — Get all authors
@@ -40,6 +41,19 @@ export async function POST(req: Request) {
       return NextResponse.json(
         { message: 'firstName, lastName, and email are required' },
         { status: 400 },
+      );
+    }
+
+    const [existingUser] = await db
+      .select()
+      .from(authorSchema)
+      .where(eq(authorSchema.email, email))
+      .limit(1);
+
+    if (existingUser) {
+      return NextResponse.json(
+        { error: 'Author with this email already exists' },
+        { status: 409 },
       );
     }
 

@@ -42,16 +42,12 @@ export async function GET(
       .limit(1);
 
     if (!result) {
-      return NextResponse.json(
-        { error: 'Blog not found', success: false },
-        { status: 404 },
-      );
+      return NextResponse.json({ error: 'Blog not found' }, { status: 404 });
     }
 
     return NextResponse.json(
       {
         message: 'Blog fetched successfully',
-        success: true,
         data: result,
       },
       { status: 200 },
@@ -61,7 +57,6 @@ export async function GET(
     return NextResponse.json(
       {
         error: 'Internal server error',
-        success: false,
         details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 },
@@ -156,7 +151,7 @@ export async function DELETE(
     }
 
     return NextResponse.json(
-      { message: 'Blog deleted successfully', success: true },
+      { message: 'Blog deleted successfully' },
       { status: 200 },
     );
   } catch (error) {
@@ -164,7 +159,6 @@ export async function DELETE(
     return NextResponse.json(
       {
         error: 'Internal server error',
-        success: false,
         details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 },

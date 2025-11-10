@@ -51,6 +51,19 @@ export async function PATCH(
     const body = await req.json();
     const { firstName, lastName, email } = body;
 
+    const [existingUser] = await db
+      .select()
+      .from(authorSchema)
+      .where(eq(authorSchema.email, email))
+      .limit(1);
+
+    if (existingUser) {
+      return NextResponse.json(
+        { error: 'Author with this email already exists' },
+        { status: 409 },
+      );
+    }
+
     const [updatedAuthor] = await db
       .update(authorSchema)
       .set({ firstName, lastName, email })
