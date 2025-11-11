@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { user } from 'lib/user';
 
 // API call to create user
 async function createUser(data: {
@@ -58,7 +59,7 @@ export default function AddUserPage() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<UserForm>({
     resolver: zodResolver(UserSchema),
   });
@@ -66,19 +67,35 @@ export default function AddUserPage() {
   const onSubmit = (data: UserForm) => {
     createUserMutation.mutate(data);
   };
+  const createAuthorMutation = useMutation({
+    mutationFn: async (data: UserForm) => {
+      return await user.create(data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['authors'] });
+      alert('✅ Author created successfully!');
+      router.push('/dashboard/author');
+    },
+    onError: (err) => {
+      console.error('Error creating author:', err);
+      alert('❌ Author with this email already exist.');
+    },
+  });
 
   return (
-    <div className="max-w-3xl mx-auto bg-gray-900 p-8 rounded-2xl shadow-lg border border-gray-800">
-      <h1 className="text-2xl font-bold text-white mb-6">Add New User</h1>
-
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+    <div className="min-h-screen text-black">
+      {/* Header */}
+      <header className="border-b border-gray-200 py-6 text-black  px-6">
+        <h1 className="text-3xl font-bold text-black">Add New User</h1>
+      </header>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 py-10 px-6">
         {/* Name */}
         <div>
-          <label className="block text-gray-300 mb-2">Name</label>
+          <label className="block text-black font-medium mb-2">Name</label>
           <input
             type="text"
             {...register('name')}
-            className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-white"
+            className="w-full p-3 rounded-lg  border border-gray-300 text-black"
             placeholder="Enter user name"
           />
           {errors.name && (
@@ -88,11 +105,11 @@ export default function AddUserPage() {
 
         {/* Email */}
         <div>
-          <label className="block text-gray-300 mb-2">Email</label>
+          <label className="block text-black font-medium mb-2">Email</label>
           <input
             type="email"
             {...register('email')}
-            className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-white"
+            className="w-full p-3 rounded-lg border border-gray-300 text-black"
             placeholder="Enter user email"
           />
           {errors.email && (
@@ -102,11 +119,11 @@ export default function AddUserPage() {
 
         {/* Password */}
         <div>
-          <label className="block text-gray-300 mb-2">Password</label>
+          <label className="block text-black font-medium mb-2">Password</label>
           <input
             type="password"
             {...register('password')}
-            className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-white"
+            className="w-full p-3 rounded-lg border border-gray-300 text-black"
             placeholder="Enter password"
           />
           {errors.password && (
@@ -123,17 +140,30 @@ export default function AddUserPage() {
             {...register('isAdmin')}
             className="w-4 h-4 accent-blue-500"
           />
-          <label className="text-gray-300">Is Admin?</label>
+          <label className="text-black">Is Admin?</label>
         </div>
 
         {/* Submit */}
-        <button
-          type="submit"
-          disabled={createUserMutation.isPending}
-          className="bg-[#455bb5] hover:bg-[#3a4b99] text-white font-semibold px-6 py-3 rounded-lg transition"
-        >
-          {createUserMutation.isPending ? 'Saving...' : 'Add User'}
-        </button>
+        <div className="flex justify-between">
+          {isValid && (
+            <button
+              type="submit"
+              disabled={createAuthorMutation.isPending}
+              className="px-6 py-3 rounded-lg border border-gray-300 hover:bg-gray-400 transition"
+            >
+              {createAuthorMutation.isPending ? 'Saving...' : 'Add Author'}
+            </button>
+          )}
+
+          {/* <div className="flex justify-end"> */}
+          <button
+            type="button"
+            onClick={() => router.push('/dashboard/author')}
+            className="px-6 py-3 rounded-lg border border-gray-300 hover:bg-gray-400 transition"
+          >
+            Cancel
+          </button>
+        </div>
       </form>
     </div>
   );

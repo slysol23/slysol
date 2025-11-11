@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { IUser } from 'lib/type';
-import { FaTrash, FaPlus } from 'react-icons/fa';
+import { FaTrash, FaPlus, FaPen } from 'react-icons/fa';
 import Link from 'next/link';
 import { user } from 'lib/user';
 
@@ -77,6 +77,12 @@ export default function UsersDashboardPage() {
                   <td className="p-3">{u.email}</td>
                   <td className="p-3">{u.isAdmin ? 'Yes' : 'No'}</td>
                   <td className="p-3 flex gap-3 justify-center">
+                    <Link
+                      href={`/dashboard/user/edit/${u.id}`}
+                      className="text-yellow-500 hover:text-yellow-300"
+                    >
+                      <FaPen />
+                    </Link>
                     <button
                       onClick={() => handleDelete(Number(u.id))}
                       className="text-red-500 hover:text-red-400"

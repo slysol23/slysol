@@ -84,16 +84,18 @@ export default function EditAuthorPage() {
     );
 
   return (
-    <div className="max-w-3xl mx-auto bg-gray-900 p-8 rounded-2xl shadow-lg border border-gray-800">
-      <h1 className="text-2xl font-bold text-white mb-6">Edit Author</h1>
+    <div className="p-8">
+      <h1 className="text-2xl font-bold text-black mb-6">Edit Author</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div>
-          <label className="block text-gray-300 mb-2">First Name</label>
+          <label className="block text-black font-medium mb-2">
+            First Name
+          </label>
           <input
             type="text"
             {...register('firstName')}
-            className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-white"
+            className="w-full p-3 rounded-lg border border-gray-700 text-black"
             placeholder="Enter first name"
           />
           {errors.firstName && (
@@ -104,11 +106,11 @@ export default function EditAuthorPage() {
         </div>
 
         <div>
-          <label className="block text-gray-300 mb-2">Last Name</label>
+          <label className="block text-black font-medium mb-2">Last Name</label>
           <input
             type="text"
             {...register('lastName')}
-            className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-white"
+            className="w-full p-3 rounded-lg border border-gray-700 text-black"
             placeholder="Enter last name"
           />
           {errors.lastName && (
@@ -119,25 +121,33 @@ export default function EditAuthorPage() {
         </div>
 
         <div>
-          <label className="block text-gray-300 mb-2">Email</label>
+          <label className="block text-black font-medium mb-2">Email</label>
           <input
             type="email"
             {...register('email')}
-            className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-white"
+            className="w-full p-3 rounded-lg border border-gray-700 text-black"
             placeholder="Enter author email"
           />
           {errors.email && (
             <p className="text-red-400 text-sm mt-1">{errors.email.message}</p>
           )}
         </div>
-
-        <button
-          type="submit"
-          disabled={updateAuthorMutation.isPending}
-          className="bg-[#455bb5] hover:bg-[#3a4b99] text-white font-semibold px-6 py-3 rounded-lg transition"
-        >
-          {updateAuthorMutation.isPending ? 'Saving...' : 'Update Author'}
-        </button>
+        <div className="flex justify-between">
+          <button
+            type="submit"
+            disabled={updateAuthorMutation.isPending}
+            className="px-6 py-3 rounded-lg text-black border border-gray-300 hover:bg-gray-400 transition"
+          >
+            {updateAuthorMutation.isPending ? 'Saving...' : 'Update Author'}
+          </button>
+          <button
+            type="button"
+            onClick={() => router.push('/dashboard/author')}
+            className="px-6 py-3 rounded-lg text-black border border-gray-300 hover:bg-gray-400 transition"
+          >
+            Cancal
+          </button>
+        </div>
       </form>
     </div>
   );

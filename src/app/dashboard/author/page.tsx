@@ -71,7 +71,7 @@ export default function AuthorDashboardPage() {
               </tr>
             </thead>
             <tbody>
-              {authors.map((a: any, index: number) => (
+              {authors.map((a, index) => (
                 <tr
                   key={a.id}
                   className="border-t border-gray-700 hover:bg-gray-400 transition text-black"

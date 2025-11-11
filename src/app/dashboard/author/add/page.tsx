@@ -31,16 +31,17 @@ export default function AddAuthorPage() {
     },
     onError: (err) => {
       console.error('Error creating author:', err);
-      alert('❌ Failed to create author.');
+      alert('❌ Author with this email already exist.');
     },
   });
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<AuthorForm>({
     resolver: zodResolver(AuthorSchema),
+    mode: 'onChange', // validate and update isValid as user types
   });
 
   const onSubmit = (data: AuthorForm) => {
@@ -48,65 +49,86 @@ export default function AddAuthorPage() {
   };
 
   return (
-    <>
-      <div className="max-w-3xl mx-auto bg-gray-900 p-8 rounded-2xl shadow-lg border border-gray-800">
-        <h1 className="text-2xl font-bold text-white mb-6">Add New Author</h1>
+    <div className="min-h-screen text-black">
+      <header className="border-b border-gray-200 py-6 px-6">
+        <h1 className="text-3xl font-bold">Add New Author</h1>
+      </header>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      {/* Main Content */}
+      <main className="flex-grow py-10 px-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 bg-white">
           <div>
-            <label className="block text-gray-300 mb-2">First Name</label>
+            <label className="block text-black font-medium mb-2">
+              First Name
+            </label>
             <input
               type="text"
               {...register('firstName')}
-              className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-white"
+              className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter first name"
             />
             {errors.firstName && (
-              <p className="text-red-400 text-sm mt-1">
+              <p className="text-red-500 text-sm mt-1">
                 {errors.firstName.message}
               </p>
             )}
           </div>
 
           <div>
-            <label className="block text-gray-300 mb-2">Last Name</label>
+            <label className="block text-black font-medium mb-2">
+              Last Name
+            </label>
             <input
               type="text"
               {...register('lastName')}
-              className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-white"
+              className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter last name"
             />
             {errors.lastName && (
-              <p className="text-red-400 text-sm mt-1">
+              <p className="text-red-500 text-sm mt-1">
                 {errors.lastName.message}
               </p>
             )}
           </div>
 
           <div>
-            <label className="block text-gray-300 mb-2">Email</label>
+            <label className="block text-black font-medium mb-2">Email</label>
             <input
               type="email"
               {...register('email')}
-              className="w-full p-3 rounded-lg bg-gray-800 border border-gray-700 text-white"
+              className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter author email"
             />
             {errors.email && (
-              <p className="text-red-400 text-sm mt-1">
+              <p className="text-red-500 text-sm mt-1">
                 {errors.email.message}
               </p>
             )}
           </div>
 
-          <button
-            type="submit"
-            disabled={createAuthorMutation.isPending}
-            className="bg-[#455bb5] hover:bg-[#3a4b99] text-white font-semibold px-6 py-3 rounded-lg transition"
-          >
-            {createAuthorMutation.isPending ? 'Saving...' : 'Add Author'}
-          </button>
+          <div className="flex justify-between">
+            {isValid && (
+              <button
+                type="submit"
+                disabled={createAuthorMutation.isPending}
+                className="px-6 py-3 rounded-lg border border-gray-300 hover:bg-gray-400 transition"
+              >
+                {createAuthorMutation.isPending ? 'Saving...' : 'Add Author'}
+              </button>
+            )}
+
+            {/* <div className="flex justify-end"> */}
+            <button
+              type="button"
+              onClick={() => router.push('/dashboard/author')}
+              className="px-6 py-3 rounded-lg border border-gray-300 hover:bg-gray-400 transition"
+            >
+              Cancel
+            </button>
+          </div>
+          {/* </div> */}
         </form>
-      </div>
-    </>
+      </main>
+    </div>
   );
 }
