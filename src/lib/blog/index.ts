@@ -1,18 +1,36 @@
 import { IBlog, ICreateBlog, IUpdateBlog, ApiResponse } from 'lib/type';
 import apiClient from 'lib/client';
 
+export interface BlogApiResponse {
+  message: string;
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  data: IBlog[];
+}
+
 export const blog = {
-  // 🟢 Get all blogs
-  getAll: async (page?: number, limit?: number) => {
-    const params = new URLSearchParams();
+  // 🟢 Get all blogs with pagination
+  getAll: async (page = 1, limit = 6): Promise<BlogApiResponse> => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+    });
 
-    if (page) params.append('page', page.toString());
-    if (limit) params.append('limit', limit.toString());
+    const response = await apiClient.get(`/blog?${params.toString()}`);
+    const resData = response.data;
 
-    const response = await apiClient.get<ApiResponse<IBlog[]>>(
-      `/blog${params.toString() ? `?${params.toString()}` : ''}`,
-    );
-    return response.data;
+    return {
+      message: resData.message,
+      page: resData.page ?? page,
+      limit: resData.limit ?? limit,
+      total: resData.total ?? resData.data.length,
+      totalPages:
+        resData.totalPages ??
+        Math.ceil((resData.total ?? resData.data.length) / limit),
+      data: resData.data,
+    };
   },
 
   // 🟢 Get single blog by ID

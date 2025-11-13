@@ -1,27 +1,43 @@
 import { NextResponse } from 'next/server';
+import fs from 'fs';
+import path from 'path';
 import { db } from '../../../../db/index';
 import { blogSchema, authorSchema } from '../../../../db/schema';
 import { eq } from 'drizzle-orm';
 
+// save the uploaded image in the uploads folder
+async function saveFile(file: File) {
+  const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
+  if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
+
+  const arrayBuffer = await file.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+
+  const fileName = `${Date.now()}-${file.name}`;
+  const filePath = path.join(uploadsDir, fileName);
+  await fs.promises.writeFile(filePath, buffer);
+
+  return fileName;
+}
+
+// 🔹 GET blog by ID
 export async function GET(
   _req: Request,
   { params }: { params: { id: string } },
 ) {
   try {
     const blogId = Number(params.id);
-
     if (isNaN(blogId)) {
-      return NextResponse.json(
-        { error: 'Invalid blog ID. It must be a number.' },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: 'Invalid blog ID' }, { status: 400 });
     }
 
-    // Fetch blog and join with author
     const [result] = await db
       .select({
         id: blogSchema.id,
         title: blogSchema.title,
+        description: blogSchema.description,
+        content: blogSchema.content,
+        image: blogSchema.image,
         author: {
           id: authorSchema.id,
           firstName: authorSchema.firstName,
@@ -30,9 +46,6 @@ export async function GET(
           createdAt: authorSchema.createdAt,
           updatedAt: authorSchema.updatedAt,
         },
-        description: blogSchema.description,
-        content: blogSchema.content,
-        image: blogSchema.image,
         createdAt: blogSchema.createdAt,
         updatedAt: blogSchema.updatedAt,
       })
@@ -41,17 +54,13 @@ export async function GET(
       .where(eq(blogSchema.id, blogId))
       .limit(1);
 
-    if (!result) {
+    if (!result)
       return NextResponse.json({ error: 'Blog not found' }, { status: 404 });
-    }
 
-    return NextResponse.json(
-      {
-        message: 'Blog fetched successfully',
-        data: result,
-      },
-      { status: 200 },
-    );
+    return NextResponse.json({
+      message: 'Blog fetched successfully',
+      data: result,
+    });
   } catch (error) {
     console.error('Error fetching blog by ID:', error);
     return NextResponse.json(
@@ -64,32 +73,36 @@ export async function GET(
   }
 }
 
-// 🟡 PUT - Update blog by ID
+// 🔹 PATCH: Update blog by ID
 export async function PATCH(
   req: Request,
   { params }: { params: { id: string } },
 ) {
   try {
     const blogId = Number(params.id);
-    const body = await req.json();
-    const { title, description, content, image } = body;
-
     if (isNaN(blogId)) {
-      return NextResponse.json(
-        { error: 'Invalid blog ID. It must be a number.' },
-        { status: 400 },
-      );
+      return NextResponse.json({ error: 'Invalid blog ID' }, { status: 400 });
     }
+
+    const formData = await req.formData();
+    const title = formData.get('title')?.toString();
+    const description = formData.get('description')?.toString();
+    const content = formData.get('content')?.toString();
+    const imageFile = formData.get('image') as File | null;
 
     const updateData: any = {};
     if (title) updateData.title = title;
     if (description) updateData.description = description;
     if (content) updateData.content = content;
-    if (image) updateData.image = image;
+
+    if (imageFile && imageFile.size > 0) {
+      const fileName = await saveFile(imageFile);
+      updateData.image = fileName;
+    }
 
     if (Object.keys(updateData).length === 0) {
       return NextResponse.json(
-        { error: 'No valid fields provided for update.' },
+        { error: 'No valid fields to update' },
         { status: 400 },
       );
     }
@@ -101,16 +114,13 @@ export async function PATCH(
       .returning();
 
     if (!updatedBlog) {
-      return NextResponse.json({ error: 'Blog not found.' }, { status: 404 });
+      return NextResponse.json({ error: 'Blog not found' }, { status: 404 });
     }
 
-    return NextResponse.json(
-      {
-        message: 'Blog updated successfully',
-        data: updatedBlog,
-      },
-      { status: 200 },
-    );
+    return NextResponse.json({
+      message: 'Blog updated successfully',
+      data: updatedBlog,
+    });
   } catch (error) {
     console.error('Error updating blog:', error);
     return NextResponse.json(
@@ -123,37 +133,28 @@ export async function PATCH(
   }
 }
 
-// 🔴 DELETE - Remove blog by ID
+// 🔹 DELETE blog by ID
 export async function DELETE(
   _req: Request,
   { params }: { params: { id: string } },
 ) {
   try {
     const blogId = Number(params.id);
-
-    if (isNaN(blogId)) {
-      return NextResponse.json(
-        { error: 'Invalid blog ID. It must be a number.' },
-        { status: 400 },
-      );
-    }
+    if (isNaN(blogId))
+      return NextResponse.json({ error: 'Invalid blog ID' }, { status: 400 });
 
     const [deletedBlog] = await db
       .delete(blogSchema)
       .where(eq(blogSchema.id, blogId))
       .returning();
 
-    if (!deletedBlog) {
+    if (!deletedBlog)
       return NextResponse.json(
         { error: 'Blog not found or already deleted.' },
         { status: 404 },
       );
-    }
 
-    return NextResponse.json(
-      { message: 'Blog deleted successfully' },
-      { status: 200 },
-    );
+    return NextResponse.json({ message: 'Blog deleted successfully' });
   } catch (error) {
     console.error('Error deleting blog:', error);
     return NextResponse.json(

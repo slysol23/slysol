@@ -45,10 +45,8 @@ export default function BlogDetailsPage() {
           {b?.image && (
             <div className="w-full h-96 relative rounded-3xl overflow-hidden my-6 bg-gray-100">
               <Image
-                src={`/uploads/${b.image}`}
+                src={b.image.startsWith('/') ? b.image : `/uploads/${b.image}`}
                 alt={b.title}
-                // height={1124}
-                // width={384}
                 fill
                 className="object-cover"
                 sizes="100vw"
@@ -77,9 +75,10 @@ export default function BlogDetailsPage() {
             </p>
           )}
 
-          <div className="text-black leading-relaxed whitespace-pre-line">
-            {b?.content}
-          </div>
+          <div
+            className="prose prose-lg text-black max-w-none"
+            dangerouslySetInnerHTML={{ __html: b?.content || '' }}
+          />
         </div>
       </Container>
       <Footer />

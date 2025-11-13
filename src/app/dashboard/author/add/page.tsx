@@ -126,7 +126,6 @@ export default function AddAuthorPage() {
               Cancel
             </button>
           </div>
-          {/* </div> */}
         </form>
       </main>
     </div>

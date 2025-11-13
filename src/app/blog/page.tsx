@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import { useQuery, UseQueryOptions } from '@tanstack/react-query';
 import { blog } from 'lib/blog';
 import { author } from 'lib/author';
 import Container from '@/components/Container';
@@ -9,55 +9,43 @@ import Link from 'next/link';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import Title from '@/components/Title';
-import { IBlog, ApiResponse, IAuthor } from 'lib/type';
+import { IBlog, IAuthor } from 'lib/type';
 import Image from 'next/image';
+
+// ✅ Define the API response shape including total & totalPages
+interface BlogApiResponse {
+  message: string;
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  data: IBlog[];
+}
 
 export default function BlogPage() {
   const [page, setPage] = useState(1);
   const limit = 6;
 
-  // 🟢 Fetch blogs with pagination
-  const {
-    data: blogData,
-    isLoading,
-    isError,
-    error,
-    isFetching,
-  } = useQuery<ApiResponse<IBlog[]>>({
+  // ✅ Fetch blogs
+  const blogQuery = useQuery<BlogApiResponse, Error>({
     queryKey: ['blogs', page],
-    queryFn: async () => {
-      const res = await blog.getAll(page, limit);
-      return res;
-    },
-    placeholderData: keepPreviousData,
+    queryFn: async () => await blog.getAll(page, limit),
     staleTime: 2 * 60 * 1000,
-  });
+    keepPreviousData: true, // ✅ Correct usage
+  } as UseQueryOptions<BlogApiResponse, Error>);
 
-  // 🟢 Fetch all authors (no pagination)
-  const { data: authorData } = useQuery<ApiResponse<IAuthor[]>>({
+  // ✅ Fetch authors
+  const authorQuery = useQuery({
     queryKey: ['authors'],
-    queryFn: async () => {
-      const res = await author.getAll();
-      return res;
-    },
+    queryFn: async () => await author.getAll(),
     staleTime: 5 * 60 * 1000,
   });
 
-  if (isLoading)
-    return <div className="text-center text-white py-20">Loading blogs...</div>;
-  if (isError)
-    return (
-      <div className="text-center text-red-500 py-20">
-        Error: {(error as Error).message}
-      </div>
-    );
+  const blogs = blogQuery.data?.data ?? [];
+  const total = blogQuery.data?.total ?? 0;
+  const totalPages = blogQuery.data?.totalPages ?? 1;
+  const authors = authorQuery.data?.data ?? [];
 
-  const blogs = blogData?.data ?? [];
-  const total = blogData?.count ?? 0;
-  const totalPages = Math.ceil(total / limit);
-  const authors = authorData?.data ?? [];
-
-  // 🧩 Helper to find author name
   const getAuthorName = (authorId: number) => {
     const found = authors.find((a) => a.id === authorId);
     return found
@@ -65,18 +53,28 @@ export default function BlogPage() {
       : `Author #${authorId}`;
   };
 
+  if (blogQuery.isLoading)
+    return <div className="text-center text-white py-20">Loading blogs...</div>;
+
+  if (blogQuery.isError)
+    return (
+      <div className="text-center text-red-500 py-20">
+        Error: {blogQuery.error?.message}
+      </div>
+    );
+
   return (
     <div>
       <Container hScreen={false}>
         <Header />
         <Title text="Blogs" className="py-10" />
 
-        {!blogs || blogs.length === 0 ? (
+        {!blogs.length ? (
           <p className="text-center text-gray-400">No blogs found.</p>
         ) : (
           <>
             <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-8 pb-10">
-              {blogs.map((b: IBlog) => (
+              {blogs.map((b) => (
                 <article
                   key={b.id}
                   className="backdrop-blur p-6 rounded-3xl shadow-md hover:scale-[1.02] transition-all duration-300"
@@ -84,7 +82,11 @@ export default function BlogPage() {
                   {b.image && (
                     <div className="relative w-full h-56 mb-4 bg-gray-800 rounded-2xl overflow-hidden">
                       <Image
-                        src={`/uploads/${b.image}`}
+                        src={
+                          b.image.startsWith('/')
+                            ? b.image
+                            : `/uploads/${b.image}`
+                        }
                         height={800}
                         width={500}
                         alt={b.title}
@@ -99,10 +101,10 @@ export default function BlogPage() {
                   </h2>
 
                   <p className="text-sm font-bold text-gray-400 mb-2">
-                    By:
+                    By:{' '}
                     {b.author
                       ? `${b.author.firstName} ${b.author.lastName}`
-                      : `Author #${b.authorId}`}
+                      : getAuthorName(b.authorId)}
                     <span className="ml-2">
                       {new Date(b.createdAt).toLocaleDateString('en-GB', {
                         day: '2-digit',
@@ -126,25 +128,25 @@ export default function BlogPage() {
               ))}
             </div>
 
-            {/* 🧭 Pagination Controls */}
+            {/* Pagination */}
             <div className="flex justify-center items-center gap-4 pb-20">
               <button
                 onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-                disabled={page === 1 || isFetching}
+                disabled={page === 1 || blogQuery.isFetching}
                 className="px-4 py-2 rounded-lg bg-gray-700 text-white disabled:opacity-40 hover:bg-gray-600"
               >
                 ←
               </button>
 
               <span className="text-gray-300">
-                Page {page} of {totalPages || 1}
+                Page {page} of {totalPages}
               </span>
 
               <button
                 onClick={() =>
-                  setPage((prev) => (page < totalPages ? prev + 1 : prev))
+                  setPage((prev) => (prev < totalPages ? prev + 1 : prev))
                 }
-                disabled={page >= totalPages || isFetching}
+                disabled={page >= totalPages || blogQuery.isFetching}
                 className="px-4 py-2 rounded-lg bg-gray-700 text-white disabled:opacity-40 hover:bg-gray-600"
               >
                 →
