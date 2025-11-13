@@ -47,8 +47,8 @@ const Sidebar = () => {
         <button
           className="w-full bg-red-600 py-2 rounded-lg hover:bg-red-500"
           onClick={() => {
-            // logout logic here
-            console.log('Logout clicked');
+            localStorage.removeItem('token'); // or whatever key you use
+            window.location.href = '/login'; // redirect to login page
           }}
         >
           Logout

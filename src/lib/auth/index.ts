@@ -12,7 +12,7 @@ export const auth = {
 
   register: async (userData: RegisterData) => {
     const response = await apiClient.post<ApiResponse<IUser>>(
-      '/register',
+      '/user',
       userData,
     );
     return response.data;
