@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { author } from 'lib/author';
 import { useRouter } from 'next/navigation';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 
 const AuthorSchema = z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
@@ -41,22 +42,29 @@ export default function AddAuthorPage() {
     formState: { errors, isValid },
   } = useForm<AuthorForm>({
     resolver: zodResolver(AuthorSchema),
-    mode: 'onChange', // validate and update isValid as user types
+    mode: 'onChange',
   });
 
   const onSubmit = (data: AuthorForm) => {
     createAuthorMutation.mutate(data);
   };
-
+  const breadCrumbItems: BreadcrumbItem[] = [
+    { label: 'Dashboard', href: '/dashboard' },
+    { label: 'Auhtors', href: '/dashboard/author' },
+    { label: 'Add Author', href: '/dashboard/author/add' },
+  ];
   return (
     <div className="min-h-screen text-black">
-      <header className="border-b border-gray-200 py-6 px-6">
+      <header className="border-b border-gray-200 px-6">
         <h1 className="text-3xl font-bold">Add New Author</h1>
+        <span className="p-5">
+          <Breadcrumb items={breadCrumbItems} />
+        </span>
       </header>
 
       {/* Main Content */}
       <main className="flex-grow py-10 px-6">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8 bg-white">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
           <div>
             <label className="block text-black font-medium mb-2">
               First Name
@@ -106,7 +114,14 @@ export default function AddAuthorPage() {
             )}
           </div>
 
-          <div className="flex justify-between">
+          <div className="flex justify-end gap-3">
+            <button
+              type="button"
+              onClick={() => router.push('/dashboard/author')}
+              className="px-6 py-3 rounded-lg border bg-red-500 hover:bg-red-700 transition"
+            >
+              Cancel
+            </button>
             {isValid && (
               <button
                 type="submit"
@@ -116,15 +131,6 @@ export default function AddAuthorPage() {
                 {createAuthorMutation.isPending ? 'Saving...' : 'Add Author'}
               </button>
             )}
-
-            {/* <div className="flex justify-end"> */}
-            <button
-              type="button"
-              onClick={() => router.push('/dashboard/author')}
-              className="px-6 py-3 rounded-lg border border-gray-300 hover:bg-gray-400 transition"
-            >
-              Cancel
-            </button>
           </div>
         </form>
       </main>

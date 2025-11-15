@@ -11,6 +11,7 @@ import Header from '@/components/Header';
 import Title from '@/components/Title';
 import { IBlog, IAuthor } from 'lib/type';
 import Image from 'next/image';
+import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 
 // ✅ Define the API response shape including total & totalPages
 interface BlogApiResponse {
@@ -63,11 +64,13 @@ export default function BlogPage() {
       </div>
     );
 
+  const breadCrumb: BreadcrumbItem[] = [{ label: 'Blogs', href: '/blog' }];
   return (
     <div>
       <Container hScreen={false}>
         <Header />
-        <Title text="Blogs" className="py-10" />
+        <Title text="Blogs" className="py-5" />
+        <Breadcrumb items={breadCrumb} />
 
         {!blogs.length ? (
           <p className="text-center text-gray-400">No blogs found.</p>

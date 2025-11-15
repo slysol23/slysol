@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { author } from 'lib/author';
+import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 
 const AuthorSchema = z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
@@ -82,10 +83,14 @@ export default function EditAuthorPage() {
         {(error as Error)?.message || 'Failed to load author'}
       </p>
     );
-
+  const breadCrumb: BreadcrumbItem[] = [
+    { label: 'Authors', href: '/dashboard/author' },
+    { label: 'Edit', href: '/dashboard/author/edit/id' },
+  ];
   return (
     <div className="p-8">
       <h1 className="text-2xl font-bold text-black mb-6">Edit Author</h1>
+      <Breadcrumb items={breadCrumb} />
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div>
@@ -132,20 +137,20 @@ export default function EditAuthorPage() {
             <p className="text-red-400 text-sm mt-1">{errors.email.message}</p>
           )}
         </div>
-        <div className="flex justify-between">
+        <div className="flex justify-end gap-4">
+          <button
+            type="button"
+            onClick={() => router.push('/dashboard/author')}
+            className="px-6 py-3 rounded-lg text-black border bg-red-500 hover:bg-red-700 transition"
+          >
+            Cancal
+          </button>
           <button
             type="submit"
             disabled={updateAuthorMutation.isPending}
             className="px-6 py-3 rounded-lg text-black border border-gray-300 hover:bg-gray-400 transition"
           >
             {updateAuthorMutation.isPending ? 'Saving...' : 'Update Author'}
-          </button>
-          <button
-            type="button"
-            onClick={() => router.push('/dashboard/author')}
-            className="px-6 py-3 rounded-lg text-black border border-gray-300 hover:bg-gray-400 transition"
-          >
-            Cancal
           </button>
         </div>
       </form>

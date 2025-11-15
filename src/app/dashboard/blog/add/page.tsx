@@ -8,9 +8,13 @@ import { blog } from 'lib/blog';
 import { author } from 'lib/author';
 import { useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import dynamic from 'next/dynamic';
+import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 
-// Direct import of CKEditorWrapper (no dynamic needed for v12.0.0)
-import CKEditorWrapper from '../../../../components/CkEditor/CkEditorWrapper';
+const CKEditorWrapper = dynamic(
+  () => import('../../../../components/CkEditor/CkEditorWrapper'),
+  { ssr: false },
+);
 
 const BlogSchema = z.object({
   title: z.string().min(3, 'Title must be at least 3 characters'),
@@ -58,11 +62,18 @@ export default function AddBlogPage() {
     if (data.image?.[0]) formData.append('image', data.image[0]);
     createBlog.mutate(formData);
   };
+  const breadCrumb: BreadcrumbItem[] = [
+    { label: 'Blogs', href: '/dashboard/blog' },
+    { label: 'Add Blog', href: '/dashboard/blog/add' },
+  ];
 
   return (
     <div className=" min-h-screen text-black">
-      <header className="border-b border-gray-200 py-6 px-6">
+      <header className="border-b border-gray-200 px-6">
         <h1 className="text-3xl font-bold">Add New Blog</h1>
+        <span className="p-5">
+          <Breadcrumb items={breadCrumb} />
+        </span>
       </header>
       <main className="flex-grow py-10 px-6">
         {!authorsLoading && (
@@ -159,7 +170,14 @@ export default function AddBlogPage() {
               )}
             </div>
 
-            <div className="flex justify-between">
+            <div className="flex justify-end gap-4">
+              <button
+                type="button"
+                onClick={() => router.push('/dashboard/blog')}
+                className="px-6 py-3 rounded-lg border bg-red-500 hover:bg-red-700 transition"
+              >
+                Cancel
+              </button>
               {isValid && (
                 <button
                   type="submit"
@@ -169,13 +187,6 @@ export default function AddBlogPage() {
                   {createBlog.isPending ? 'Adding...' : 'Add Blog'}
                 </button>
               )}
-              <button
-                type="button"
-                onClick={() => router.push('/dashboard/blog')}
-                className="px-6 py-3 rounded-lg border border-gray-300 hover:bg-gray-400 transition"
-              >
-                Cancel
-              </button>
             </div>
           </form>
         )}

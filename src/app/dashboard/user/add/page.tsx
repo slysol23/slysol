@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { user } from 'lib/user';
+import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 
 // API call to create user
 async function createUser(data: {
@@ -81,12 +82,19 @@ export default function AddUserPage() {
       alert('❌ Author with this email already exist.');
     },
   });
+  const breadCrumb: BreadcrumbItem[] = [
+    { label: 'Users', href: '/dashboard/user' },
+    { label: 'Add User', href: '/dashboard/user/add' },
+  ];
 
   return (
     <div className="min-h-screen text-black">
       {/* Header */}
-      <header className="border-b border-gray-200 py-6 text-black  px-6">
+      <header className="border-b border-gray-200 text-black px-6">
         <h1 className="text-3xl font-bold text-black">Add New User</h1>
+        <span className="p-5">
+          <Breadcrumb items={breadCrumb} />
+        </span>
       </header>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 py-10 px-6">
         {/* Name */}
@@ -144,7 +152,14 @@ export default function AddUserPage() {
         </div>
 
         {/* Submit */}
-        <div className="flex justify-between">
+        <div className="flex justify-end gap-4">
+          <button
+            type="button"
+            onClick={() => router.push('/dashboard/user')}
+            className="px-6 py-3 rounded-lg border bg-red-500 hover:bg-red-700 transition"
+          >
+            Cancel
+          </button>
           {isValid && (
             <button
               type="submit"
@@ -154,15 +169,6 @@ export default function AddUserPage() {
               {createAuthorMutation.isPending ? 'Saving...' : 'Add Author'}
             </button>
           )}
-
-          {/* <div className="flex justify-end"> */}
-          <button
-            type="button"
-            onClick={() => router.push('/dashboard/author')}
-            className="px-6 py-3 rounded-lg border border-gray-300 hover:bg-gray-400 transition"
-          >
-            Cancel
-          </button>
         </div>
       </form>
     </div>

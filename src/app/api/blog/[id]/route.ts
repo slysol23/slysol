@@ -4,6 +4,7 @@ import path from 'path';
 import { db } from '../../../../db/index';
 import { blogSchema, authorSchema } from '../../../../db/schema';
 import { eq } from 'drizzle-orm';
+import { auth } from 'auth';
 
 // save the uploaded image in the uploads folder
 async function saveFile(file: File) {
@@ -122,7 +123,7 @@ export async function PATCH(
       data: updatedBlog,
     });
   } catch (error) {
-    console.error('Error updating blog:', error);
+    console.error(error);
     return NextResponse.json(
       {
         error: 'Internal server error',
@@ -139,6 +140,11 @@ export async function DELETE(
   { params }: { params: { id: string } },
 ) {
   try {
+    const session = await auth();
+    if (!session?.user || !(session.user as any).isAdmin) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
     const blogId = Number(params.id);
     if (isNaN(blogId))
       return NextResponse.json({ error: 'Invalid blog ID' }, { status: 400 });

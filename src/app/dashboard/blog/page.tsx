@@ -5,6 +5,9 @@ import { blog, BlogApiResponse } from 'lib/blog';
 import { IBlog } from 'lib/type';
 import { FaPen, FaTrash, FaPlus } from 'react-icons/fa';
 import Link from 'next/link';
+import { useSession } from 'next-auth/react';
+import Breadcrumb from '@/components/breadCrum';
+import { BreadcrumbItem } from '@/components/breadCrum';
 
 export default function BlogDashboardPage() {
   const [blogs, setBlogs] = useState<IBlog[]>([]);
@@ -34,20 +37,27 @@ export default function BlogDashboardPage() {
     if (!confirm('Are you sure you want to delete this blog?')) return;
     try {
       await blog.delete(id);
-      // Refetch current page after deletion
       fetchBlogs(page);
     } catch (error) {
       console.error('Error deleting blog:', error);
     }
   };
-
+  const { data: session } = useSession();
+  const isAdmin = Boolean((session?.user as any)?.isAdmin);
+  const breadCrumb: BreadcrumbItem[] = [
+    { label: 'Dashboard', href: '/dashboard' },
+    { label: 'Blogs', href: '/dashboard/blog' },
+  ];
   return (
     <>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-black">Manage Blogs</h1>
+        <h1 className="text-2xl font-bold text-black">
+          Blogs
+          <Breadcrumb items={breadCrumb} />
+        </h1>
         <Link
           href="/dashboard/blog/add"
-          className="bg-blue px-4 py-2 rounded-lg hover:bg-gray-400 flex items-center gap-2"
+          className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-500 flex items-center gap-2"
         >
           <FaPlus /> Add Blog
         </Link>
@@ -93,12 +103,15 @@ export default function BlogDashboardPage() {
                       >
                         <FaPen />
                       </Link>
-                      <button
-                        onClick={() => handleDelete(b.id)}
-                        className="text-red-500 hover:text-red-400"
-                      >
-                        <FaTrash />
-                      </button>
+                      {isAdmin && (
+                        <button
+                          onClick={() => handleDelete(b.id)}
+                          disabled={!isAdmin}
+                          className="text-red-500 hover:text-red-400"
+                        >
+                          <FaTrash />
+                        </button>
+                      )}
                     </td>
                   </tr>
                 ))}

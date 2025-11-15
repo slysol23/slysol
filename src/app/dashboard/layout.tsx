@@ -1,18 +1,26 @@
+// src/app/dashboard/layout.tsx
 import Sidebar from '@/components/dashboard/Sidebar';
-import React from 'react';
+import NextAuthSessionProvider from '@/components/Providers/sessionProvider';
+import { auth } from 'auth';
+import { redirect } from 'next/navigation';
 
-interface DashboardLayoutProps {
+export default async function DashboardLayout({
+  children,
+}: {
   children: React.ReactNode;
-}
+}) {
+  const session = await auth();
 
-export default function DashboardLayout({ children }: DashboardLayoutProps) {
+  if (!session?.user) {
+    redirect('/login');
+  }
+
   return (
-    <div className="flex h-screen text-gray-200">
-      {/* Sidebar */}
-      <Sidebar />
-
-      {/* Main Content */}
-      <main className="flex-1 p-8 overflow-auto">{children}</main>
-    </div>
+    <NextAuthSessionProvider>
+      <div className="flex min-h-screen">
+        <Sidebar />
+        <main className="flex-1 p-8 bg-gray-100">{children}</main>
+      </div>
+    </NextAuthSessionProvider>
   );
 }

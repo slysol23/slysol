@@ -7,6 +7,7 @@ import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { user } from 'lib/user';
+import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 
 // Validation schema
 const UserSchema = z.object({
@@ -95,10 +96,14 @@ export default function EditUserPage() {
         {(error as Error)?.message || 'Failed to load user'}
       </div>
     );
-
+  const breadCrumb: BreadcrumbItem[] = [
+    { label: 'Users', href: '/dashboard/user' },
+    { label: 'Edit User', href: `/dashboard/user/edit/${id}` },
+  ];
   return (
-    <div className="min-h-screen bg-white text-black p-8">
+    <div className="min-h-screen text-black p-8">
       <h1 className="text-2xl font-bold mb-6">Edit User</h1>
+      <Breadcrumb items={breadCrumb} />
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Username */}
@@ -165,21 +170,20 @@ export default function EditUserPage() {
         </div>
 
         {/* Buttons */}
-        <div className="flex justify-between">
+        <div className="flex justify-end gap-4">
+          <button
+            type="button"
+            onClick={() => router.push('/dashboard/user')}
+            className="px-6 py-3 rounded-lg border bg-red-500 hover:bg-red-700 transition"
+          >
+            Cancel
+          </button>
           <button
             type="submit"
             disabled={updateUserMutation.isPending}
             className="px-6 py-3 rounded-lg border border-gray-300 hover:bg-gray-400 transition"
           >
             {updateUserMutation.isPending ? 'Saving...' : 'Update User'}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => router.push('/dashboard/user')}
-            className="px-6 py-3 rounded-lg border border-gray-300 hover:bg-gray-400 transition"
-          >
-            Cancel
           </button>
         </div>
       </form>

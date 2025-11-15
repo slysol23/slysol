@@ -2,14 +2,17 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import * as api from 'lib';
+import { getSession, signIn, useSession } from 'next-auth/react';
 
 export default function LoginPage() {
   const router = useRouter();
+  const { data: session } = useSession();
+
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
+
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -19,13 +22,37 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      await api.auth.login(formData);
-      router.push('/dashboard');
-    } catch (err: any) {
-      setError(err.response?.data?.error || 'Login failed. Please try again.');
-    } finally {
-      setLoading(false);
+      const result = await signIn('credentials', {
+        email: formData.email,
+        password: formData.password,
+        redirect: false,
+      });
+
+      if (result?.error) {
+        setError(result.error || 'Invalid email or password');
+        setLoading(false);
+        return;
+      }
+
+      // Wait for updated session
+      const updatedSession = await getSession();
+      console.log('Updated Session:', updatedSession);
+
+      if (!updatedSession) {
+        setError('Session not found after login.');
+        setLoading(false);
+        return;
+      }
+
+      // FIXME: instead of hard reload the page, we need to use router.
+      // router.push('/dashboard/blog');
+      window.location.href = '/dashboard/blog';
+    } catch (err) {
+      console.error(err);
+      setError('Login failed. Please try again.');
     }
+
+    setLoading(false);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,7 +87,7 @@ export default function LoginPage() {
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md"
               required
             />
           </div>
@@ -78,7 +105,7 @@ export default function LoginPage() {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md"
               required
             />
           </div>
@@ -86,7 +113,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue text-white py-2 rounded-md hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition"
+            className="w-full bg-blue text-white py-2 rounded-md hover:bg-blue-700 transition"
           >
             {loading ? 'Logging in...' : 'Login'}
           </button>

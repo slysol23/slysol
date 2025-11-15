@@ -1,56 +1,69 @@
+// src/app/dashboard/user/page.tsx
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { IUser } from 'lib/type';
 import { FaTrash, FaPlus, FaPen } from 'react-icons/fa';
 import Link from 'next/link';
-import { user } from 'lib/user';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useSession } from 'next-auth/react';
+import RoleProtected from '@/components/Role/RoleProtected';
+import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 
-export default function UsersDashboardPage() {
-  const [users, setUsers] = useState<IUser[]>([]);
-  const [loading, setLoading] = useState(true);
+const fetchUsers = async (): Promise<IUser[]> => {
+  const res = await fetch('/api/user', { cache: 'no-store' });
+  if (!res.ok) throw new Error('Failed to fetch users');
+  const data = await res.json();
+  return data.data;
+};
 
-  // Fetch users from backend
-  const fetchUsers = async () => {
-    try {
-      setLoading(true);
-      const res = await user.getAll(); // assumes user API returns { data: IUser[] }
-      setUsers(res?.data || []);
-    } catch (error) {
-      console.error('Error fetching user:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+const deleteUser = async (id: number) => {
+  const res = await fetch(`/api/user/${id}`, { method: 'DELETE' });
+  if (!res.ok) throw new Error('Failed to delete user');
+};
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
+const UsersDashboard = () => {
+  const queryClient = useQueryClient();
+  const { data: session } = useSession();
+  const isAdmin = Boolean(session?.user?.isAdmin);
 
-  // Delete user
-  const handleDelete = async (id: number) => {
+  const { data: users = [], isLoading } = useQuery<IUser[], Error>({
+    queryKey: ['users'],
+    queryFn: fetchUsers,
+  });
+
+  const mutation = useMutation({
+    mutationFn: deleteUser,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['users'] }),
+  });
+
+  const handleDelete = (id: number) => {
     if (!confirm('Are you sure you want to delete this user?')) return;
-    try {
-      await user.delete(id);
-      fetchUsers(); // refresh list
-    } catch (error) {
-      console.error('Error deleting user:', error);
-    }
+    mutation.mutate(id);
   };
+
+  const breadCrumb: BreadcrumbItem[] = [
+    { label: 'Users', href: '/dashboard/user' },
+  ];
 
   return (
     <>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-black">Manage Users</h1>
-        <Link
-          href="/dashboard/user/add"
-          className="bg-blue px-4 py-2 rounded-lg hover:bg-gray-400 flex items-center gap-2"
-        >
-          <FaPlus /> Add User
-        </Link>
+        <h1 className="text-2xl font-bold text-black">
+          Users
+          <Breadcrumb items={breadCrumb} />
+        </h1>
+        {isAdmin && (
+          <Link
+            href="/dashboard/user/add"
+            className="bg-gray-200 px-4 py-2 rounded-lg text-black hover:bg-gray-400 flex items-center gap-2"
+          >
+            <FaPlus /> Add User
+          </Link>
+        )}
       </div>
 
-      {loading ? (
+      {isLoading ? (
         <p className="text-gray-400">Loading users...</p>
       ) : users.length === 0 ? (
         <p className="text-gray-400">No users found.</p>
@@ -75,7 +88,9 @@ export default function UsersDashboardPage() {
                   <td className="p-3">{index + 1}</td>
                   <td className="p-3 font-semibold">{u.name}</td>
                   <td className="p-3">{u.email}</td>
-                  <td className="p-3">{u.isAdmin ? 'Yes' : 'No'}</td>
+                  <td className="p-3 font-semibold">
+                    {u.isAdmin ? 'Yes' : 'No'}
+                  </td>
                   <td className="p-3 flex gap-3 justify-center">
                     <Link
                       href={`/dashboard/user/edit/${u.id}`}
@@ -83,12 +98,15 @@ export default function UsersDashboardPage() {
                     >
                       <FaPen />
                     </Link>
-                    <button
-                      onClick={() => handleDelete(Number(u.id))}
-                      className="text-red-500 hover:text-red-400"
-                    >
-                      <FaTrash />
-                    </button>
+
+                    {isAdmin && (
+                      <button
+                        onClick={() => handleDelete(Number(u.id))}
+                        className="text-red-500 hover:text-red-400"
+                      >
+                        <FaTrash />
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -97,5 +115,13 @@ export default function UsersDashboardPage() {
         </div>
       )}
     </>
+  );
+};
+
+export default function UsersDashboardPage() {
+  return (
+    <RoleProtected roles={['admin']}>
+      <UsersDashboard />
+    </RoleProtected>
   );
 }

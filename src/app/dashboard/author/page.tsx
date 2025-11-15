@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { author } from 'lib/author';
 import { FaPen, FaTrash, FaPlus } from 'react-icons/fa';
 import Link from 'next/link';
+import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 
 export default function AuthorDashboardPage() {
   const queryClient = useQueryClient();
@@ -43,14 +44,19 @@ export default function AuthorDashboardPage() {
         {(error as Error)?.message || 'Failed to load authors'}
       </p>
     );
-
+  const breadCrumb: BreadcrumbItem[] = [
+    { label: 'Authors', href: '/dashboard/author' },
+  ];
   return (
     <>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-black">Manage Authors</h1>
+        <h1 className="text-2xl font-bold text-black">
+          Authors
+          <Breadcrumb items={breadCrumb} />
+        </h1>
         <Link
           href="/dashboard/author/add"
-          className="bg-blue px-4 py-2 rounded-lg hover:bg-gray-400 flex items-center gap-2"
+          className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-500 flex items-center gap-2"
         >
           <FaPlus /> Add Author
         </Link>

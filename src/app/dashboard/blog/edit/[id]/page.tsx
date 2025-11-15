@@ -10,6 +10,7 @@ import { blog } from 'lib/blog';
 import { author } from 'lib/author';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
+import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 
 const CKEditorWrapper = dynamic(
   () => import('../../../../../components/CkEditor/CkEditorWrapper'),
@@ -142,133 +143,140 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
       </div>
     );
   }
-
+  const breadCrumb: BreadcrumbItem[] = [
+    { label: 'Blogs', href: '/dashboard/blog' },
+    { label: 'Edit', href: `/dashboard/blog/edit/${blogId}` },
+  ];
   return (
-    <div className="min-h-screen text-black">
-      <header className="border-b border-gray-200 py-6 px-6">
-        <h1 className="text-3xl font-bold">Edit Blog</h1>
-      </header>
+    <div className="p-8">
+      <h1 className="text-2xl font-bold text-black mb-6">Edit Blog</h1>
+      <Breadcrumb items={breadCrumb} />
 
-      <main className="flex-grow py-10 px-6">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* Title */}
-          <div>
-            <label className="block text-black font-medium mb-2">Title</label>
-            <input
-              type="text"
-              {...register('title')}
-              className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter blog title"
-            />
-            {errors.title && (
-              <p className="text-red-400 text-sm mt-1">
-                {errors.title.message}
-              </p>
-            )}
-          </div>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        {/* Title */}
+        <div>
+          <label className="block text-black font-medium mb-2">Title</label>
+          <input
+            type="text"
+            {...register('title')}
+            className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter blog title"
+          />
+          {errors.title && (
+            <p className="text-red-400 text-sm mt-1">{errors.title.message}</p>
+          )}
+        </div>
 
-          {/* Description */}
-          <div>
-            <label className="block text-black font-medium mb-2">
-              Description
-            </label>
-            <textarea
-              {...register('description')}
-              className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="Enter blog description"
-              rows={2}
-            />
-            {errors.description && (
-              <p className="text-red-400 text-sm mt-1">
-                {errors.description.message}
-              </p>
-            )}
-          </div>
+        {/* Description */}
+        <div>
+          <label className="block text-black font-medium mb-2">
+            Description
+          </label>
+          <textarea
+            {...register('description')}
+            className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter blog description"
+            rows={2}
+          />
+          {errors.description && (
+            <p className="text-red-400 text-sm mt-1">
+              {errors.description.message}
+            </p>
+          )}
+        </div>
 
-          {/* Author */}
-          <div>
-            <label className="block text-black font-medium mb-2">Author</label>
-            <select
-              {...register('authorId')}
-              className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="">Select an author</option>
-              {authors.map((a: any) => (
-                <option key={a.id} value={a.id}>
-                  {a.firstName} {a.lastName}
-                </option>
-              ))}
-            </select>
-            {errors.authorId && (
-              <p className="text-red-400 text-sm mt-1">
-                {errors.authorId.message}
-              </p>
-            )}
-          </div>
+        {/* Author */}
+        <div>
+          <label className="block text-black font-medium mb-2">Author</label>
+          <select
+            {...register('authorId')}
+            className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Select an author</option>
+            {authors.map((a: any) => (
+              <option key={a.id} value={a.id}>
+                {a.firstName} {a.lastName}
+              </option>
+            ))}
+          </select>
+          {errors.authorId && (
+            <p className="text-red-400 text-sm mt-1">
+              {errors.authorId.message}
+            </p>
+          )}
+        </div>
 
-          {/* Image */}
-          <div>
-            <label className="block text-black font-medium mb-2">
-              Upload New Image
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
-              className="w-full p-3 text-black"
-            />
+        {/* Image */}
+        <div>
+          <label className="block text-black font-medium mb-2">
+            Upload New Image
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="w-full p-3 text-black"
+          />
 
-            {/* Image Preview */}
-            <div className="mt-4">
-              {previewUrl ? (
-                <div>
-                  <p className="text-sm text-black mb-2">New Image:</p>
-                  <Image
-                    src={previewUrl}
-                    alt="Selected Image"
-                    width={192}
-                    height={192}
-                    className="w-48 h-48 object-cover rounded-md border border-gray-300"
-                  />
-                </div>
-              ) : blogData?.image ? (
-                <div>
-                  <p className="text-sm text-black mb-2">Current Image:</p>
-                  <Image
-                    src={getImagePath(blogData.image)!}
-                    alt="Current Blog Image"
-                    width={192}
-                    height={192}
-                    className="w-48 h-48 object-cover rounded-md border border-gray-300"
-                    unoptimized
-                  />
-                </div>
-              ) : (
-                <p className="text-gray-500 text-sm">No image uploaded</p>
-              )}
-            </div>
-          </div>
-
-          {/* CKEditor */}
-          <div>
-            <label className="block text-black font-medium mb-2">Content</label>
-            <Controller
-              name="content"
-              control={control}
-              render={({ field }) => (
-                <CKEditorWrapper
-                  initialData={field.value}
-                  onChange={field.onChange}
+          {/* Image Preview */}
+          <div className="mt-4">
+            {previewUrl ? (
+              <div>
+                <p className="text-sm text-black mb-2">New Image:</p>
+                <Image
+                  src={previewUrl}
+                  alt="Selected Image"
+                  width={192}
+                  height={192}
+                  className="w-48 h-48 object-cover rounded-md border border-gray-300"
                 />
-              )}
-            />
-            {errors.content && (
-              <p className="text-red-400 text-sm mt-1">
-                {errors.content.message}
-              </p>
+              </div>
+            ) : blogData?.image ? (
+              <div>
+                <p className="text-sm text-black mb-2">Current Image:</p>
+                <Image
+                  src={getImagePath(blogData.image)!}
+                  alt="Current Blog Image"
+                  width={192}
+                  height={192}
+                  className="w-48 h-48 object-cover rounded-md border border-gray-300"
+                  unoptimized
+                />
+              </div>
+            ) : (
+              <p className="text-gray-500 text-sm">No image uploaded</p>
             )}
           </div>
+        </div>
 
+        {/* CKEditor */}
+        <div>
+          <label className="block text-black font-medium mb-2">Content</label>
+          <Controller
+            name="content"
+            control={control}
+            render={({ field }) => (
+              <CKEditorWrapper
+                initialData={field.value}
+                onChange={field.onChange}
+              />
+            )}
+          />
+          {errors.content && (
+            <p className="text-red-400 text-sm mt-1">
+              {errors.content.message}
+            </p>
+          )}
+        </div>
+
+        <div className="flex justify-end gap-4">
+          <button
+            type="button"
+            onClick={() => router.push('/dashboard/author')}
+            className="px-6 py-3 rounded-lg text-black border bg-red-500 hover:bg-red-700 transition"
+          >
+            Cancal
+          </button>{' '}
           <button
             type="submit"
             disabled={updateBlog.isPending}
@@ -276,8 +284,8 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
           >
             {updateBlog.isPending ? 'Updating...' : 'Update Blog'}
           </button>
-        </form>
-      </main>
+        </div>
+      </form>
     </div>
   );
 }

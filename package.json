@@ -36,6 +36,7 @@
     "eslint-config-next": "13.4.13",
     "formidable": "^3.5.4",
     "framer-motion": "^10.16.0",
+    "lucide-react": "^0.553.0",
     "mailgun.js": "^11.1.0",
     "multer": "^2.0.2",
     "next": "13.4.13",
