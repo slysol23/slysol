@@ -12,8 +12,6 @@ const Sidebar = () => {
   const pathname = usePathname();
   const { data: session, status } = useSession();
 
-  console.log({ session });
-
   if (status === 'loading')
     return <div className="w-64 bg-blue p-4">Loading...</div>;
 
@@ -54,14 +52,6 @@ const Sidebar = () => {
             className="w-20 h-auto mx-auto my-5"
           />
         </Link>
-
-        {/* Debug info */}
-        <div className="flex flex-col gap-2 px-4">
-          <p className="flex items-center px-4 py-2 rounded-lg gap-2 text-white">
-            <FaUser />
-            <strong className="items-center">Admin:</strong> {String(isAdmin)}
-          </p>
-        </div>
 
         <nav className="flex flex-col gap-2 px-4">
           {filteredMenu.map((item) => (
