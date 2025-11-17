@@ -23,6 +23,10 @@ const BlogSchema = z.object({
   content: z.string().min(10, 'Content must be at least 10 characters'),
   authorId: z.string().min(1, 'Author is required'),
   image: z.any().optional(),
+  tags: z.string().optional(),
+  metaTitle: z.string().optional(),
+  metaDescription: z.string().optional(),
+  metaKeywords: z.string().optional(),
 });
 
 type BlogForm = z.infer<typeof BlogSchema>;
@@ -87,6 +91,10 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
       content: '',
       authorId: '',
       image: undefined,
+      tags: '',
+      metaTitle: '',
+      metaDescription: '',
+      metaKeywords: '',
     },
   });
 
@@ -98,7 +106,10 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
         description: blogData.description || '',
         content: blogData.content || '',
         authorId: blogData.author?.id?.toString() || '',
-        image: undefined,
+        tags: blogData.tags?.join(', ') || '',
+        metaTitle: blogData.meta?.title || '',
+        metaDescription: blogData.meta?.description || '',
+        metaKeywords: blogData.meta?.keywords?.join(', ') || '',
       });
     }
   }, [blogData, reset]);
@@ -119,9 +130,7 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
   // Cleanup preview URL
   useEffect(() => {
     return () => {
-      if (previewUrl) {
-        URL.revokeObjectURL(previewUrl);
-      }
+      if (previewUrl) URL.revokeObjectURL(previewUrl);
     };
   }, [previewUrl]);
 
@@ -131,7 +140,22 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
     formData.append('description', data.description);
     formData.append('content', data.content);
     formData.append('authorId', data.authorId);
+
     if (selectedImage) formData.append('image', selectedImage);
+
+    if (data.tags)
+      formData.append(
+        'tags',
+        JSON.stringify(data.tags.split(',').map((t) => t.trim())),
+      );
+    formData.append(
+      'meta',
+      JSON.stringify({
+        title: data.metaTitle,
+        description: data.metaDescription,
+        keywords: data.metaKeywords?.split(',').map((k) => k.trim()) || [],
+      }),
+    );
 
     updateBlog.mutate(formData);
   };
@@ -143,10 +167,12 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
       </div>
     );
   }
+
   const breadCrumb: BreadcrumbItem[] = [
     { label: 'Blogs', href: '/dashboard/blog' },
     { label: 'Edit', href: `/dashboard/blog/edit/${blogId}` },
   ];
+
   return (
     <div className="p-8">
       <h1 className="text-2xl font-bold text-black mb-6">Edit Blog</h1>
@@ -193,7 +219,7 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
             className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">Select an author</option>
-            {authors.map((a: any) => (
+            {authors.map((a) => (
               <option key={a.id} value={a.id}>
                 {a.firstName} {a.lastName}
               </option>
@@ -206,6 +232,52 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
           )}
         </div>
 
+        {/* Tags */}
+        <div>
+          <label className="block text-black font-medium mb-2">
+            Tags (comma separated)
+          </label>
+          <input
+            type="text"
+            {...register('tags')}
+            className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="tag1, tag2, tag3"
+          />
+        </div>
+
+        {/* Meta */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-black font-medium mb-2">
+              Meta Title
+            </label>
+            <input
+              type="text"
+              {...register('metaTitle')}
+              className="w-full p-3 rounded-lg border border-gray-300"
+            />
+          </div>
+          <div>
+            <label className="block text-black font-medium mb-2">
+              Meta Description
+            </label>
+            <input
+              type="text"
+              {...register('metaDescription')}
+              className="w-full p-3 rounded-lg border border-gray-300"
+            />
+          </div>
+          <div>
+            <label className="block text-black font-medium mb-2">
+              Meta Keywords (comma separated)
+            </label>
+            <input
+              type="text"
+              {...register('metaKeywords')}
+              className="w-full p-3 rounded-lg border border-gray-300"
+            />
+          </div>
+        </div>
         {/* Image */}
         <div>
           <label className="block text-black font-medium mb-2">
@@ -217,11 +289,9 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
             onChange={handleImageChange}
             className="w-full p-3 text-black"
           />
-
-          {/* Image Preview */}
           <div className="mt-4">
             {previewUrl ? (
-              <div>
+              <>
                 <p className="text-sm text-black mb-2">New Image:</p>
                 <Image
                   src={previewUrl}
@@ -230,9 +300,9 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
                   height={192}
                   className="w-48 h-48 object-cover rounded-md border border-gray-300"
                 />
-              </div>
+              </>
             ) : blogData?.image ? (
-              <div>
+              <>
                 <p className="text-sm text-black mb-2">Current Image:</p>
                 <Image
                   src={getImagePath(blogData.image)!}
@@ -242,7 +312,7 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
                   className="w-48 h-48 object-cover rounded-md border border-gray-300"
                   unoptimized
                 />
-              </div>
+              </>
             ) : (
               <p className="text-gray-500 text-sm">No image uploaded</p>
             )}
@@ -269,14 +339,14 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
           )}
         </div>
 
-        <div className="flex justify-end gap-4">
+        <div className="flex justify-end gap-4 mt-6">
           <button
             type="button"
-            onClick={() => router.push('/dashboard/author')}
+            onClick={() => router.push('/dashboard/blog')}
             className="px-6 py-3 rounded-lg text-black border bg-red-500 hover:bg-red-700 transition"
           >
-            Cancal
-          </button>{' '}
+            Cancel
+          </button>
           <button
             type="submit"
             disabled={updateBlog.isPending}

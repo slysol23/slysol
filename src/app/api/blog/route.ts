@@ -28,6 +28,8 @@ export async function GET(req: Request) {
         description: blogSchema.description,
         content: blogSchema.content,
         image: blogSchema.image,
+        tags: blogSchema.tags,
+        meta: blogSchema.meta,
         createdAt: blogSchema.createdAt,
         updatedAt: blogSchema.updatedAt,
         author: {
@@ -84,6 +86,7 @@ export async function POST(req: Request) {
       );
     }
 
+    // ✅ Handle image upload
     let imageUrl = '';
     const imageFile = formData.get('image') as File | null;
 
@@ -102,11 +105,27 @@ export async function POST(req: Request) {
         await fs.writeFile(filePath, buffer);
 
         imageUrl = `/uploads/${uniqueFileName}`;
-        console.log('✅ Image uploaded:', imageUrl);
       } catch (uploadError) {
         console.error('❌ Image upload failed:', uploadError);
         imageUrl = '';
       }
+    }
+
+    // ✅ Handle tags and meta as JSON
+    let tags: any = null;
+    try {
+      const tagsRaw = formData.get('tags');
+      if (tagsRaw) tags = JSON.parse(tagsRaw.toString());
+    } catch (err) {
+      console.warn('Invalid tags JSON', err);
+    }
+
+    let meta: any = null;
+    try {
+      const metaRaw = formData.get('meta');
+      if (metaRaw) meta = JSON.parse(metaRaw.toString());
+    } catch (err) {
+      console.warn('Invalid meta JSON', err);
     }
 
     // ✅ Insert blog into database
@@ -118,6 +137,8 @@ export async function POST(req: Request) {
         content,
         authorId,
         image: imageUrl,
+        tags,
+        meta,
       })
       .returning();
 

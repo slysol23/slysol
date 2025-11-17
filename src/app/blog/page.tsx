@@ -9,19 +9,9 @@ import Link from 'next/link';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import Title from '@/components/Title';
-import { IBlog, IAuthor } from 'lib/type';
+import { BlogApiResponse } from 'lib/type';
 import Image from 'next/image';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
-
-// ✅ Define the API response shape including total & totalPages
-interface BlogApiResponse {
-  message: string;
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
-  data: IBlog[];
-}
 
 export default function BlogPage() {
   const [page, setPage] = useState(1);

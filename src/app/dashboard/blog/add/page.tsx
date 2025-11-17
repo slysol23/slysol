@@ -21,6 +21,10 @@ const BlogSchema = z.object({
   authorId: z.string().min(1, 'Author is required'),
   content: z.string().min(10, 'Content must be at least 10 characters'),
   description: z.string(),
+  tags: z.string().optional(), // Comma separated
+  metaTitle: z.string().optional(),
+  metaDescription: z.string().optional(),
+  metaKeywords: z.string().optional(), // Comma separated
   image: z.any().optional(),
 });
 
@@ -59,16 +63,36 @@ export default function AddBlogPage() {
     formData.append('description', data.description);
     formData.append('authorId', data.authorId);
     formData.append('content', data.content);
+
     if (data.image?.[0]) formData.append('image', data.image[0]);
+
+    // Tags as array
+    if (data.tags) {
+      const tagsArray = data.tags.split(',').map((tag) => tag.trim());
+      formData.append('tags', JSON.stringify(tagsArray));
+    }
+
+    // Meta as object
+    const meta: any = {};
+    if (data.metaTitle) meta.title = data.metaTitle;
+    if (data.metaDescription) meta.description = data.metaDescription;
+    if (data.metaKeywords)
+      meta.keywords = data.metaKeywords.split(',').map((k) => k.trim());
+
+    if (Object.keys(meta).length > 0) {
+      formData.append('meta', JSON.stringify(meta));
+    }
+
     createBlog.mutate(formData);
   };
+
   const breadCrumb: BreadcrumbItem[] = [
     { label: 'Blogs', href: '/dashboard/blog' },
     { label: 'Add Blog', href: '/dashboard/blog/add' },
   ];
 
   return (
-    <div className=" min-h-screen text-black">
+    <div className="min-h-screen text-black">
       <header className="border-b border-gray-200 px-6">
         <h1 className="text-3xl font-bold">Add New Blog</h1>
         <span className="p-5">
@@ -78,7 +102,7 @@ export default function AddBlogPage() {
       <main className="flex-grow py-10 px-6">
         {!authorsLoading && (
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Header */}
+            {/* Title */}
             <div>
               <label className="block text-black font-medium mb-2">Title</label>
               <input
@@ -94,7 +118,7 @@ export default function AddBlogPage() {
               )}
             </div>
 
-            {/* Descritpion */}
+            {/* Description */}
             <div>
               <label className="block text-black font-medium mb-2">
                 Description
@@ -135,6 +159,50 @@ export default function AddBlogPage() {
               )}
             </div>
 
+            {/* Tags */}
+            <div>
+              <label className="block text-black font-medium mb-2">Tags</label>
+              <input
+                type="text"
+                {...register('tags')}
+                className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="e.g. tech, programming, react"
+              />
+            </div>
+
+            {/* Meta */}
+            <div className="space-y-2">
+              <label className="block text-black font-medium mb-2">
+                Meta Title
+              </label>
+              <input
+                type="text"
+                {...register('metaTitle')}
+                className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Meta title"
+              />
+
+              <label className="block text-black font-medium mb-2">
+                Meta Description
+              </label>
+              <textarea
+                {...register('metaDescription')}
+                className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Meta description"
+                rows={2}
+              />
+
+              <label className="block text-black font-medium mb-2">
+                Meta Keywords
+              </label>
+              <input
+                type="text"
+                {...register('metaKeywords')}
+                className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="e.g. react, javascript, nextjs"
+              />
+            </div>
+
             {/* Image */}
             <div>
               <label className="block text-black font-medium mb-2">
@@ -170,6 +238,7 @@ export default function AddBlogPage() {
               )}
             </div>
 
+            {/* Buttons */}
             <div className="flex justify-end gap-4">
               <button
                 type="button"

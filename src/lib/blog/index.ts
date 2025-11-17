@@ -1,61 +1,123 @@
-import { IBlog, ICreateBlog, IUpdateBlog, ApiResponse } from 'lib/type';
+import {
+  IBlog,
+  ICreateBlog,
+  IUpdateBlog,
+  ApiResponse,
+  BlogApiResponse,
+} from 'lib/type';
 import apiClient from 'lib/client';
 
-export interface BlogApiResponse {
-  message: string;
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
-  data: IBlog[];
-}
-
 export const blog = {
-  // 🟢 Get all blogs with pagination
   getAll: async (page = 1, limit = 6): Promise<BlogApiResponse> => {
     const params = new URLSearchParams({
       page: page.toString(),
       limit: limit.toString(),
     });
+    const response = await apiClient.get<BlogApiResponse>(
+      `/blog?${params.toString()}`,
+    );
+    const rawData = response.data.data ?? [];
 
-    const response = await apiClient.get(`/blog?${params.toString()}`);
-    const resData = response.data;
+    const data: IBlog[] = rawData.map((b) => ({
+      id: b.id ?? 0,
+      authorId: b.authorId ?? 0,
+      title: b.title ?? '',
+      description: b.description ?? '',
+      content: b.content ?? '',
+      image: b.image ?? '',
+      tags: b.tags ?? [],
+      meta: b.meta ?? { title: '', description: '', keywords: [] },
+      createdAt: b.createdAt ?? new Date().toISOString(),
+      updatedAt: b.updatedAt ?? new Date().toISOString(),
+      author: b.author ?? undefined,
+    }));
 
     return {
-      message: resData.message,
-      page: resData.page ?? page,
-      limit: resData.limit ?? limit,
-      total: resData.total ?? resData.data.length,
-      totalPages:
-        resData.totalPages ??
-        Math.ceil((resData.total ?? resData.data.length) / limit),
-      data: resData.data,
+      message: response.data.message ?? '',
+      page,
+      limit,
+      total: response.data.total ?? data.length,
+      totalPages: response.data.totalPages ?? Math.ceil(data.length / limit),
+      data,
     };
   },
 
-  // 🟢 Get single blog by ID
-  getById: async (id: number) => {
+  getById: async (id: number): Promise<ApiResponse<IBlog>> => {
     const response = await apiClient.get<ApiResponse<IBlog>>(`/blog/${id}`);
-    return response.data;
+    const b = response.data.data;
+    if (!b) throw new Error('Blog not found');
+
+    return {
+      ...response.data,
+      data: {
+        id: b.id ?? 0,
+        authorId: b.authorId ?? 0,
+        title: b.title ?? '',
+        description: b.description ?? '',
+        content: b.content ?? '',
+        image: b.image ?? '',
+        tags: Array.isArray(b.tags) ? b.tags : [], // convert string to array if needed
+        meta: b.meta ?? { title: '', description: '', keywords: [] },
+        createdAt: b.createdAt ?? new Date().toISOString(),
+        updatedAt: b.updatedAt ?? new Date().toISOString(),
+        author: b.author ?? undefined,
+      },
+    };
   },
 
-  // 🟡 Create new blog
-  create: async (data: ICreateBlog) => {
+  create: async (data: ICreateBlog): Promise<ApiResponse<IBlog>> => {
     const response = await apiClient.post<ApiResponse<IBlog>>('/blog', data);
-    return response.data;
+    const b = response.data.data;
+    if (!b) throw new Error('Failed to create blog');
+
+    return {
+      ...response.data,
+      data: {
+        id: b.id ?? 0,
+        authorId: b.authorId ?? 0,
+        title: b.title ?? '',
+        description: b.description ?? '',
+        content: b.content ?? '',
+        image: b.image ?? '',
+        tags: Array.isArray(b.tags) ? b.tags : [],
+        meta: b.meta ?? { title: '', description: '', keywords: [] },
+        createdAt: b.createdAt ?? new Date().toISOString(),
+        updatedAt: b.updatedAt ?? new Date().toISOString(),
+        author: b.author ?? undefined,
+      },
+    };
   },
 
-  // 🟠 Update blog by ID
-  update: async (id: number, data: IUpdateBlog) => {
+  update: async (
+    id: number,
+    data: IUpdateBlog,
+  ): Promise<ApiResponse<IBlog>> => {
     const response = await apiClient.patch<ApiResponse<IBlog>>(
       `/blog/${id}`,
       data,
     );
-    return response.data;
+    const b = response.data.data;
+    if (!b) throw new Error('Failed to update blog');
+
+    return {
+      ...response.data,
+      data: {
+        id: b.id ?? 0,
+        authorId: b.authorId ?? 0,
+        title: b.title ?? '',
+        description: b.description ?? '',
+        content: b.content ?? '',
+        image: b.image ?? '',
+        tags: Array.isArray(b.tags) ? b.tags : [],
+        meta: b.meta ?? { title: '', description: '', keywords: [] },
+        createdAt: b.createdAt ?? new Date().toISOString(),
+        updatedAt: b.updatedAt ?? new Date().toISOString(),
+        author: b.author ?? undefined,
+      },
+    };
   },
 
-  // 🔴 Delete blog by ID
-  delete: async (id: number) => {
+  delete: async (id: number): Promise<ApiResponse<{}>> => {
     const response = await apiClient.delete<ApiResponse<{}>>(`/blog/${id}`);
     return response.data;
   },

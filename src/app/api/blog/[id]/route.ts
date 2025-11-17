@@ -6,7 +6,7 @@ import { blogSchema, authorSchema } from '../../../../db/schema';
 import { eq } from 'drizzle-orm';
 import { auth } from 'auth';
 
-// save the uploaded image in the uploads folder
+// Save uploaded file
 async function saveFile(file: File) {
   const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
   if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
@@ -28,9 +28,8 @@ export async function GET(
 ) {
   try {
     const blogId = Number(params.id);
-    if (isNaN(blogId)) {
+    if (isNaN(blogId))
       return NextResponse.json({ error: 'Invalid blog ID' }, { status: 400 });
-    }
 
     const [result] = await db
       .select({
@@ -39,6 +38,8 @@ export async function GET(
         description: blogSchema.description,
         content: blogSchema.content,
         image: blogSchema.image,
+        tags: blogSchema.tags,
+        meta: blogSchema.meta,
         author: {
           id: authorSchema.id,
           firstName: authorSchema.firstName,
@@ -58,9 +59,16 @@ export async function GET(
     if (!result)
       return NextResponse.json({ error: 'Blog not found' }, { status: 404 });
 
+    // ✅ Ensure tags and meta have correct types
+    const blog = {
+      ...result,
+      tags: Array.isArray(result.tags) ? result.tags : [],
+      meta: result.meta ?? { title: '', description: '', keywords: [] },
+    };
+
     return NextResponse.json({
       message: 'Blog fetched successfully',
-      data: result,
+      data: blog,
     });
   } catch (error) {
     console.error('Error fetching blog by ID:', error);
@@ -81,32 +89,63 @@ export async function PATCH(
 ) {
   try {
     const blogId = Number(params.id);
-    if (isNaN(blogId)) {
+    if (isNaN(blogId))
       return NextResponse.json({ error: 'Invalid blog ID' }, { status: 400 });
-    }
 
     const formData = await req.formData();
     const title = formData.get('title')?.toString();
     const description = formData.get('description')?.toString();
     const content = formData.get('content')?.toString();
+
+    // ✅ Tags
+    let tags: string[] | undefined;
+    const tagsRaw = formData.get('tags');
+    if (tagsRaw) {
+      try {
+        const parsed = JSON.parse(tagsRaw.toString());
+        if (Array.isArray(parsed)) tags = parsed;
+      } catch {
+        console.warn('Invalid tags JSON, skipping');
+      }
+    }
+
+    // ✅ Meta
+    let meta:
+      | { title?: string; description?: string; keywords?: string[] }
+      | undefined;
+    const metaRaw = formData.get('meta');
+    if (metaRaw) {
+      try {
+        const parsed = JSON.parse(metaRaw.toString());
+        meta = {
+          title: parsed.title ?? '',
+          description: parsed.description ?? '',
+          keywords: Array.isArray(parsed.keywords) ? parsed.keywords : [],
+        };
+      } catch {
+        console.warn('Invalid meta JSON, skipping');
+      }
+    }
+
+    // ✅ Image
     const imageFile = formData.get('image') as File | null;
 
     const updateData: any = {};
     if (title) updateData.title = title;
     if (description) updateData.description = description;
     if (content) updateData.content = content;
-
+    if (tags) updateData.tags = tags;
+    if (meta) updateData.meta = meta;
     if (imageFile && imageFile.size > 0) {
       const fileName = await saveFile(imageFile);
       updateData.image = fileName;
     }
 
-    if (Object.keys(updateData).length === 0) {
+    if (Object.keys(updateData).length === 0)
       return NextResponse.json(
         { error: 'No valid fields to update' },
         { status: 400 },
       );
-    }
 
     const [updatedBlog] = await db
       .update(blogSchema)
@@ -114,13 +153,19 @@ export async function PATCH(
       .where(eq(blogSchema.id, blogId))
       .returning();
 
-    if (!updatedBlog) {
+    if (!updatedBlog)
       return NextResponse.json({ error: 'Blog not found' }, { status: 404 });
-    }
+
+    // ✅ Ensure updated tags/meta types
+    const blog = {
+      ...updatedBlog,
+      tags: Array.isArray(updatedBlog.tags) ? updatedBlog.tags : [],
+      meta: updatedBlog.meta ?? { title: '', description: '', keywords: [] },
+    };
 
     return NextResponse.json({
       message: 'Blog updated successfully',
-      data: updatedBlog,
+      data: blog,
     });
   } catch (error) {
     console.error(error);
@@ -133,7 +178,6 @@ export async function PATCH(
     );
   }
 }
-
 // 🔹 DELETE blog by ID
 export async function DELETE(
   _req: Request,

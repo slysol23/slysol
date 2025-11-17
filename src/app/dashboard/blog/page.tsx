@@ -1,52 +1,50 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { blog, BlogApiResponse } from 'lib/blog';
-import { IBlog } from 'lib/type';
+import React, { useState } from 'react';
+import { blog } from 'lib/blog';
+import { BlogApiResponse, IBlog } from 'lib/type';
 import { FaPen, FaTrash, FaPlus } from 'react-icons/fa';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
-import Breadcrumb from '@/components/breadCrum';
-import { BreadcrumbItem } from '@/components/breadCrum';
+import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 export default function BlogDashboardPage() {
-  const [blogs, setBlogs] = useState<IBlog[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const limit = 10; // show 10 blogs per page
-
-  const fetchBlogs = async (pageNumber: number) => {
-    try {
-      setLoading(true);
-      const res: BlogApiResponse = await blog.getAll(pageNumber, limit);
-      setBlogs(res.data || []);
-      setTotalPages(res.totalPages || 1);
-    } catch (error) {
-      console.error('Error fetching blogs:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchBlogs(page);
-  }, [page]);
-
-  const handleDelete = async (id: number) => {
-    if (!confirm('Are you sure you want to delete this blog?')) return;
-    try {
-      await blog.delete(id);
-      fetchBlogs(page);
-    } catch (error) {
-      console.error('Error deleting blog:', error);
-    }
-  };
+  const queryClient = useQueryClient();
   const { data: session } = useSession();
   const isAdmin = Boolean((session?.user as any)?.isAdmin);
+
+  const [page, setPage] = useState(1);
+  const limit = 10;
+
+  // Fetch blogs with proper types
+  const { data, isLoading, error } = useQuery<BlogApiResponse, Error>({
+    queryKey: ['blogs', page],
+    queryFn: () => blog.getAll(page, limit),
+    staleTime: 1000 * 60, // 1 min cache
+  });
+
+  const blogs: IBlog[] = data?.data ?? [];
+  const totalPages: number = data?.totalPages ?? 1;
+
+  // Delete mutation
+  const deleteMutation = useMutation<void, Error, number>({
+    mutationFn: (id) => blog.delete(id).then(() => {}),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['blogs'] }),
+  });
+
+  const handleDelete = (id: number) => {
+    if (!confirm('Are you sure you want to delete this blog?')) return;
+    deleteMutation.mutate(id);
+  };
+
   const breadCrumb: BreadcrumbItem[] = [
     { label: 'Blogs', href: '/dashboard/blog' },
   ];
+
+  if (isLoading) return <p className="text-gray-400">Loading blogs...</p>;
+  if (error) return <p className="text-red-500">Error loading blogs.</p>;
+
   return (
     <>
       <div className="flex justify-between items-center mb-6">
@@ -62,9 +60,7 @@ export default function BlogDashboardPage() {
         </Link>
       </div>
 
-      {loading ? (
-        <p className="text-gray-400">Loading blogs...</p>
-      ) : blogs.length === 0 ? (
+      {blogs.length === 0 ? (
         <p className="text-gray-400">No blogs found.</p>
       ) : (
         <>
@@ -75,12 +71,13 @@ export default function BlogDashboardPage() {
                   <th className="p-3">#</th>
                   <th className="p-3">Title</th>
                   <th className="p-3">Author</th>
+                  <th className="p-3">Tags</th>
+                  <th className="p-3">Meta Data</th>
                   <th className="p-3">Created</th>
-                  <th className="p-3 text-center">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {blogs.map((b, index) => (
+                {blogs.map((b: IBlog, index: number) => (
                   <tr
                     key={b.id}
                     className="border-t border-gray-700 hover:bg-gray-400 transition text-black"
@@ -92,10 +89,21 @@ export default function BlogDashboardPage() {
                         ? `${b.author.firstName} ${b.author.lastName}`
                         : `Author #${b.authorId}`}
                     </td>
+                    {/* Tags */}
+                    <td className="p-3">
+                      {b.tags && b.tags.length > 0
+                        ? b.tags.map((tag: string) => (
+                            <span key={tag} className="px-2 py-1 text-black">
+                              #{tag}
+                            </span>
+                          ))
+                        : '-'}
+                    </td>
+
                     <td className="p-3">
                       {new Date(b.createdAt).toLocaleDateString('en-GB')}
                     </td>
-                    <td className="p-3 flex gap-3 justify-center">
+                    <td className="p-3 flex gap-3">
                       <Link
                         href={`/dashboard/blog/edit/${b.id}`}
                         className="text-yellow-500 hover:text-yellow-300"
@@ -105,7 +113,7 @@ export default function BlogDashboardPage() {
                       {isAdmin && (
                         <button
                           onClick={() => handleDelete(b.id)}
-                          disabled={!isAdmin}
+                          disabled={!isAdmin || deleteMutation.isPending}
                           className="text-red-500 hover:text-red-400"
                         >
                           <FaTrash />
@@ -118,7 +126,7 @@ export default function BlogDashboardPage() {
             </table>
           </div>
 
-          {/* Pagination controls */}
+          {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex justify-center items-center gap-4 mt-6">
               <button

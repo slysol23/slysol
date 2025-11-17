@@ -14,6 +14,8 @@ export interface IBlog {
   content: string;
   image?: string;
   authorId: number;
+  tags?: string[];
+  meta?: { title?: string; description?: string; keywords?: string[] };
   author?: IAuthor;
   createdAt: string;
   updatedAt: string;
@@ -32,4 +34,12 @@ export interface IUpdateBlog {
   description?: string;
   content?: string;
   image?: string;
+}
+export interface BlogApiResponse {
+  message: string;
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  data: IBlog[];
 }
