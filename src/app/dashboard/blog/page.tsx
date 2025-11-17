@@ -45,7 +45,6 @@ export default function BlogDashboardPage() {
   const { data: session } = useSession();
   const isAdmin = Boolean((session?.user as any)?.isAdmin);
   const breadCrumb: BreadcrumbItem[] = [
-    { label: 'Dashboard', href: '/dashboard' },
     { label: 'Blogs', href: '/dashboard/blog' },
   ];
   return (
