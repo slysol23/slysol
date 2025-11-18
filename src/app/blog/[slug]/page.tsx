@@ -12,23 +12,24 @@ import Head from 'next/head';
 import { IBlog } from 'lib/type';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 
-export default function BlogDetailsPage() {
+export default function BlogPage() {
   const params = useParams();
-  const id = Number(params.id);
+  const slugParam = params.slug;
+  const slug = Array.isArray(slugParam) ? slugParam[0] : slugParam;
 
   const {
     data: b,
     isLoading,
     error,
   } = useQuery<IBlog>({
-    queryKey: ['blog', id],
+    queryKey: ['blog', slug],
     queryFn: async () => {
-      if (isNaN(id)) throw new Error('Invalid blog ID');
-      const res = await blog.getById(id);
+      if (!slug) throw new Error('Invalid blog slug');
+      const res = await blog.getBySlug(slug);
       if (!res?.data) throw new Error('Blog not found');
       return res.data;
     },
-    enabled: !isNaN(id),
+    enabled: !!slug,
   });
 
   if (isLoading)
@@ -38,14 +39,14 @@ export default function BlogDetailsPage() {
     return (
       <div className="text-center text-red-500 py-20">{error.message}</div>
     );
+
   const breadCrumb: BreadcrumbItem[] = [
     { label: 'Blogs', href: '/blog' },
-    { label: 'Blog', href: '/blog/${id}' },
+    { label: b?.title || 'Blog', href: `/blog/${b?.slug}` },
   ];
 
   return (
     <>
-      {/* Dynamically update <head> for SEO */}
       <Head>
         <title>{b?.meta?.title || b?.title || 'Blog'}</title>
         {b?.meta?.description && (
@@ -74,29 +75,21 @@ export default function BlogDetailsPage() {
 
           <MainHeading text={b?.title ?? 'Untitled'} className="font-bold" />
 
-          {b ? (
-            <p className="text-sm text-gray-400 mb-2 mt-2">
-              Published by{' '}
-              {b.author
-                ? `${b.author.firstName} ${b.author.lastName}`
-                : `Author #${b.authorId}`}{' '}
-              on{' '}
-              {b.createdAt
-                ? new Date(b.createdAt).toLocaleDateString('en-GB', {
-                    day: '2-digit',
-                    month: 'long',
-                    year: 'numeric',
-                  })
-                : ''}
-            </p>
-          ) : (
-            <p className="text-sm text-gray-400 mb-2">
-              Blog information not available
-            </p>
-          )}
+          <p className="text-sm text-gray-400 mb-2 mt-2">
+            Published by{' '}
+            {b?.author
+              ? `${b.author.firstName} ${b.author.lastName}`
+              : `Author #${b?.authorId}`}{' '}
+            on{' '}
+            {b?.createdAt
+              ? new Date(b.createdAt).toLocaleDateString('en-GB', {
+                  day: '2-digit',
+                  month: 'long',
+                  year: 'numeric',
+                })
+              : ''}
+          </p>
 
-          {/* Tags */}
-          {/* Tags */}
           {b?.tags && b.tags.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-3">
               {b.tags.map((tag: string, idx: number) => (
@@ -110,7 +103,6 @@ export default function BlogDetailsPage() {
             </div>
           )}
 
-          {/* Meta info displayed on page (optional) */}
           {b?.meta && (
             <div className="text-xs text-gray-500 mb-3">
               {b.meta.title && (

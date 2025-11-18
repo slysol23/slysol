@@ -8,6 +8,10 @@ import {
 import apiClient from 'lib/client';
 
 export const blog = {
+  /**
+   * Get all blogs with pagination
+   * Uses: /api/blog?page=1&limit=6
+   */
   getAll: async (page = 1, limit = 6): Promise<BlogApiResponse> => {
     const params = new URLSearchParams({
       page: page.toString(),
@@ -27,6 +31,7 @@ export const blog = {
       image: b.image ?? '',
       tags: b.tags ?? [],
       meta: b.meta ?? { title: '', description: '', keywords: [] },
+      slug: b.slug ?? '',
       createdAt: b.createdAt ?? new Date().toISOString(),
       updatedAt: b.updatedAt ?? new Date().toISOString(),
       author: b.author ?? undefined,
@@ -42,8 +47,12 @@ export const blog = {
     };
   },
 
-  getById: async (id: number): Promise<ApiResponse<IBlog>> => {
-    const response = await apiClient.get<ApiResponse<IBlog>>(`/blog/${id}`);
+  /**
+   * Get blog by SLUG (for public detail page)
+   * Uses: /api/blog/[slug]
+   */
+  getBySlug: async (slug: string): Promise<ApiResponse<IBlog>> => {
+    const response = await apiClient.get<ApiResponse<IBlog>>(`/blog/${slug}`);
     const b = response.data.data;
     if (!b) throw new Error('Blog not found');
 
@@ -56,8 +65,9 @@ export const blog = {
         description: b.description ?? '',
         content: b.content ?? '',
         image: b.image ?? '',
-        tags: Array.isArray(b.tags) ? b.tags : [], // convert string to array if needed
+        tags: Array.isArray(b.tags) ? b.tags : [],
         meta: b.meta ?? { title: '', description: '', keywords: [] },
+        slug: b.slug ?? '',
         createdAt: b.createdAt ?? new Date().toISOString(),
         updatedAt: b.updatedAt ?? new Date().toISOString(),
         author: b.author ?? undefined,
@@ -65,6 +75,38 @@ export const blog = {
     };
   },
 
+  /**
+   * Get blog by ID (for admin operations)
+   * Uses: /api/blog/id/[id]
+   */
+  getById: async (id: number): Promise<ApiResponse<IBlog>> => {
+    const response = await apiClient.get<ApiResponse<IBlog>>(`/blog/id/${id}`);
+    const b = response.data.data;
+    if (!b) throw new Error('Blog not found');
+
+    return {
+      ...response.data,
+      data: {
+        id: b.id ?? 0,
+        authorId: b.authorId ?? 0,
+        title: b.title ?? '',
+        description: b.description ?? '',
+        content: b.content ?? '',
+        image: b.image ?? '',
+        tags: Array.isArray(b.tags) ? b.tags : [],
+        meta: b.meta ?? { title: '', description: '', keywords: [] },
+        slug: b.slug ?? '',
+        createdAt: b.createdAt ?? new Date().toISOString(),
+        updatedAt: b.updatedAt ?? new Date().toISOString(),
+        author: b.author ?? undefined,
+      },
+    };
+  },
+
+  /**
+   * Create a new blog
+   * Uses: /api/blog
+   */
   create: async (data: ICreateBlog): Promise<ApiResponse<IBlog>> => {
     const response = await apiClient.post<ApiResponse<IBlog>>('/blog', data);
     const b = response.data.data;
@@ -81,6 +123,7 @@ export const blog = {
         image: b.image ?? '',
         tags: Array.isArray(b.tags) ? b.tags : [],
         meta: b.meta ?? { title: '', description: '', keywords: [] },
+        slug: b.slug ?? '',
         createdAt: b.createdAt ?? new Date().toISOString(),
         updatedAt: b.updatedAt ?? new Date().toISOString(),
         author: b.author ?? undefined,
@@ -88,12 +131,16 @@ export const blog = {
     };
   },
 
+  /**
+   * Update blog by ID
+   * Uses: /api/blog/id/[id]
+   */
   update: async (
     id: number,
     data: IUpdateBlog,
   ): Promise<ApiResponse<IBlog>> => {
     const response = await apiClient.patch<ApiResponse<IBlog>>(
-      `/blog/${id}`,
+      `/blog/id/${id}`,
       data,
     );
     const b = response.data.data;
@@ -110,6 +157,7 @@ export const blog = {
         image: b.image ?? '',
         tags: Array.isArray(b.tags) ? b.tags : [],
         meta: b.meta ?? { title: '', description: '', keywords: [] },
+        slug: b.slug ?? '',
         createdAt: b.createdAt ?? new Date().toISOString(),
         updatedAt: b.updatedAt ?? new Date().toISOString(),
         author: b.author ?? undefined,
@@ -117,8 +165,12 @@ export const blog = {
     };
   },
 
+  /**
+   * Delete blog by ID
+   * Uses: /api/blog/id/[id]
+   */
   delete: async (id: number): Promise<ApiResponse<{}>> => {
-    const response = await apiClient.delete<ApiResponse<{}>>(`/blog/${id}`);
+    const response = await apiClient.delete<ApiResponse<{}>>(`/blog/id/${id}`);
     return response.data;
   },
 };

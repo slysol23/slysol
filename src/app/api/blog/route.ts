@@ -5,6 +5,15 @@ import { eq, sql } from 'drizzle-orm';
 import fs from 'fs/promises';
 import path from 'path';
 
+// Slugify helper - converts title to URL-friendly slug
+function slugify(title: string) {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-') // Replace spaces/special chars with -
+    .replace(/(^-|-$)/g, ''); // Remove leading/trailing -
+}
+
 /**
  * 🟢 GET — Get all blogs with pagination and author info
  */
@@ -25,11 +34,13 @@ export async function GET(req: Request) {
       .select({
         id: blogSchema.id,
         title: blogSchema.title,
+        slug: blogSchema.slug, // ← CRITICAL: Include slug
         description: blogSchema.description,
         content: blogSchema.content,
         image: blogSchema.image,
         tags: blogSchema.tags,
         meta: blogSchema.meta,
+        authorId: blogSchema.authorId, // ← Also include authorId
         createdAt: blogSchema.createdAt,
         updatedAt: blogSchema.updatedAt,
         author: {
@@ -86,32 +97,24 @@ export async function POST(req: Request) {
       );
     }
 
-    // ✅ Handle image upload
+    // Image upload
     let imageUrl = '';
     const imageFile = formData.get('image') as File | null;
-
     if (imageFile && imageFile.size > 0) {
-      try {
-        const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-        await fs.mkdir(uploadDir, { recursive: true });
+      const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+      await fs.mkdir(uploadDir, { recursive: true });
 
-        const timestamp = Date.now();
-        const sanitizedName = imageFile.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-        const uniqueFileName = `${timestamp}-${sanitizedName}`;
-        const filePath = path.join(uploadDir, uniqueFileName);
+      const timestamp = Date.now();
+      const sanitizedName = imageFile.name.replace(/[^a-zA-Z0-9.-]/g, '_');
+      const uniqueFileName = `${timestamp}-${sanitizedName}`;
+      const filePath = path.join(uploadDir, uniqueFileName);
 
-        const arrayBuffer = await imageFile.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
-        await fs.writeFile(filePath, buffer);
-
-        imageUrl = `/uploads/${uniqueFileName}`;
-      } catch (uploadError) {
-        console.error('❌ Image upload failed:', uploadError);
-        imageUrl = '';
-      }
+      const arrayBuffer = await imageFile.arrayBuffer();
+      await fs.writeFile(filePath, Buffer.from(arrayBuffer));
+      imageUrl = `/uploads/${uniqueFileName}`;
     }
 
-    // ✅ Handle tags and meta as JSON
+    // Tags & Meta
     let tags: any = null;
     try {
       const tagsRaw = formData.get('tags');
@@ -128,11 +131,31 @@ export async function POST(req: Request) {
       console.warn('Invalid meta JSON', err);
     }
 
+    // ✅ Generate unique slug
+    let baseSlug = slugify(title);
+    let slug = baseSlug;
+    let counter = 1;
+
+    // Check if slug already exists, if so, append number
+    while (true) {
+      const existing = await db
+        .select({ slug: blogSchema.slug })
+        .from(blogSchema)
+        .where(eq(blogSchema.slug, slug))
+        .limit(1);
+
+      if (existing.length === 0) break; // Slug is unique
+
+      slug = `${baseSlug}-${counter}`;
+      counter++;
+    }
+
     // ✅ Insert blog into database
     const [newBlog] = await db
       .insert(blogSchema)
       .values({
         title,
+        slug, // ✅ FIXED: Use human-readable slug
         description,
         content,
         authorId,

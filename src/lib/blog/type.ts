@@ -8,6 +8,7 @@ export interface IAuthor {
 }
 
 export interface IBlog {
+  slug: string;
   id: number;
   title: string;
   description?: string;

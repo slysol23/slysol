@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
-import { db } from '../../../../db/index';
-import { blogSchema, authorSchema } from '../../../../db/schema';
-import { eq } from 'drizzle-orm';
+import { db } from '../../../../../db/index';
+import { blogSchema, authorSchema } from '../../../../../db/schema';
+import { and, eq, ne } from 'drizzle-orm';
 import { auth } from 'auth';
 
 // Save uploaded file
@@ -19,6 +19,14 @@ async function saveFile(file: File) {
   await fs.promises.writeFile(filePath, buffer);
 
   return fileName;
+}
+
+// Slugify helper
+function slugify(title: string) {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-') // replace spaces/special chars with -
+    .replace(/(^-|-$)/g, ''); // remove leading/trailing -
 }
 
 // 🔹 GET blog by ID
@@ -40,6 +48,7 @@ export async function GET(
         image: blogSchema.image,
         tags: blogSchema.tags,
         meta: blogSchema.meta,
+        slug: blogSchema.slug,
         author: {
           id: authorSchema.id,
           firstName: authorSchema.firstName,
@@ -59,7 +68,6 @@ export async function GET(
     if (!result)
       return NextResponse.json({ error: 'Blog not found' }, { status: 404 });
 
-    // ✅ Ensure tags and meta have correct types
     const blog = {
       ...result,
       tags: Array.isArray(result.tags) ? result.tags : [],
@@ -97,7 +105,7 @@ export async function PATCH(
     const description = formData.get('description')?.toString();
     const content = formData.get('content')?.toString();
 
-    // ✅ Tags
+    // Tags
     let tags: string[] | undefined;
     const tagsRaw = formData.get('tags');
     if (tagsRaw) {
@@ -109,7 +117,7 @@ export async function PATCH(
       }
     }
 
-    // ✅ Meta
+    // Meta
     let meta:
       | { title?: string; description?: string; keywords?: string[] }
       | undefined;
@@ -127,7 +135,7 @@ export async function PATCH(
       }
     }
 
-    // ✅ Image
+    // Image
     const imageFile = formData.get('image') as File | null;
 
     const updateData: any = {};
@@ -139,6 +147,22 @@ export async function PATCH(
     if (imageFile && imageFile.size > 0) {
       const fileName = await saveFile(imageFile);
       updateData.image = fileName;
+    }
+
+    // Generate unique slug if title changes
+    if (title) {
+      let baseSlug = slugify(title);
+
+      const existing = await db
+        .select({ slug: blogSchema.slug })
+        .from(blogSchema)
+        .where(and(eq(blogSchema.slug, baseSlug), ne(blogSchema.id, blogId)));
+
+      if (existing.length > 0) {
+        baseSlug = `${baseSlug}-${Date.now()}`;
+      }
+
+      updateData.slug = baseSlug;
     }
 
     if (Object.keys(updateData).length === 0)
@@ -156,7 +180,6 @@ export async function PATCH(
     if (!updatedBlog)
       return NextResponse.json({ error: 'Blog not found' }, { status: 404 });
 
-    // ✅ Ensure updated tags/meta types
     const blog = {
       ...updatedBlog,
       tags: Array.isArray(updatedBlog.tags) ? updatedBlog.tags : [],
@@ -168,7 +191,7 @@ export async function PATCH(
       data: blog,
     });
   } catch (error) {
-    console.error(error);
+    console.error('Error updating blog:', error);
     return NextResponse.json(
       {
         error: 'Internal server error',
@@ -178,6 +201,7 @@ export async function PATCH(
     );
   }
 }
+
 // 🔹 DELETE blog by ID
 export async function DELETE(
   _req: Request,

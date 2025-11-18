@@ -22,7 +22,7 @@ export default function BlogPage() {
     queryKey: ['blogs', page],
     queryFn: async () => await blog.getAll(page, limit),
     staleTime: 2 * 60 * 1000,
-    keepPreviousData: true, // ✅ Correct usage
+    keepPreviousData: true,
   } as UseQueryOptions<BlogApiResponse, Error>);
 
   // ✅ Fetch authors
@@ -45,7 +45,7 @@ export default function BlogPage() {
   };
 
   if (blogQuery.isLoading)
-    return <div className="text-center text-white py-20">Loading blogs...</div>;
+    return <div className="text-center text-black py-20">Loading blogs...</div>;
 
   if (blogQuery.isError)
     return (
@@ -55,6 +55,7 @@ export default function BlogPage() {
     );
 
   const breadCrumb: BreadcrumbItem[] = [{ label: 'Blogs', href: '/blog' }];
+
   return (
     <div>
       <Container hScreen={false}>
@@ -111,8 +112,16 @@ export default function BlogPage() {
                     {b.description}
                   </p>
 
+                  {/* 🔍 DEBUG: Show slug value */}
+                  {!b.slug && (
+                    <p className="text-red-500 text-xs mb-2">
+                      ⚠️ Warning: This blog has no slug! ID: {b.id}
+                    </p>
+                  )}
+
+                  {/* Use slug if exists, fallback to ID */}
                   <Link
-                    href={`/blog/${b.id}`}
+                    href={b.slug ? `/blog/${b.slug}` : `/blog/id/${b.id}`}
                     className="text-blue-500 hover:text-blue-400 hover:underline"
                   >
                     Read More

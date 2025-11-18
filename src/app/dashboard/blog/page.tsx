@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { blog } from 'lib/blog';
 import { BlogApiResponse, IBlog } from 'lib/type';
-import { FaPen, FaTrash, FaPlus } from 'react-icons/fa';
+import { FaPen, FaTrash, FaPlus, FaEye } from 'react-icons/fa';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
@@ -21,7 +21,7 @@ export default function BlogDashboardPage() {
   const { data, isLoading, error } = useQuery<BlogApiResponse, Error>({
     queryKey: ['blogs', page],
     queryFn: () => blog.getAll(page, limit),
-    staleTime: 1000 * 60, // 1 min cache
+    staleTime: 1000 * 60,
   });
 
   const blogs: IBlog[] = data?.data ?? [];
@@ -68,48 +68,56 @@ export default function BlogDashboardPage() {
             <table className="w-full text-left border border-gray-700 rounded-lg">
               <thead className="bg-black text-white">
                 <tr>
-                  <th className="p-3">#</th>
+                  <th className="p-3">Image</th>
                   <th className="p-3">Title</th>
                   <th className="p-3">Author</th>
-                  <th className="p-3">Tags</th>
-                  <th className="p-3">Meta Data</th>
-                  <th className="p-3">Created</th>
+                  <th className="p-3">Created At</th>
+                  <th className="p-3">Updated At</th>
+                  {/* <th className="p-3">Status</th> */}
+                  <th className="p-3">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {blogs.map((b: IBlog, index: number) => (
+                {blogs.map((b: IBlog) => (
                   <tr
                     key={b.id}
                     className="border-t border-gray-700 hover:bg-gray-400 transition text-black"
                   >
-                    <td className="p-3">{(page - 1) * limit + index + 1}</td>
+                    <td className="p-3">
+                      {b.image ? (
+                        <img
+                          src={b.image}
+                          alt={b.title}
+                          className="w-20 h-12 object-cover rounded-lg"
+                        />
+                      ) : (
+                        <span className="text-gray-400">No image</span>
+                      )}
+                    </td>
+
                     <td className="p-3 font-semibold">{b.title}</td>
                     <td className="p-3">
                       {b.author
                         ? `${b.author.firstName} ${b.author.lastName}`
                         : `Author #${b.authorId}`}
                     </td>
-                    {/* Tags */}
-                    <td className="p-3">
-                      {b.tags && b.tags.length > 0
-                        ? b.tags.map((tag: string) => (
-                            <span key={tag} className="px-2 py-1 text-black">
-                              #{tag}
-                            </span>
-                          ))
-                        : '-'}
-                    </td>
-
                     <td className="p-3">
                       {new Date(b.createdAt).toLocaleDateString('en-GB')}
                     </td>
+                    <td className="p-3">
+                      {new Date(b.updatedAt).toLocaleDateString('en-GB')}
+                    </td>
+                    {/* <td className="p-3 capitalize">{b.status}</td> */}
                     <td className="p-3 flex gap-3">
+                      {/* Edit */}
                       <Link
                         href={`/dashboard/blog/edit/${b.id}`}
                         className="text-yellow-500 hover:text-yellow-300"
                       >
                         <FaPen />
                       </Link>
+
+                      {/* Delete */}
                       {isAdmin && (
                         <button
                           onClick={() => handleDelete(b.id)}
@@ -119,6 +127,14 @@ export default function BlogDashboardPage() {
                           <FaTrash />
                         </button>
                       )}
+
+                      {/* View */}
+                      <Link
+                        href={`/blog/${b.slug}`} // dynamic route using slug
+                        className="text-blue-500 hover:text-blue-400"
+                      >
+                        <FaEye />
+                      </Link>
                     </td>
                   </tr>
                 ))}

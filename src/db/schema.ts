@@ -5,6 +5,7 @@ import {
   boolean,
   integer,
   jsonb,
+  varchar,
 } from 'drizzle-orm/pg-core';
 
 export const userSchema = pgTable('user', {
@@ -18,11 +19,9 @@ export const userSchema = pgTable('user', {
 });
 export const blogSchema = pgTable('blog', {
   id: integer('id').primaryKey().unique().notNull().generatedAlwaysAsIdentity(),
-
   authorId: integer('author_id')
     .notNull()
     .references(() => authorSchema.id),
-
   title: text('title').notNull(),
   content: text('content').notNull(),
   image: text('image').notNull(),
@@ -31,6 +30,7 @@ export const blogSchema = pgTable('blog', {
   meta: jsonb('meta'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  slug: varchar('slug', { length: 255 }).notNull().unique(),
 });
 
 export const authorSchema = pgTable('author', {
