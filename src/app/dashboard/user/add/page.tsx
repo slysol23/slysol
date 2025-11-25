@@ -9,7 +9,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { user } from 'lib/user';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 
-// API call to create user
 async function createUser(data: {
   name: string;
   email: string;
@@ -61,6 +60,7 @@ export default function AddUserPage() {
     register,
     handleSubmit,
     formState: { errors, isValid },
+    setValue,
   } = useForm<UserForm>({
     resolver: zodResolver(UserSchema),
   });
@@ -68,6 +68,7 @@ export default function AddUserPage() {
   const onSubmit = (data: UserForm) => {
     createUserMutation.mutate(data);
   };
+
   const createAuthorMutation = useMutation({
     mutationFn: async (data: UserForm) => {
       return await user.create(data);
@@ -90,14 +91,24 @@ export default function AddUserPage() {
   return (
     <div className="min-h-screen text-black">
       {/* Header */}
-      <header className="border-b border-gray-200 text-black px-6">
+      <header className="border-b border-gray-200 text-black px-6 py-4">
         <h1 className="text-3xl font-bold text-black">Add New User</h1>
-        <span className="p-5">
+        <div className="pt-4">
           <Breadcrumb items={breadCrumb} />
-        </span>
+        </div>
       </header>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 py-10 px-6">
-        {/* Name */}
+        <div className="flex justify-end gap-4">
+          {isValid && (
+            <button
+              type="submit"
+              disabled={createAuthorMutation.isPending}
+              className="px-6 py-3 rounded-lg border border-gray-300 hover:bg-gray-500 transition"
+            >
+              {createAuthorMutation.isPending ? 'Adding...' : 'Add Author'}
+            </button>
+          )}
+        </div>
         <div>
           <label className="block text-black font-medium mb-2">Name</label>
           <input
@@ -142,33 +153,16 @@ export default function AddUserPage() {
         </div>
 
         {/* Is Admin */}
-        <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            {...register('isAdmin')}
-            className="w-4 h-4 accent-blue-500"
-          />
-          <label className="text-black">Is Admin?</label>
-        </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-black font-medium">Is Admin?</label>
 
-        {/* Submit */}
-        <div className="flex justify-end gap-4">
-          <button
-            type="button"
-            onClick={() => router.push('/dashboard/user')}
-            className="px-6 py-3 rounded-lg border bg-red-500 hover:bg-red-700 transition"
+          <select
+            className="w-full border border-gray-300 rounded-lg p-2 text-black"
+            onChange={(e) => setValue('isAdmin', e.target.value === 'yes')}
           >
-            Cancel
-          </button>
-          {isValid && (
-            <button
-              type="submit"
-              disabled={createAuthorMutation.isPending}
-              className="px-6 py-3 rounded-lg border border-gray-300 hover:bg-gray-400 transition"
-            >
-              {createAuthorMutation.isPending ? 'Saving...' : 'Add Author'}
-            </button>
-          )}
+            <option value="no">No</option>
+            <option value="yes">Yes</option>
+          </select>
         </div>
       </form>
     </div>

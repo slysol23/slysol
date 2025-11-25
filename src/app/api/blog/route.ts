@@ -1,98 +1,129 @@
-import { NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { db } from '../../../db';
-import { blogSchema, authorSchema } from '../../../db/schema';
-import { eq, sql } from 'drizzle-orm';
+import {
+  blogSchema,
+  authorSchema,
+  blogAuthorsSchema,
+} from '../../../db/schema';
+import { eq, inArray, sql } from 'drizzle-orm';
 import fs from 'fs/promises';
 import path from 'path';
+import { auth } from 'auth';
+import { NextResponse } from 'next/server';
 
-// Slugify helper - converts title to URL-friendly slug
 function slugify(title: string) {
   return title
     .toLowerCase()
     .trim()
-    .replace(/[^a-z0-9]+/g, '-') // Replace spaces/special chars with -
-    .replace(/(^-|-$)/g, ''); // Remove leading/trailing -
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
 }
 
 /**
- * 🟢 GET — Get all blogs with pagination and author info
+ * 🟢 GET — Get all blogs with pagination and multiple authors
  */
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
-    const page = parseInt(searchParams.get('page') || '1', 10);
-    const limit = parseInt(searchParams.get('limit') || '6', 10);
+    const page = parseInt(searchParams.get('page') ?? '1');
+    const limit = parseInt(searchParams.get('limit') ?? '10');
     const offset = (page - 1) * limit;
 
-    // ✅ Total blog count
-    const [{ count }] = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(blogSchema);
-
-    // ✅ Fetch paginated blogs with author info
     const blogs = await db
-      .select({
-        id: blogSchema.id,
-        title: blogSchema.title,
-        slug: blogSchema.slug, // ← CRITICAL: Include slug
-        description: blogSchema.description,
-        content: blogSchema.content,
-        image: blogSchema.image,
-        tags: blogSchema.tags,
-        meta: blogSchema.meta,
-        authorId: blogSchema.authorId, // ← Also include authorId
-        createdAt: blogSchema.createdAt,
-        updatedAt: blogSchema.updatedAt,
-        author: {
-          id: authorSchema.id,
-          firstName: authorSchema.firstName,
-          lastName: authorSchema.lastName,
-          email: authorSchema.email,
-        },
-      })
+      .select()
       .from(blogSchema)
-      .leftJoin(authorSchema, eq(blogSchema.authorId, authorSchema.id))
       .orderBy(sql`${blogSchema.createdAt} DESC`)
       .limit(limit)
       .offset(offset);
+
+    const blogIds = blogs.map((b) => b.id);
+
+    if (blogIds.length === 0) {
+      return NextResponse.json({
+        message: 'Blogs fetched',
+        page,
+        limit,
+        total: 0,
+        totalPages: 0,
+        data: [],
+      });
+    }
+
+    const relations = await db
+      .select()
+      .from(blogAuthorsSchema)
+      .where(inArray(blogAuthorsSchema.blogId, blogIds));
+
+    const authorIds = relations.map((r) => r.authorId);
+
+    const authors = await db
+      .select()
+      .from(authorSchema)
+      .where(inArray(authorSchema.id, authorIds));
+
+    const authorMap = new Map(authors.map((a) => [a.id, a]));
+
+    const blogsWithAuthors = blogs.map((blog) => {
+      const ids = relations
+        .filter((r) => r.blogId === blog.id)
+        .map((r) => r.authorId);
+
+      return {
+        ...blog,
+        authorIds: ids,
+        authors: ids.map((id) => authorMap.get(id)).filter(Boolean),
+      };
+    });
 
     return NextResponse.json({
       message: 'Blogs fetched successfully',
       page,
       limit,
-      total: count,
-      totalPages: Math.ceil(count / limit),
-      data: blogs,
+      data: blogsWithAuthors,
     });
-  } catch (error) {
-    console.error('❌ Error fetching blogs:', error);
+  } catch (err) {
+    console.error('GET /api/blog error:', err);
     return NextResponse.json(
-      {
-        error: 'Failed to fetch blogs',
-        details: error instanceof Error ? error.message : String(error),
-      },
+      { error: 'Internal Server Error', details: (err as Error).message },
       { status: 500 },
     );
   }
 }
 
 /**
- * 🟡 POST — Create a new blog (with optional image upload)
+ * 🟡 POST — Create a new blog
  */
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const formData = await req.formData();
+    const session = await auth().catch(() => null);
 
-    const title = formData.get('title')?.toString();
-    const description = formData.get('description')?.toString();
-    const content = formData.get('content')?.toString();
-    const authorIdRaw = formData.get('authorId')?.toString();
-    const authorId = authorIdRaw ? parseInt(authorIdRaw, 10) : undefined;
-
-    // ✅ Validate required fields
-    if (!title || !description || !content || !authorId) {
+    if (!session?.user) {
       return NextResponse.json(
-        { error: 'Title, description, content and authorId are required' },
+        { error: 'Unauthorized - Please log in' },
+        { status: 401 },
+      );
+    }
+
+    const formData = await req.formData();
+    const title = formData.get('title')?.toString() || '';
+    const description = formData.get('description')?.toString() || '';
+    const content = formData.get('content')?.toString() || '';
+
+    const authorIds = formData
+      .getAll('authorId')
+      .map((id) => Number(id))
+      .filter((id) => !isNaN(id));
+
+    if (authorIds.length === 0) {
+      return NextResponse.json(
+        { error: 'At least 1 author required' },
+        { status: 400 },
+      );
+    }
+
+    if (!title || !description || !content) {
+      return NextResponse.json(
+        { error: 'Missing required fields' },
         { status: 400 },
       );
     }
@@ -114,68 +145,89 @@ export async function POST(req: Request) {
       imageUrl = `/uploads/${uniqueFileName}`;
     }
 
-    // Tags & Meta
-    let tags: any = null;
-    try {
-      const tagsRaw = formData.get('tags');
-      if (tagsRaw) tags = JSON.parse(tagsRaw.toString());
-    } catch (err) {
-      console.warn('Invalid tags JSON', err);
+    // 👇 Parse tags - handle both string and already-parsed
+    let tags: any[] = [];
+    const tagsRaw = formData.get('tags');
+    if (tagsRaw) {
+      try {
+        tags =
+          typeof tagsRaw === 'string'
+            ? JSON.parse(tagsRaw.toString())
+            : tagsRaw;
+        if (!Array.isArray(tags)) tags = [];
+      } catch (e) {
+        console.error('Error parsing tags:', e);
+        tags = [];
+      }
     }
 
-    let meta: any = null;
-    try {
-      const metaRaw = formData.get('meta');
-      if (metaRaw) meta = JSON.parse(metaRaw.toString());
-    } catch (err) {
-      console.warn('Invalid meta JSON', err);
+    // 👇 Parse meta - handle both string and already-parsed
+    let meta: any = [];
+    const metaRaw = formData.get('meta');
+    if (metaRaw) {
+      try {
+        meta =
+          typeof metaRaw === 'string'
+            ? JSON.parse(metaRaw.toString())
+            : metaRaw;
+      } catch (e) {
+        console.error('Error parsing meta:', e);
+        meta = [];
+      }
     }
 
-    // ✅ Generate unique slug
-    let baseSlug = slugify(title);
+    const baseSlug = slugify(title);
     let slug = baseSlug;
     let counter = 1;
 
-    // Check if slug already exists, if so, append number
     while (true) {
       const existing = await db
         .select({ slug: blogSchema.slug })
         .from(blogSchema)
-        .where(eq(blogSchema.slug, slug))
-        .limit(1);
-
-      if (existing.length === 0) break; // Slug is unique
-
-      slug = `${baseSlug}-${counter}`;
-      counter++;
+        .where(eq(blogSchema.slug, slug));
+      if (existing.length === 0) break;
+      slug = `${baseSlug}-${counter++}`;
     }
 
-    // ✅ Insert blog into database
     const [newBlog] = await db
       .insert(blogSchema)
       .values({
         title,
-        slug, // ✅ FIXED: Use human-readable slug
+        slug,
         description,
         content,
-        authorId,
+        authorId: authorIds[0],
         image: imageUrl,
         tags,
         meta,
+        createdBy: session.user.name,
+        updatedBy: session.user.name,
+        is_published: false,
       })
       .returning();
 
+    const relations = authorIds.map((id) => ({
+      blogId: newBlog.id,
+      authorId: id,
+    }));
+
+    if (relations.length) {
+      await db.insert(blogAuthorsSchema).values(relations);
+    }
+
+    const authors = await db
+      .select()
+      .from(authorSchema)
+      .where(inArray(authorSchema.id, authorIds));
+
+    return NextResponse.json({
+      message: 'Blog created successfully',
+      data: { ...newBlog, authorIds, authors },
+    });
+  } catch (err) {
+    console.error('POST /api/blog error:', err);
     return NextResponse.json(
-      { message: 'Blog created successfully', data: newBlog },
-      { status: 201 },
-    );
-  } catch (error) {
-    console.error('❌ Blog creation error:', error);
-    return NextResponse.json(
-      {
-        error: 'Internal Server Error',
-        details: error instanceof Error ? error.message : String(error),
-      },
+      { error: 'Internal Server Error', details: (err as Error).message },
       { status: 500 },
     );
   }

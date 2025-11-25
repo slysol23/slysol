@@ -27,7 +27,7 @@ export default function AddAuthorPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['authors'] });
-      alert('✅ Author created successfully!');
+      alert('✅ Author Added successfully!');
       router.push('/dashboard/author');
     },
     onError: (err) => {
@@ -48,8 +48,8 @@ export default function AddAuthorPage() {
   const onSubmit = (data: AuthorForm) => {
     createAuthorMutation.mutate(data);
   };
+
   const breadCrumbItems: BreadcrumbItem[] = [
-    { label: 'Dashboard', href: '/dashboard' },
     { label: 'Auhtors', href: '/dashboard/author' },
     { label: 'Add Author', href: '/dashboard/author/add' },
   ];
@@ -57,14 +57,25 @@ export default function AddAuthorPage() {
     <div className="min-h-screen text-black">
       <header className="border-b border-gray-200 px-6">
         <h1 className="text-3xl font-bold">Add New Author</h1>
-        <span className="p-5">
+        <div className="mt-4">
           <Breadcrumb items={breadCrumbItems} />
-        </span>
+        </div>
       </header>
 
       {/* Main Content */}
-      <main className="flex-grow py-10 px-6">
+      <main className="flex-grow py-4 px-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+          <div className="flex justify-end mt-4">
+            {isValid && (
+              <button
+                type="submit"
+                disabled={createAuthorMutation.isPending}
+                className="px-6 py-3 rounded-lg border border-gray-300 hover:bg-gray-400 transition"
+              >
+                {createAuthorMutation.isPending ? 'Saving...' : 'Add Author'}
+              </button>
+            )}
+          </div>
           <div>
             <label className="block text-black font-medium mb-2">
               First Name
@@ -111,25 +122,6 @@ export default function AddAuthorPage() {
               <p className="text-red-500 text-sm mt-1">
                 {errors.email.message}
               </p>
-            )}
-          </div>
-
-          <div className="flex justify-end gap-3">
-            <button
-              type="button"
-              onClick={() => router.push('/dashboard/author')}
-              className="px-6 py-3 rounded-lg border bg-red-500 hover:bg-red-700 transition"
-            >
-              Cancel
-            </button>
-            {isValid && (
-              <button
-                type="submit"
-                disabled={createAuthorMutation.isPending}
-                className="px-6 py-3 rounded-lg border border-gray-300 hover:bg-gray-400 transition"
-              >
-                {createAuthorMutation.isPending ? 'Saving...' : 'Add Author'}
-              </button>
             )}
           </div>
         </form>

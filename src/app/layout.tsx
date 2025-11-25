@@ -1,3 +1,4 @@
+// @ts-ignore: Allow side-effect import of global CSS without type declarations
 import './globals.css';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';

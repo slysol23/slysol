@@ -38,12 +38,10 @@ iframe.skiptranslate {
 
 .gradient-border {
   border-image-slice: 1;
-  border-image-source: linear-gradient(
-    0deg,
-    rgba(15, 171, 246, 0.5),
-    rgba(69, 90, 181, 0.5),
-    rgba(235, 87, 123, 0.5)
-  );
+  border-image-source: linear-gradient(0deg,
+      rgba(15, 171, 246, 0.5),
+      rgba(69, 90, 181, 0.5),
+      rgba(235, 87, 123, 0.5));
 }
 
 @media screen and (max-width: 768px) {
@@ -55,4 +53,13 @@ iframe.skiptranslate {
     top: auto;
     left: auto;
   }
+}
+
+/* Toolbar background and text color */
+.jsoneditor-menu {
+  background-color: #393e58 !important;
+}
+
+.jsoneditor {
+  border: 1px solid #393e58 !important;
 }

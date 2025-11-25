@@ -1,19 +1,16 @@
-// src/components/dashboard/Sidebar.tsx
 'use client';
 
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { FaBlog, FaUser, FaUsers } from 'react-icons/fa';
-import { useSession, signOut, getSession } from 'next-auth/react';
+import { useUser } from '../../providers/UserProvider';
 
 const Sidebar = () => {
   const pathname = usePathname();
-  const { data: session, status } = useSession();
-
-  if (status === 'loading')
-    return <div className="w-64 bg-blue p-4">Loading...</div>;
+  const router = useRouter();
+  const { user, isAdmin, isLoading } = useUser();
 
   const menu = [
     {
@@ -35,10 +32,34 @@ const Sidebar = () => {
       adminOnly: true,
     },
   ];
-  const isAdmin = session?.user && (session.user as any).isAdmin;
+
+  if (isLoading) {
+    return (
+      <div className="w-64 bg-blue p-4 text-white">Loading Sidebar...</div>
+    );
+  }
+
+  if (!user) {
+    return <div className="w-64 bg-blue p-4 text-white">No session found</div>;
+  }
 
   // Filter menu based on admin status
   const filteredMenu = menu.filter((item) => !item.adminOnly || isAdmin);
+
+  const handleLogout = async () => {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    router.push('/login');
+  };
+  if (isLoading) {
+    return (
+      <div className="min-h-screen text-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
+          <p className="text-xl">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-64 bg-blue flex flex-col justify-between">
@@ -71,7 +92,7 @@ const Sidebar = () => {
       <div className="p-4">
         <button
           className="w-full bg-red-500 py-2 rounded-lg text-white hover:bg-red-600"
-          onClick={() => signOut({ callbackUrl: '/login' })}
+          onClick={handleLogout}
         >
           Logout
         </button>

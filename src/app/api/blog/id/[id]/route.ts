@@ -2,8 +2,12 @@ import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
 import { db } from '../../../../../db/index';
-import { blogSchema, authorSchema } from '../../../../../db/schema';
-import { and, eq, ne } from 'drizzle-orm';
+import {
+  blogSchema,
+  authorSchema,
+  blogAuthorsSchema,
+} from '../../../../../db/schema';
+import { and, eq, inArray, ne } from 'drizzle-orm';
 import { auth } from 'auth';
 
 // Save uploaded file
@@ -25,8 +29,8 @@ async function saveFile(file: File) {
 function slugify(title: string) {
   return title
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-') // replace spaces/special chars with -
-    .replace(/(^-|-$)/g, ''); // remove leading/trailing -
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
 }
 
 // 🔹 GET blog by ID
@@ -39,44 +43,36 @@ export async function GET(
     if (isNaN(blogId))
       return NextResponse.json({ error: 'Invalid blog ID' }, { status: 400 });
 
-    const [result] = await db
-      .select({
-        id: blogSchema.id,
-        title: blogSchema.title,
-        description: blogSchema.description,
-        content: blogSchema.content,
-        image: blogSchema.image,
-        tags: blogSchema.tags,
-        meta: blogSchema.meta,
-        slug: blogSchema.slug,
-        author: {
-          id: authorSchema.id,
-          firstName: authorSchema.firstName,
-          lastName: authorSchema.lastName,
-          email: authorSchema.email,
-          createdAt: authorSchema.createdAt,
-          updatedAt: authorSchema.updatedAt,
-        },
-        createdAt: blogSchema.createdAt,
-        updatedAt: blogSchema.updatedAt,
-      })
+    const [blogResult] = await db
+      .select()
       .from(blogSchema)
-      .leftJoin(authorSchema, eq(blogSchema.authorId, authorSchema.id))
-      .where(eq(blogSchema.id, blogId))
-      .limit(1);
+      .where(eq(blogSchema.id, blogId));
 
-    if (!result)
+    if (!blogResult)
       return NextResponse.json({ error: 'Blog not found' }, { status: 404 });
 
-    const blog = {
-      ...result,
-      tags: Array.isArray(result.tags) ? result.tags : [],
-      meta: result.meta ?? { title: '', description: '', keywords: [] },
-    };
+    const relations = await db
+      .select()
+      .from(blogAuthorsSchema)
+      .where(eq(blogAuthorsSchema.blogId, blogId));
+
+    const authorIds = relations.map((r) => r.authorId);
+    const authors = authorIds.length
+      ? await db
+          .select()
+          .from(authorSchema)
+          .where(inArray(authorSchema.id, authorIds))
+      : [];
 
     return NextResponse.json({
       message: 'Blog fetched successfully',
-      data: blog,
+      data: {
+        ...blogResult,
+        authors,
+        // 👇 Return tags and meta as-is (should already be arrays/objects)
+        tags: blogResult.tags || [],
+        meta: blogResult.meta || [],
+      },
     });
   } catch (error) {
     console.error('Error fetching blog by ID:', error);
@@ -90,12 +86,20 @@ export async function GET(
   }
 }
 
-// 🔹 PATCH: Update blog by ID
-export async function PATCH(
+export async function PUT(
   req: Request,
   { params }: { params: { id: string } },
 ) {
   try {
+    const session = await auth();
+
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: 'Unauthorized - Please log in' },
+        { status: 401 },
+      );
+    }
+
     const blogId = Number(params.id);
     if (isNaN(blogId))
       return NextResponse.json({ error: 'Invalid blog ID' }, { status: 400 });
@@ -105,35 +109,37 @@ export async function PATCH(
     const description = formData.get('description')?.toString();
     const content = formData.get('content')?.toString();
 
-    // Tags
-    let tags: string[] | undefined;
+    // 👇 Parse tags - handle both string and already-parsed array
+    let tags: any[] | undefined;
     const tagsRaw = formData.get('tags');
     if (tagsRaw) {
       try {
-        const parsed = JSON.parse(tagsRaw.toString());
-        if (Array.isArray(parsed)) tags = parsed;
-      } catch {
-        console.warn('Invalid tags JSON, skipping');
+        const parsed =
+          typeof tagsRaw === 'string' ? JSON.parse(tagsRaw) : tagsRaw;
+        if (Array.isArray(parsed)) {
+          tags = parsed;
+        }
+      } catch (e) {
+        console.error('Error parsing tags:', e);
       }
     }
 
-    // Meta
-    let meta:
-      | { title?: string; description?: string; keywords?: string[] }
-      | undefined;
+    // 👇 Parse meta - handle both string and already-parsed array/object
+    let meta: any;
     const metaRaw = formData.get('meta');
     if (metaRaw) {
       try {
-        const parsed = JSON.parse(metaRaw.toString());
-        meta = {
-          title: parsed.title ?? '',
-          description: parsed.description ?? '',
-          keywords: Array.isArray(parsed.keywords) ? parsed.keywords : [],
-        };
-      } catch {
-        console.warn('Invalid meta JSON, skipping');
+        meta = typeof metaRaw === 'string' ? JSON.parse(metaRaw) : metaRaw;
+      } catch (e) {
+        console.error('Error parsing meta:', e);
       }
     }
+
+    // Authors
+    const authorIds = formData
+      .getAll('authorId')
+      .map((id) => Number(id))
+      .filter((id) => !isNaN(id));
 
     // Image
     const imageFile = formData.get('image') as File | null;
@@ -142,30 +148,27 @@ export async function PATCH(
     if (title) updateData.title = title;
     if (description) updateData.description = description;
     if (content) updateData.content = content;
-    if (tags) updateData.tags = tags;
-    if (meta) updateData.meta = meta;
+    if (tags !== undefined) updateData.tags = tags;
+    if (meta !== undefined) updateData.meta = meta;
     if (imageFile && imageFile.size > 0) {
       const fileName = await saveFile(imageFile);
-      updateData.image = fileName;
+      updateData.image = `/uploads/${fileName}`; // ✅ Add leading slash
     }
 
-    // Generate unique slug if title changes
+    updateData.updatedBy = session.user.name;
+    updateData.updatedAt = new Date();
+
     if (title) {
       let baseSlug = slugify(title);
-
       const existing = await db
         .select({ slug: blogSchema.slug })
         .from(blogSchema)
         .where(and(eq(blogSchema.slug, baseSlug), ne(blogSchema.id, blogId)));
-
-      if (existing.length > 0) {
-        baseSlug = `${baseSlug}-${Date.now()}`;
-      }
-
+      if (existing.length > 0) baseSlug = `${baseSlug}-${Date.now()}`;
       updateData.slug = baseSlug;
     }
 
-    if (Object.keys(updateData).length === 0)
+    if (Object.keys(updateData).length === 0 && authorIds.length === 0)
       return NextResponse.json(
         { error: 'No valid fields to update' },
         { status: 400 },
@@ -180,15 +183,35 @@ export async function PATCH(
     if (!updatedBlog)
       return NextResponse.json({ error: 'Blog not found' }, { status: 404 });
 
-    const blog = {
-      ...updatedBlog,
-      tags: Array.isArray(updatedBlog.tags) ? updatedBlog.tags : [],
-      meta: updatedBlog.meta ?? { title: '', description: '', keywords: [] },
-    };
+    // Update authors if provided
+    if (authorIds.length > 0) {
+      await db
+        .delete(blogAuthorsSchema)
+        .where(eq(blogAuthorsSchema.blogId, blogId));
+      await db
+        .insert(blogAuthorsSchema)
+        .values(authorIds.map((id) => ({ blogId, authorId: id })));
+    }
+
+    // Fetch updated authors
+    const authors = authorIds.length
+      ? await db
+          .select()
+          .from(authorSchema)
+          .where(inArray(authorSchema.id, authorIds))
+      : [];
 
     return NextResponse.json({
       message: 'Blog updated successfully',
-      data: blog,
+      data: {
+        ...updatedBlog,
+        authors,
+        updatedBy: session.user.name,
+        updatedAt: updateData.updatedAt,
+        // 👇 Return as-is (already arrays/objects)
+        tags: updatedBlog.tags || [],
+        meta: updatedBlog.meta || [],
+      },
     });
   } catch (error) {
     console.error('Error updating blog:', error);
@@ -202,17 +225,11 @@ export async function PATCH(
   }
 }
 
-// 🔹 DELETE blog by ID
 export async function DELETE(
   _req: Request,
   { params }: { params: { id: string } },
 ) {
   try {
-    const session = await auth();
-    if (!session?.user || !(session.user as any).isAdmin) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-    }
-
     const blogId = Number(params.id);
     if (isNaN(blogId))
       return NextResponse.json({ error: 'Invalid blog ID' }, { status: 400 });
@@ -221,7 +238,6 @@ export async function DELETE(
       .delete(blogSchema)
       .where(eq(blogSchema.id, blogId))
       .returning();
-
     if (!deletedBlog)
       return NextResponse.json(
         { error: 'Blog not found or already deleted.' },
@@ -236,6 +252,57 @@ export async function DELETE(
         error: 'Internal server error',
         details: error instanceof Error ? error.message : 'Unknown error',
       },
+      { status: 500 },
+    );
+  }
+}
+
+export async function PATCH(
+  req: Request,
+  { params }: { params: { id: string } },
+) {
+  try {
+    const blogId = Number(params.id);
+    if (isNaN(blogId))
+      return NextResponse.json({ error: 'Invalid blog ID' }, { status: 400 });
+
+    const body = await req.json();
+    const { isPublished } = body; // new state
+
+    const [updatedBlog] = await db
+      .update(blogSchema)
+      .set({ is_published: isPublished })
+      .where(eq(blogSchema.id, blogId))
+      .returning();
+
+    if (!updatedBlog)
+      return NextResponse.json({ error: 'Blog not found' }, { status: 404 });
+
+    const relations = await db
+      .select()
+      .from(blogAuthorsSchema)
+      .where(eq(blogAuthorsSchema.blogId, blogId));
+
+    const authorIds = relations.map((r) => r.authorId);
+    const authors = authorIds.length
+      ? await db
+          .select()
+          .from(authorSchema)
+          .where(inArray(authorSchema.id, authorIds))
+      : [];
+
+    return NextResponse.json({
+      message: `Blog ${isPublished ? 'published' : 'unpublished'} successfully`,
+      data: {
+        ...updatedBlog,
+        authors,
+        status: updatedBlog.is_published ? 'Published' : 'Draft',
+      },
+    });
+  } catch (error) {
+    console.error('Error updating blog:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
       { status: 500 },
     );
   }

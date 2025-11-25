@@ -1,9 +1,8 @@
-// src/components/Role/RoleProtected.tsx
 'use client';
 
-import React from 'react';
-import { useSession } from 'next-auth/react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useUser } from '../../providers/UserProvider';
 
 interface RoleProtectedProps {
   roles: ('admin' | 'user')[];
@@ -11,22 +10,29 @@ interface RoleProtectedProps {
 }
 
 const RoleProtected = ({ roles, children }: RoleProtectedProps) => {
-  const { data: session, status } = useSession();
+  const { user, isAdmin, isLoading } = useUser();
   const router = useRouter();
 
-  if (status === 'loading') return <div>Loading...</div>;
+  useEffect(() => {
+    if (isLoading) return;
 
-  if (!session?.user) {
-    router.replace('/login');
-    return null;
-  }
+    if (!user) {
+      router.replace('/login');
+      return;
+    }
 
-  const userRole: 'admin' | 'user' = session.user.isAdmin ? 'admin' : 'user';
+    const userRole: 'admin' | 'user' = isAdmin ? 'admin' : 'user';
 
-  if (!roles.includes(userRole)) {
-    router.replace('/dashboard'); // redirect non-admins
-    return null;
-  }
+    if (!roles.includes(userRole)) {
+      router.replace('/dashboard/blog');
+    }
+  }, [user, isLoading, roles, router, isAdmin]);
+
+  if (isLoading) return <div>Loading...</div>;
+
+  const userRole: 'admin' | 'user' = isAdmin ? 'admin' : 'user';
+
+  if (!user || !roles.includes(userRole)) return null;
 
   return <>{children}</>;
 };

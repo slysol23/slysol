@@ -8,12 +8,17 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { user } from 'lib/user';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
+import { IUser } from 'lib/type';
 
 // Validation schema
 const UserSchema = z.object({
   username: z.string().min(2, 'Username must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  password: z
+    .string()
+    .min(6, 'Password must be at least 6 characters')
+    .optional()
+    .or(z.literal('')),
   isAdmin: z.enum(['yes', 'no']),
 });
 
@@ -31,7 +36,7 @@ export default function EditUserPage() {
     isLoading,
     isError,
     error,
-  } = useQuery({
+  } = useQuery<IUser | undefined>({
     queryKey: ['user', id],
     queryFn: async () => {
       const res = await user.getById(id);
@@ -41,14 +46,25 @@ export default function EditUserPage() {
   });
 
   // Update user mutation
-  const updateUserMutation = useMutation({
-    mutationFn: async (data: Partial<UserForm>) => {
-      // Convert isAdmin to boolean for backend
-      const payload = { ...data, isAdmin: data.isAdmin === 'yes' };
+  const updateUser = useMutation({
+    mutationFn: async (data: UserForm) => {
+      const payload: Partial<IUser> & { password?: string } = {
+        name: data.username,
+        email: data.email,
+        isAdmin: data.isAdmin === 'yes',
+      };
+
+      // Only include password if it's not empty
+      if (data.password && data.password.trim() !== '') {
+        payload.password = data.password;
+      }
+
       return await user.update(id, payload);
     },
     onSuccess: () => {
+      // Invalidate both the user list and the specific user query
       queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ['user', id] });
       alert('✅ User updated successfully!');
       router.push('/dashboard/user');
     },
@@ -68,21 +84,19 @@ export default function EditUserPage() {
     resolver: zodResolver(UserSchema),
   });
 
-  // Populate form with existing data
+  // Populate form with existing data safely
   React.useEffect(() => {
     if (u) {
       reset({
-        username: u.name || '',
-        email: u.email || '',
+        username: u.name ?? '',
+        email: u.email ?? '',
         password: '',
         isAdmin: u.isAdmin ? 'yes' : 'no',
       });
     }
   }, [u, reset]);
 
-  const onSubmit = (data: UserForm) => {
-    updateUserMutation.mutate(data);
-  };
+  const onSubmit = (data: UserForm) => updateUser.mutate(data);
 
   if (isLoading)
     return (
@@ -96,16 +110,27 @@ export default function EditUserPage() {
         {(error as Error)?.message || 'Failed to load user'}
       </div>
     );
+
   const breadCrumb: BreadcrumbItem[] = [
     { label: 'Users', href: '/dashboard/user' },
     { label: 'Edit User', href: `/dashboard/user/edit/${id}` },
   ];
+
   return (
     <div className="min-h-screen text-black p-8">
       <h1 className="text-2xl font-bold mb-6">Edit User</h1>
       <Breadcrumb items={breadCrumb} />
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <div className="flex justify-end">
+          <button
+            type="submit"
+            className="bg-gray-200 text-black py-2 px-4 rounded-md hover:bg-gray-500"
+            disabled={updateUser.isPending}
+          >
+            {updateUser.isPending ? 'Updating...' : 'Update User'}
+          </button>
+        </div>
         {/* Username */}
         <div>
           <label className="block text-black mb-2 font-medium">Username</label>
@@ -143,7 +168,7 @@ export default function EditUserPage() {
             type="password"
             {...register('password')}
             className="w-full p-3 rounded-lg border border-gray-300 text-black focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter new password"
+            placeholder="Leave blank to keep current password"
           />
           {errors.password && (
             <p className="text-red-500 text-sm mt-1">
@@ -167,24 +192,6 @@ export default function EditUserPage() {
               {errors.isAdmin.message}
             </p>
           )}
-        </div>
-
-        {/* Buttons */}
-        <div className="flex justify-end gap-4">
-          <button
-            type="button"
-            onClick={() => router.push('/dashboard/user')}
-            className="px-6 py-3 rounded-lg border bg-red-500 hover:bg-red-700 transition"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            disabled={updateUserMutation.isPending}
-            className="px-6 py-3 rounded-lg border border-gray-300 hover:bg-gray-400 transition"
-          >
-            {updateUserMutation.isPending ? 'Saving...' : 'Update User'}
-          </button>
         </div>
       </form>
     </div>

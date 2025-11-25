@@ -76,7 +76,16 @@ export default function EditAuthorPage() {
     updateAuthorMutation.mutate(data);
   };
 
-  if (isLoading) return <p className="text-gray-400">Loading author...</p>;
+  if (isLoading) {
+    return (
+      <div className="min-h-screen text-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
+          <p className="text-xl">Loading...</p>
+        </div>
+      </div>
+    );
+  }
   if (isError)
     return (
       <p className="text-red-400">
@@ -93,6 +102,15 @@ export default function EditAuthorPage() {
       <Breadcrumb items={breadCrumb} />
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <div className="flex justify-end mt-4">
+          <button
+            type="submit"
+            disabled={updateAuthorMutation.isPending}
+            className="bg-gray-200 text-black py-2 px-4 rounded-md hover:bg-gray-500"
+          >
+            {updateAuthorMutation.isPending ? 'Saving...' : 'Update Author'}
+          </button>
+        </div>
         <div>
           <label className="block text-black font-medium mb-2">
             First Name
@@ -136,22 +154,6 @@ export default function EditAuthorPage() {
           {errors.email && (
             <p className="text-red-400 text-sm mt-1">{errors.email.message}</p>
           )}
-        </div>
-        <div className="flex justify-end gap-4">
-          <button
-            type="button"
-            onClick={() => router.push('/dashboard/author')}
-            className="px-6 py-3 rounded-lg text-black border bg-red-500 hover:bg-red-700 transition"
-          >
-            Cancal
-          </button>
-          <button
-            type="submit"
-            disabled={updateAuthorMutation.isPending}
-            className="px-6 py-3 rounded-lg text-black border border-gray-300 hover:bg-gray-400 transition"
-          >
-            {updateAuthorMutation.isPending ? 'Saving...' : 'Update Author'}
-          </button>
         </div>
       </form>
     </div>

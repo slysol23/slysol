@@ -1,15 +1,20 @@
-import { auth } from 'auth';
-import { redirect } from 'next/navigation';
-import React from 'react';
+'use client';
 
-const DashboardPage = async () => {
-  const session = await auth();
+import { useRouter } from 'next/navigation';
+import { useUser } from '../../providers/UserProvider';
 
-  if (!session?.user) {
-    redirect('/login');
+const DashboardPage = () => {
+  const router = useRouter();
+  const { user, isAdmin, isLoading } = useUser();
+
+  if (isLoading) {
+    return <div>Loading...</div>;
   }
 
-  const isAdmin = (session.user as any).isAdmin;
+  if (!user) {
+    router.push('/login');
+    return null;
+  }
 
   return (
     <div className="text-black font-bold text-5xl text-center">

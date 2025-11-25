@@ -1,18 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { getSession, signIn, useSession } from 'next-auth/react';
 
 export default function LoginPage() {
-  const router = useRouter();
-  const { data: session } = useSession();
-
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  });
-
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -22,45 +13,30 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const result = await signIn('credentials', {
-        email: formData.email,
-        password: formData.password,
-        redirect: false,
+      // Call your login API
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
       });
 
-      if (result?.error) {
-        setError(result.error || 'Invalid email or password');
+      const data = await response.json();
+
+      if (data.success || response.ok) {
+        window.location.href = '/dashboard/blog';
+      } else {
+        setError(data.error || 'Login failed. Please try again.');
         setLoading(false);
-        return;
       }
-
-      // Wait for updated session
-      const updatedSession = await getSession();
-      console.log('Updated Session:', updatedSession);
-
-      if (!updatedSession) {
-        setError('Session not found after login.');
-        setLoading(false);
-        return;
-      }
-
-      // FIXME: instead of hard reload the page, we need to use router.
-      // router.push('/dashboard/blog');
-      window.location.href = '/dashboard/blog';
-    } catch (err) {
-      console.error(err);
-      setError('Login failed. Please try again.');
+    } catch (err: any) {
+      console.error('Login error:', err);
+      setError(err.message || 'Login failed. Please try again.');
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value });
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -73,7 +49,7 @@ export default function LoginPage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
+        <div onSubmit={handleSubmit} className="space-y-4">
           <div className="mb-4">
             <label
               htmlFor="email"
@@ -111,13 +87,13 @@ export default function LoginPage() {
           </div>
 
           <button
-            type="submit"
+            onClick={handleSubmit}
             disabled={loading}
-            className="w-full bg-blue text-white py-2 rounded-md hover:bg-blue-700 transition"
+            className="w-full bg-blue text-white py-2 rounded-md hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? 'Logging in...' : 'Login'}
           </button>
-        </form>
+        </div>
       </div>
     </div>
   );

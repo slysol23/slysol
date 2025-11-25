@@ -1,46 +1,52 @@
 import { NextResponse } from 'next/server';
 import { db } from '../../../../db/index';
-import { blogSchema, authorSchema } from '../../../../db/schema';
-import { eq } from 'drizzle-orm';
+import {
+  blogSchema,
+  blogAuthorsSchema,
+  authorSchema,
+} from '../../../../db/schema';
+import { eq, inArray } from 'drizzle-orm';
 
-// 🔹 GET blog by SLUG (for public viewing and editing)
+// GET blog by slug with all authors
 export async function GET(
   _req: Request,
   { params }: { params: { slug: string } },
 ) {
   try {
     const { slug } = params;
-    const [result] = await db
-      .select({
-        id: blogSchema.id,
-        title: blogSchema.title,
-        slug: blogSchema.slug,
-        description: blogSchema.description,
-        content: blogSchema.content,
-        image: blogSchema.image,
-        tags: blogSchema.tags,
-        meta: blogSchema.meta,
-        authorId: blogSchema.authorId,
-        author: {
-          id: authorSchema.id,
-          firstName: authorSchema.firstName,
-          lastName: authorSchema.lastName,
-          email: authorSchema.email,
-          createdAt: authorSchema.createdAt,
-          updatedAt: authorSchema.updatedAt,
-        },
-        createdAt: blogSchema.createdAt,
-        updatedAt: blogSchema.updatedAt,
-      })
-      .from(blogSchema)
-      .leftJoin(authorSchema, eq(blogSchema.authorId, authorSchema.id))
-      .where(eq(blogSchema.slug, slug))
-      .limit(1);
 
+    // 1️⃣ Fetch blog by slug
+    const [blogResult] = await db
+      .select()
+      .from(blogSchema)
+      .where(eq(blogSchema.slug, slug));
+
+    if (!blogResult) {
+      return NextResponse.json({ error: 'Blog not found' }, { status: 404 });
+    }
+
+    // 2️⃣ Fetch all author relations for this blog
+    const relations = await db
+      .select()
+      .from(blogAuthorsSchema)
+      .where(eq(blogAuthorsSchema.blogId, blogResult.id));
+
+    const authorIds = relations.map((r) => r.authorId);
+
+    // 3️⃣ Fetch all authors
+    const authors = authorIds.length
+      ? await db
+          .select()
+          .from(authorSchema)
+          .where(inArray(authorSchema.id, authorIds))
+      : [];
+
+    // 4️⃣ Prepare blog object
     const blog = {
-      ...result,
-      tags: Array.isArray(result.tags) ? result.tags : [],
-      meta: result.meta ?? { title: '', description: '', keywords: [] },
+      ...blogResult,
+      authors, // array of authors
+      tags: Array.isArray(blogResult.tags) ? blogResult.tags : [],
+      meta: blogResult.meta ?? { title: '', description: '', keywords: [] },
     };
 
     return NextResponse.json({
@@ -48,6 +54,13 @@ export async function GET(
       data: blog,
     });
   } catch (error) {
-    return null;
+    console.error('Error fetching blog by slug:', error);
+    return NextResponse.json(
+      {
+        error: 'Failed to fetch blog',
+        details: error instanceof Error ? error.message : String(error),
+      },
+      { status: 500 },
+    );
   }
 }

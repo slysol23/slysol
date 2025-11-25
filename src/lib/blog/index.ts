@@ -1,176 +1,151 @@
+// lib/blog.ts
 import {
   IBlog,
   ICreateBlog,
   IUpdateBlog,
-  ApiResponse,
   BlogApiResponse,
+  ApiResponse,
 } from 'lib/type';
 import apiClient from 'lib/client';
 
+/**
+ * Map backend response to IBlog
+ */
+function mapBlog(b: any): IBlog {
+  return {
+    id: b.id ?? 0,
+    authorId: b.authorId ?? 0,
+    authors: Array.isArray(b.authors) ? b.authors : [],
+    title: b.title ?? '',
+    description: b.description ?? '',
+    content: b.content ?? '',
+    image: b.image ?? '',
+    tags: Array.isArray(b.tags) ? b.tags : [],
+    meta: b.meta ?? { title: '', description: '', keywords: [] },
+    slug: b.slug ?? '',
+    createdAt: b.createdAt ?? new Date().toISOString(),
+    updatedAt: b.updatedAt ?? new Date().toISOString(),
+    createdBy:
+      typeof b.createdBy === 'string'
+        ? { name: b.createdBy }
+        : b.createdBy && b.createdBy.name
+        ? b.createdBy
+        : { name: '—' },
+    updatedBy:
+      typeof b.updatedBy === 'string'
+        ? { name: b.updatedBy }
+        : b.updatedBy && b.updatedBy.name
+        ? b.updatedBy
+        : { name: '—' },
+    is_published: !!b.is_published,
+    status: b.is_published ? 'Published' : 'Draft',
+  };
+}
+
 export const blog = {
-  /**
-   * Get all blogs with pagination
-   * Uses: /api/blog?page=1&limit=6
-   */
-  getAll: async (page = 1, limit = 6): Promise<BlogApiResponse> => {
-    const params = new URLSearchParams({
-      page: page.toString(),
-      limit: limit.toString(),
-    });
+  /** Fetch blogs with pagination */
+  getAll: async (page = 1, limit = 10): Promise<BlogApiResponse> => {
     const response = await apiClient.get<BlogApiResponse>(
-      `/blog?${params.toString()}`,
+      `/blog?page=${page}&limit=${limit}`,
     );
-    const rawData = response.data.data ?? [];
-
-    const data: IBlog[] = rawData.map((b) => ({
-      id: b.id ?? 0,
-      authorId: b.authorId ?? 0,
-      title: b.title ?? '',
-      description: b.description ?? '',
-      content: b.content ?? '',
-      image: b.image ?? '',
-      tags: b.tags ?? [],
-      meta: b.meta ?? { title: '', description: '', keywords: [] },
-      slug: b.slug ?? '',
-      createdAt: b.createdAt ?? new Date().toISOString(),
-      updatedAt: b.updatedAt ?? new Date().toISOString(),
-      author: b.author ?? undefined,
-    }));
-
-    return {
-      message: response.data.message ?? '',
-      page,
-      limit,
-      total: response.data.total ?? data.length,
-      totalPages: response.data.totalPages ?? Math.ceil(data.length / limit),
-      data,
-    };
-  },
-
-  /**
-   * Get blog by SLUG (for public detail page)
-   * Uses: /api/blog/[slug]
-   */
-  getBySlug: async (slug: string): Promise<ApiResponse<IBlog>> => {
-    const response = await apiClient.get<ApiResponse<IBlog>>(`/blog/${slug}`);
-    const b = response.data.data;
-    if (!b) throw new Error('Blog not found');
-
     return {
       ...response.data,
-      data: {
-        id: b.id ?? 0,
-        authorId: b.authorId ?? 0,
-        title: b.title ?? '',
-        description: b.description ?? '',
-        content: b.content ?? '',
-        image: b.image ?? '',
-        tags: Array.isArray(b.tags) ? b.tags : [],
-        meta: b.meta ?? { title: '', description: '', keywords: [] },
-        slug: b.slug ?? '',
-        createdAt: b.createdAt ?? new Date().toISOString(),
-        updatedAt: b.updatedAt ?? new Date().toISOString(),
-        author: b.author ?? undefined,
-      },
+      data: (response.data.data ?? []).map(mapBlog),
     };
   },
 
-  /**
-   * Get blog by ID (for admin operations)
-   * Uses: /api/blog/id/[id]
-   */
+  /** Fetch blog by ID */
   getById: async (id: number): Promise<ApiResponse<IBlog>> => {
     const response = await apiClient.get<ApiResponse<IBlog>>(`/blog/id/${id}`);
-    const b = response.data.data;
-    if (!b) throw new Error('Blog not found');
-
     return {
       ...response.data,
-      data: {
-        id: b.id ?? 0,
-        authorId: b.authorId ?? 0,
-        title: b.title ?? '',
-        description: b.description ?? '',
-        content: b.content ?? '',
-        image: b.image ?? '',
-        tags: Array.isArray(b.tags) ? b.tags : [],
-        meta: b.meta ?? { title: '', description: '', keywords: [] },
-        slug: b.slug ?? '',
-        createdAt: b.createdAt ?? new Date().toISOString(),
-        updatedAt: b.updatedAt ?? new Date().toISOString(),
-        author: b.author ?? undefined,
-      },
+      data: mapBlog(response.data.data),
     };
   },
 
-  /**
-   * Create a new blog
-   * Uses: /api/blog
-   */
+  /** Fetch blog by slug */
+  getBySlug: async (slug: string): Promise<ApiResponse<IBlog>> => {
+    const response = await apiClient.get<ApiResponse<IBlog>>(`/blog/${slug}`);
+    return {
+      ...response.data,
+      data: mapBlog(response.data.data),
+    };
+  },
+
+  /** Create a new blog */
   create: async (data: ICreateBlog): Promise<ApiResponse<IBlog>> => {
-    const response = await apiClient.post<ApiResponse<IBlog>>('/blog', data);
-    const b = response.data.data;
-    if (!b) throw new Error('Failed to create blog');
+    let payload: ICreateBlog | FormData = data;
 
+    if (data.image instanceof File || data.tags || data.meta) {
+      const formData = new FormData();
+      formData.append('title', data.title);
+      formData.append('description', data.description);
+      formData.append('content', data.content);
+      formData.append('authorId', String(data.authorId));
+      data.authorIds?.forEach((id) => formData.append('authorId', String(id)));
+      if (data.image) formData.append('image', data.image);
+      if (data.tags) formData.append('tags', JSON.stringify(data.tags));
+      if (data.meta) formData.append('meta', JSON.stringify(data.meta));
+      // ❌ REMOVED: createdBy and updatedBy - backend handles it
+      payload = formData;
+    }
+
+    const response = await apiClient.post<ApiResponse<IBlog>>('/blog', payload);
     return {
       ...response.data,
-      data: {
-        id: b.id ?? 0,
-        authorId: b.authorId ?? 0,
-        title: b.title ?? '',
-        description: b.description ?? '',
-        content: b.content ?? '',
-        image: b.image ?? '',
-        tags: Array.isArray(b.tags) ? b.tags : [],
-        meta: b.meta ?? { title: '', description: '', keywords: [] },
-        slug: b.slug ?? '',
-        createdAt: b.createdAt ?? new Date().toISOString(),
-        updatedAt: b.updatedAt ?? new Date().toISOString(),
-        author: b.author ?? undefined,
-      },
+      data: mapBlog(response.data.data),
     };
   },
 
-  /**
-   * Update blog by ID
-   * Uses: /api/blog/id/[id]
-   */
+  /** Update a blog by ID */
   update: async (
     id: number,
     data: IUpdateBlog,
   ): Promise<ApiResponse<IBlog>> => {
+    let payload: IUpdateBlog | FormData = data;
+
+    if (data.image instanceof File || data.tags || data.meta) {
+      const formData = new FormData();
+      if (data.title) formData.append('title', data.title);
+      if (data.description) formData.append('description', data.description);
+      if (data.content) formData.append('content', data.content);
+      if (data.authorId) formData.append('authorId', String(data.authorId));
+      data.authorIds?.forEach((id) => formData.append('authorId', String(id)));
+      if (data.image) formData.append('image', data.image);
+      if (data.tags) formData.append('tags', JSON.stringify(data.tags));
+      if (data.meta) formData.append('meta', JSON.stringify(data.meta));
+      // ❌ REMOVED: updatedBy - backend handles it
+      payload = formData;
+    }
+
+    const response = await apiClient.put<ApiResponse<IBlog>>(
+      `/blog/id/${id}`,
+      payload,
+    );
+    return {
+      ...response.data,
+      data: mapBlog(response.data.data),
+    };
+  },
+  /** Publish a blog */
+  // blog.ts (frontend API)
+  publish: async (
+    id: number,
+    isPublished: boolean,
+  ): Promise<ApiResponse<IBlog>> => {
     const response = await apiClient.patch<ApiResponse<IBlog>>(
       `/blog/id/${id}`,
-      data,
+      { isPublished }, // send the new state
     );
-    const b = response.data.data;
-    if (!b) throw new Error('Failed to update blog');
 
     return {
       ...response.data,
-      data: {
-        id: b.id ?? 0,
-        authorId: b.authorId ?? 0,
-        title: b.title ?? '',
-        description: b.description ?? '',
-        content: b.content ?? '',
-        image: b.image ?? '',
-        tags: Array.isArray(b.tags) ? b.tags : [],
-        meta: b.meta ?? { title: '', description: '', keywords: [] },
-        slug: b.slug ?? '',
-        createdAt: b.createdAt ?? new Date().toISOString(),
-        updatedAt: b.updatedAt ?? new Date().toISOString(),
-        author: b.author ?? undefined,
-      },
+      data: mapBlog(response.data.data),
     };
   },
 
-  /**
-   * Delete blog by ID
-   * Uses: /api/blog/id/[id]
-   */
-  delete: async (id: number): Promise<ApiResponse<{}>> => {
-    const response = await apiClient.delete<ApiResponse<{}>>(`/blog/id/${id}`);
-    return response.data;
+  /** Delete a blog by ID */
+  delete: async (id: number): Promise<void> => {
+    await apiClient.delete(`/blog/id/${id}`);
   },
 };

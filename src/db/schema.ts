@@ -30,6 +30,9 @@ export const blogSchema = pgTable('blog', {
   meta: jsonb('meta'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  createdBy: text('created_by'),
+  updatedBy: text('updated_by'),
+  is_published: boolean('is_published').default(false).notNull(),
   slug: varchar('slug', { length: 255 }).notNull().unique(),
 });
 
@@ -44,3 +47,13 @@ export const authorSchema = pgTable('author', {
 
 export type User = typeof userSchema.$inferSelect;
 export type NewUser = typeof userSchema.$inferInsert;
+/** Many-to-many table */
+export const blogAuthorsSchema = pgTable('blog_authors', {
+  blogId: integer('blog_id')
+    .notNull()
+    .references(() => blogSchema.id, { onDelete: 'cascade' }),
+
+  authorId: integer('author_id')
+    .notNull()
+    .references(() => authorSchema.id, { onDelete: 'cascade' }),
+});

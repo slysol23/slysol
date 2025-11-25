@@ -77,8 +77,10 @@ export default function BlogPage() {
 
           <p className="text-sm text-gray-400 mb-2 mt-2">
             Published by{' '}
-            {b?.author
-              ? `${b.author.firstName} ${b.author.lastName}`
+            {b?.authors && b.authors.length > 0
+              ? b.authors
+                  .map((author) => `${author.firstName} ${author.lastName}`)
+                  .join(', ')
               : `Author #${b?.authorId}`}{' '}
             on{' '}
             {b?.createdAt

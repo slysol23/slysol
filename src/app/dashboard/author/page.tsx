@@ -6,11 +6,10 @@ import { author } from 'lib/author';
 import { FaPen, FaTrash, FaPlus } from 'react-icons/fa';
 import Link from 'next/link';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
+import axios from 'axios';
 
 export default function AuthorDashboardPage() {
   const queryClient = useQueryClient();
-
-  //  Fetch all
   const {
     data: authors = [],
     isLoading,
@@ -25,19 +24,45 @@ export default function AuthorDashboardPage() {
   });
 
   // Mutation for deleting author
-  const deleteMutation = useMutation({
-    mutationFn: async (id: number) => await author.delete(id),
+  const deleteAuthor = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await axios.delete(`/api/author/${id}`);
+      return res.data;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['authors'] });
-      alert('🗑 Author deleted successfully!');
+      alert('Author deleted successfully!');
     },
-    onError: (err) => {
-      console.error('Error deleting author:', err);
-      alert('❌ Failed to delete author.');
+    onError: (error: any) => {
+      if (error.response?.status === 409) {
+        const data = error.response.data;
+        alert(
+          `${data.message}\n\nThis author is associated with ${data.blogsCount} blog(s). Please remove the author from these blogs first.`,
+        );
+      } else {
+        alert(
+          'Failed to delete author: ' +
+            (error.response?.data?.message || error.message),
+        );
+      }
     },
   });
 
-  if (isLoading) return <p className="text-gray-400">Loading authors...</p>;
+  const handleDelete = (id: number) => {
+    if (confirm('Are you sure you want to delete this author?')) {
+      deleteAuthor.mutate(id);
+    }
+  };
+  if (isLoading) {
+    return (
+      <div className="min-h-screen text-black flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
+          <p className="text-xl">Loading...</p>
+        </div>
+      </div>
+    );
+  }
   if (isError)
     return (
       <p className="text-red-400">
@@ -52,7 +77,9 @@ export default function AuthorDashboardPage() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-black">
           Authors
-          <Breadcrumb items={breadCrumb} />
+          <div className="mt-4">
+            <Breadcrumb items={breadCrumb} />
+          </div>
         </h1>
         <Link
           href="/dashboard/author/add"
@@ -67,7 +94,7 @@ export default function AuthorDashboardPage() {
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-left border border-gray-700 rounded-lg">
-            <thead className="bg-black text-white">
+            <thead className="bg-blue text-white">
               <tr>
                 <th className="p-3">#</th>
                 <th className="p-3">Name</th>
@@ -106,7 +133,7 @@ export default function AuthorDashboardPage() {
                             'Are you sure you want to delete this author?',
                           )
                         )
-                          deleteMutation.mutate(a.id);
+                          deleteAuthor.mutate(a.id);
                       }}
                       className="text-red-500 hover:text-red-400"
                     >

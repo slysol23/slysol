@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useQuery, UseQueryOptions } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { blog } from 'lib/blog';
 import { author } from 'lib/author';
 import Container from '@/components/Container';
@@ -9,7 +9,7 @@ import Link from 'next/link';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import Title from '@/components/Title';
-import { BlogApiResponse } from 'lib/type';
+import { BlogApiResponse, IBlog, IAuthor } from 'lib/type';
 import Image from 'next/image';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 
@@ -22,20 +22,26 @@ export default function BlogPage() {
     queryKey: ['blogs', page],
     queryFn: async () => await blog.getAll(page, limit),
     staleTime: 2 * 60 * 1000,
-    keepPreviousData: true,
-  } as UseQueryOptions<BlogApiResponse, Error>);
+  });
 
   // ✅ Fetch authors
-  const authorQuery = useQuery({
+  const authorQuery = useQuery<{ data: IAuthor[] }, Error>({
     queryKey: ['authors'],
-    queryFn: async () => await author.getAll(),
+    queryFn: async () => {
+      const res = await author.getAll();
+      return { data: res.data ?? [] };
+    },
     staleTime: 5 * 60 * 1000,
   });
 
-  const blogs = blogQuery.data?.data ?? [];
+  const allBlogs: IBlog[] = blogQuery.data?.data ?? [];
+
+  // ✅ Filter to show only published blogs on public page
+  const blogs = allBlogs.filter((b) => b.is_published);
+
   const total = blogQuery.data?.total ?? 0;
   const totalPages = blogQuery.data?.totalPages ?? 1;
-  const authors = authorQuery.data?.data ?? [];
+  const authors: IAuthor[] = authorQuery.data?.data ?? [];
 
   const getAuthorName = (authorId: number) => {
     const found = authors.find((a) => a.id === authorId);
@@ -64,7 +70,7 @@ export default function BlogPage() {
         <Breadcrumb items={breadCrumb} />
 
         {!blogs.length ? (
-          <p className="text-center text-gray-400">No blogs found.</p>
+          <p className="text-center text-gray-400">No published blogs found.</p>
         ) : (
           <>
             <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-8 pb-10">
@@ -96,9 +102,14 @@ export default function BlogPage() {
 
                   <p className="text-sm font-bold text-gray-400 mb-2">
                     By:{' '}
-                    {b.author
-                      ? `${b.author.firstName} ${b.author.lastName}`
-                      : getAuthorName(b.authorId)}
+                    {b?.authors && b.authors.length > 0
+                      ? b.authors
+                          .map(
+                            (author) =>
+                              `${author.firstName} ${author.lastName}`,
+                          )
+                          .join(', ')
+                      : getAuthorName(b.authorId)}{' '}
                     <span className="ml-2">
                       {new Date(b.createdAt).toLocaleDateString('en-GB', {
                         day: '2-digit',
@@ -112,14 +123,12 @@ export default function BlogPage() {
                     {b.description}
                   </p>
 
-                  {/* 🔍 DEBUG: Show slug value */}
                   {!b.slug && (
                     <p className="text-red-500 text-xs mb-2">
                       ⚠️ Warning: This blog has no slug! ID: {b.id}
                     </p>
                   )}
 
-                  {/* Use slug if exists, fallback to ID */}
                   <Link
                     href={b.slug ? `/blog/${b.slug}` : `/blog/id/${b.id}`}
                     className="text-blue-500 hover:text-blue-400 hover:underline"

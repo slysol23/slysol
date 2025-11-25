@@ -45,7 +45,6 @@ export async function PATCH(
     const body = await req.json();
     const { name, email, password, isAdmin } = body;
 
-    // Check for existing email in other users
     if (email) {
       const [existingUser] = await db
         .select()
@@ -61,20 +60,34 @@ export async function PATCH(
       }
     }
 
-    // Hash password if provided
-    let hashedPassword: string;
-    if (password) {
-      hashedPassword = await bcrypt.hash(password, 10);
+    const updateData: Record<string, any> = {};
+
+    if (name !== undefined) {
+      updateData.name = name;
+    }
+
+    if (email !== undefined) {
+      updateData.email = email;
+    }
+
+    if (password !== undefined && password.trim() !== '') {
+      updateData.password = await bcrypt.hash(password, 10);
+    }
+
+    if (isAdmin !== undefined) {
+      updateData.isAdmin = isAdmin;
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      return NextResponse.json(
+        { message: 'No fields to update' },
+        { status: 400 },
+      );
     }
 
     const [updatedUser] = await db
       .update(userSchema)
-      .set({
-        ...(name! && { name }),
-        ...(email! && { email }),
-        ...(hashedPassword! && { password: hashedPassword }),
-        ...(isAdmin! && { isAdmin }),
-      })
+      .set(updateData)
       .where(eq(userSchema.id, userId))
       .returning();
 

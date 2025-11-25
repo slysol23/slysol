@@ -6,6 +6,8 @@ import { eq } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  basePath: '/api/auth',
+  trustHost: true,
   providers: [
     Credentials({
       credentials: {
@@ -15,26 +17,43 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       authorize: async (credentials) => {
         if (!credentials?.email || !credentials?.password) {
           console.error('Missing credentials');
-          throw new Error('Missing credentials');
+          return null; // ✅ Return null instead of throwing
         }
+
         const email = credentials.email as string;
         const password = credentials.password as string;
 
+        // ✅ Find user
         const [user] = await db
           .select()
           .from(userSchema)
           .where(eq(userSchema.email, email))
           .limit(1);
 
+        // ✅ Check if user exists
+        if (!user) {
+          console.error('User not found:', email);
+          return null;
+        }
+
+        // ✅ Verify password
         const isValid = await bcrypt.compare(password, user.password);
         console.log('Password valid:', isValid);
 
+        // ✅ CRITICAL: Return null if password is invalid
+        if (!isValid) {
+          console.error('Invalid password for user:', email);
+          return null;
+        }
+
+        // ✅ Only return user if password is correct
         const userReturn = {
           id: user.id.toString(),
           name: user.name,
           email: user.email,
           isAdmin: user.isAdmin,
         };
+
         return userReturn;
       },
     }),
@@ -57,6 +76,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.email = token.email as string;
         (session.user as any).isAdmin = token.isAdmin as boolean;
       }
+
       return session;
     },
   },
@@ -66,6 +86,4 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   session: {
     strategy: 'jwt',
   },
-  basePath: '/api/auth',
-  secret: process.env.AUTH_SECRET,
 });

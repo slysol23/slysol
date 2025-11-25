@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '../../../../db';
-import { authorSchema } from '../../../../db/schema';
-import { eq } from 'drizzle-orm';
+import { authorSchema, blogAuthorsSchema } from '../../../../db/schema';
+import { eq, and, ne } from 'drizzle-orm';
 
 /**
  * 🟢 GET — Get author by ID
@@ -54,7 +54,7 @@ export async function PATCH(
     const [existingUser] = await db
       .select()
       .from(authorSchema)
-      .where(eq(authorSchema.email, email))
+      .where(and(eq(authorSchema.email, email), ne(authorSchema.id, authorId)))
       .limit(1);
 
     if (existingUser) {
@@ -100,20 +100,48 @@ export async function DELETE(
   try {
     const authorId = Number(params.id);
 
-    const deleted = await db
-      .delete(authorSchema)
-      .where(eq(authorSchema.id, authorId))
-      .returning();
+    if (isNaN(authorId)) {
+      return NextResponse.json(
+        { message: 'Invalid author ID' },
+        { status: 400 },
+      );
+    }
 
-    if (!deleted.length) {
+    const [existingAuthor] = await db
+      .select()
+      .from(authorSchema)
+      .where(eq(authorSchema.id, authorId));
+
+    if (!existingAuthor) {
       return NextResponse.json(
         { message: 'Author not found' },
         { status: 404 },
       );
     }
 
+    const associatedBlogs = await db
+      .select()
+      .from(blogAuthorsSchema)
+      .where(eq(blogAuthorsSchema.authorId, authorId));
+
+    if (associatedBlogs.length > 0) {
+      return NextResponse.json(
+        {
+          message: `Cannot delete author. This author is associated with ${associatedBlogs.length} blog(s).`,
+          error: 'Author is in use',
+          blogsCount: associatedBlogs.length,
+        },
+        { status: 409 }, // 409 Conflict
+      );
+    }
+
+    const deleted = await db
+      .delete(authorSchema)
+      .where(eq(authorSchema.id, authorId))
+      .returning();
+
     return NextResponse.json(
-      { message: 'Author deleted successfully' },
+      { message: 'Author deleted successfully', data: deleted[0] },
       { status: 200 },
     );
   } catch (error) {
