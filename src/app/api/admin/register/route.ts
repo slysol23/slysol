@@ -77,12 +77,14 @@ export async function POST(req: Request) {
         name,
         email,
         password: hashedPassword,
+        isAdmin: true,
       })
       .returning({
         id: userSchema.id,
         name: userSchema.name,
         email: userSchema.email,
         createdAt: userSchema.createdAt,
+        isAdmin: userSchema.isAdmin,
       });
 
     return NextResponse.json(
