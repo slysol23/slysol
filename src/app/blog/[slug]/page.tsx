@@ -9,6 +9,7 @@ import Footer from '@/components/Footer';
 import MainHeading from '@/components/MainHeading';
 import Image from 'next/image';
 import Head from 'next/head';
+import Link from 'next/link';
 import { IBlog } from 'lib/type';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 
@@ -30,6 +31,22 @@ export default function BlogPage() {
       return res.data;
     },
     enabled: !!slug,
+  });
+
+  //Recent blogs
+  const { data: recentBlogs, isLoading: loadingRecent } = useQuery<IBlog[]>({
+    queryKey: ['recentBlogs'],
+    queryFn: async () => {
+      const res = await blog.getAll(1, 3);
+      console.log('Recent blogs response:', res);
+      const blogs = res?.data || [];
+      const sorted = blogs.sort((a, b) => {
+        const dateA = new Date(a.createdAt || 0).getTime();
+        const dateB = new Date(b.createdAt || 0).getTime();
+        return dateB - dateA;
+      });
+      return sorted;
+    },
   });
 
   if (isLoading)
@@ -61,74 +78,129 @@ export default function BlogPage() {
         <Header />
         <div className="pt-10 pb-20">
           <Breadcrumb items={breadCrumb} />
-          {b?.image && (
-            <div className="w-full h-96 relative rounded-3xl overflow-hidden my-6 bg-gray-100">
-              <Image
-                src={b.image.startsWith('/') ? b.image : `/uploads/${b.image}`}
-                alt={b.title}
-                fill
-                className="object-cover"
-                sizes="100vw"
+
+          <div className="flex flex-col lg:flex-row gap-8">
+            <div className="flex-1">
+              {b?.image && (
+                <div className="w-full h-96 relative rounded-3xl overflow-hidden my-6 bg-gray-100">
+                  <Image
+                    src={
+                      b.image.startsWith('/') ? b.image : `/uploads/${b.image}`
+                    }
+                    alt={b.title}
+                    fill
+                    className="object-cover"
+                    sizes="100vw"
+                  />
+                </div>
+              )}
+
+              <MainHeading
+                text={b?.title ?? 'Untitled'}
+                className="font-bold"
               />
+
+              <p className="text-sm text-gray-400 mb-2 mt-2">
+                Published by{' '}
+                {b?.authors && b.authors.length > 0
+                  ? b.authors
+                      .map((author) => `${author.firstName} ${author.lastName}`)
+                      .join(', ')
+                  : `Author #${b?.authorId}`}{' '}
+                on{' '}
+                {b?.createdAt
+                  ? new Date(b.createdAt).toLocaleDateString('en-GB', {
+                      day: '2-digit',
+                      month: 'long',
+                      year: 'numeric',
+                    })
+                  : ''}
+              </p>
+
+              <div
+                className="prose prose-lg text-black text-xl max-w-none"
+                dangerouslySetInnerHTML={{ __html: b?.content || '' }}
+              />
+
+              <div className="text-gray-700 rounded-lg p-2 bg-gray-200 mb-4 mt-5">
+                <h1 className="font-medium">Tags:</h1>
+                {b?.tags && b.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {b.tags.map((tag: string, idx: number) => (
+                      <span key={idx} className="text-xs">
+                        #{tag.trim()}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-          )}
 
-          <MainHeading text={b?.title ?? 'Untitled'} className="font-bold" />
+            <aside className="lg:w-100 mt-6">
+              <div className="top-10 bg-gray-100 rounded-2xl p-5">
+                <h2 className="text-xl font-bold mb-2 text-black">
+                  Recent Blogs
+                </h2>
+                {loadingRecent ? (
+                  <p className="text-gray-400 text-sm">Loading...</p>
+                ) : (
+                  <div className="space-y-4">
+                    {recentBlogs && recentBlogs.length > 0 ? (
+                      recentBlogs.map((recentBlog) => (
+                        <Link
+                          key={recentBlog.id}
+                          href={`/blog/${recentBlog.slug}`}
+                          className="block group"
+                        >
+                          <div className='border-b-2 p-2 border-gray-300'>
+                            <div className="flex gap-3 hover:opacity-80 transition-opacity">
+                              {recentBlog.image && (
+                                <div className=" relative rounded-lg overflow-hidden flex-shrink-0">
+                                  <Image
+                                    src={
+                                      recentBlog.image.startsWith('/')
+                                        ? recentBlog.image
+                                        : `/uploads/${recentBlog.image}`
+                                    }
+                                    alt={recentBlog.title}
+                                    width={80}
+                                    height={60}
+                                    className="object-cover"
+                                    sizes="80px"
+                                  />
+                                </div>
+                              )}
 
-          <p className="text-sm text-gray-400 mb-2 mt-2">
-            Published by{' '}
-            {b?.authors && b.authors.length > 0
-              ? b.authors
-                  .map((author) => `${author.firstName} ${author.lastName}`)
-                  .join(', ')
-              : `Author #${b?.authorId}`}{' '}
-            on{' '}
-            {b?.createdAt
-              ? new Date(b.createdAt).toLocaleDateString('en-GB', {
-                  day: '2-digit',
-                  month: 'long',
-                  year: 'numeric',
-                })
-              : ''}
-          </p>
-
-          {b?.tags && b.tags.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-3">
-              {b.tags.map((tag: string, idx: number) => (
-                <span
-                  key={idx}
-                  className="px-3 py-1 bg-gray-200 text-gray-700 rounded-full text-xs"
-                >
-                  #{tag.trim()}
-                </span>
-              ))}
-            </div>
-          )}
-
-          {b?.meta && (
-            <div className="text-xs text-gray-500 mb-3">
-              {b.meta.title && (
-                <p>
-                  <strong>Meta Title:</strong> {b.meta.title}
-                </p>
-              )}
-              {b.meta.description && (
-                <p>
-                  <strong>Meta Description:</strong> {b.meta.description}
-                </p>
-              )}
-              {b.meta.keywords && b.meta.keywords.length > 0 && (
-                <p>
-                  <strong>Keywords:</strong> {b.meta.keywords.join(', ')}
-                </p>
-              )}
-            </div>
-          )}
-
-          <div
-            className="prose prose-lg text-black text-xl max-w-none"
-            dangerouslySetInnerHTML={{ __html: b?.content || '' }}
-          />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-xs text-gray-500 mb-1">
+                                  {recentBlog.createdAt
+                                    ? new Date(
+                                        recentBlog.createdAt,
+                                      ).toLocaleDateString('en-US', {
+                                        month: 'long',
+                                        day: 'numeric',
+                                        year: 'numeric',
+                                      })
+                                    : ''}
+                                </p>
+                                <h3 className="text-sm text-black font-semibold line-clamp-2 group-hover:text-blue-300 transition-colors">
+                                  {recentBlog.title}
+                                </h3>
+                              </div>
+                            </div>
+                          </div>
+                        </Link>
+                      ))
+                    ) : (
+                      <p className="text-gray-400 text-sm">
+                        No recent blogs available
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
+            </aside>
+          </div>
         </div>
       </Container>
       <Footer />
