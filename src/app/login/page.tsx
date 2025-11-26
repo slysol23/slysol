@@ -1,19 +1,22 @@
 'use client';
 
 import { useState } from 'react';
+import { FiEye, FiEyeOff } from 'react-icons/fi';
+import { FaGoogle, FaGithub } from 'react-icons/fa';
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordStrength, setPasswordStrength] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
     setLoading(true);
 
     try {
-      // Call your login API
       const response = await fetch('/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -28,73 +31,200 @@ export default function LoginPage() {
         setError(data.error || 'Login failed. Please try again.');
         setLoading(false);
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error('Login error:', err);
-      setError(err.message || 'Login failed. Please try again.');
+      setError('Something went wrong. Try again.');
       setLoading(false);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
+    if (e.target.name === 'password') {
+      const pwd = e.target.value;
+      if (pwd.length < 6) setPasswordStrength('Weak');
+      else if (pwd.length < 10) setPasswordStrength('Medium');
+      else setPasswordStrength('Strong');
+    }
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
+    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-purple-300 via-pink-200 to-indigo-200 animate-gradient">
+      {/* Floating particles */}{' '}
+      <div className="absolute inset-0 z-0">
+        {Array.from({ length: 20 }).map((_, i) => (
+          <span
+            key={i}
+            className="absolute bg-white/30 rounded-full animate-float"
+            style={{
+              width: `${Math.random() * 8 + 4}px`,
+              height: `${Math.random() * 8 + 4}px`,
+              top: `${Math.random() * 100}%`,
+              left: `${Math.random() * 100}%`,
+              animationDuration: `${Math.random() * 6 + 4}s`,
+            }}
+          />
+        ))}{' '}
+      </div>
+      <div className="relative z-10 backdrop-blur-xl bg-white/30 border border-white/20 shadow-2xl rounded-3xl p-10 w-full max-w-md animate-fadeInSlow">
+        <p className="text-center text-gray-600 mb-6">Sign in to continue</p>
 
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 animate-shake">
             {error}
           </div>
         )}
 
-        <div onSubmit={handleSubmit} className="space-y-4">
-          <div className="mb-4">
-            <label
-              htmlFor="email"
-              className="block text-gray-700 font-medium mb-2"
-            >
-              Email
-            </label>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="relative">
             <input
               type="email"
-              id="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
               required
+              className="peer w-full px-4 py-3 bg-white/60 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none transition placeholder-transparent"
+              placeholder="Email Address"
             />
+            <label className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 transition-all peer-focus:top-1 peer-focus:text-xs peer-focus:text-indigo-500 peer-valid:top-1 peer-valid:text-xs">
+              Email Address
+            </label>
           </div>
 
-          <div className="mb-6">
-            <label
-              htmlFor="password"
-              className="block text-gray-700 font-medium mb-2"
-            >
-              Password
-            </label>
+          <div className="relative">
             <input
-              type="password"
-              id="password"
+              type={showPassword ? 'text' : 'password'}
               name="password"
               value={formData.password}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md"
               required
+              className="peer w-full px-4 py-3 bg-white/60 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none transition placeholder-transparent"
+              placeholder="Password"
             />
+            <label className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-600 transition-all peer-focus:top-1 peer-focus:text-xs peer-focus:text-indigo-500 peer-valid:top-1 peer-valid:text-xs">
+              Password
+            </label>
+
+            <span
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer hover:text-gray-700"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+            </span>
           </div>
 
+          {formData.password && (
+            <div
+              className={`text-sm font-medium ${
+                passwordStrength === 'Weak'
+                  ? 'text-red-500'
+                  : passwordStrength === 'Medium'
+                  ? 'text-yellow-500'
+                  : 'text-green-500'
+              }`}
+            >
+              Password Strength: {passwordStrength}
+            </div>
+          )}
+
           <button
-            onClick={handleSubmit}
+            type="submit"
             disabled={loading}
-            className="w-full bg-blue text-white py-2 rounded-md hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition active:scale-95 disabled:opacity-50"
           >
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? (
+              <div className="flex items-center justify-center gap-2">
+                <span className="loader"></span>
+                Logging in...
+              </div>
+            ) : (
+              'Login'
+            )}
           </button>
-        </div>
+        </form>
       </div>
+      <style jsx>{`
+        .animate-gradient {
+          animation: gradientShift 10s ease infinite;
+          background-size: 200% 200%;
+        }
+        @keyframes gradientShift {
+          0% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+          100% {
+            background-position: 0% 50%;
+          }
+        }
+
+        .animate-fadeInSlow {
+          animation: fadeIn 1.2s ease forwards;
+          opacity: 0;
+        }
+        @keyframes fadeIn {
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        .animate-shake {
+          animation: shake 0.3s ease-in-out;
+        }
+        @keyframes shake {
+          0% {
+            transform: translateX(0);
+          }
+          25% {
+            transform: translateX(-4px);
+          }
+          50% {
+            transform: translateX(4px);
+          }
+          75% {
+            transform: translateX(-4px);
+          }
+          100% {
+            transform: translateX(0);
+          }
+        }
+
+        .loader {
+          width: 14px;
+          height: 14px;
+          border: 3px solid rgba(255, 255, 255, 0.4);
+          border-top-color: white;
+          border-radius: 50%;
+          animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin {
+          to {
+            transform: rotate(360deg);
+          }
+        }
+
+        .animate-float {
+          animation: float 6s linear infinite;
+        }
+        @keyframes float {
+          0% {
+            transform: translateY(0px);
+            opacity: 1;
+          }
+          50% {
+            transform: translateY(-20px);
+            opacity: 0.5;
+          }
+          100% {
+            transform: translateY(0px);
+            opacity: 1;
+          }
+        }
+      `}</style>
     </div>
   );
 }
