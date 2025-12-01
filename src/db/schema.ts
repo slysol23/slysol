@@ -44,6 +44,17 @@ export const authorSchema = pgTable('author', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
+export const commentSchema = pgTable('comments', {
+  id: integer('id').primaryKey().unique().notNull().generatedAlwaysAsIdentity(),
+  blogId: integer('blog_id').notNull(),
+  parentId: integer('parent_id'),
+  name: text('name').notNull(),
+  email: text('email'),
+  comment: text('comment').notNull(),
+  is_published: boolean('is_published').default(false).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
 
 export type User = typeof userSchema.$inferSelect;
 export type NewUser = typeof userSchema.$inferInsert;

@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { FaBlog, FaUser, FaUsers } from 'react-icons/fa';
+import { FaBlog, FaFacebookMessenger, FaUser, FaUsers } from 'react-icons/fa';
 import { useUser } from '../../providers/UserProvider';
 
 const Sidebar = () => {
@@ -18,6 +18,12 @@ const Sidebar = () => {
       label: 'Blogs',
       href: '/dashboard/blog',
       icon: <FaBlog />,
+      adminOnly: false,
+    },
+    {
+      label: 'Comments',
+      href: '/dashboard/comments',
+      icon: <FaFacebookMessenger />,
       adminOnly: false,
     },
     {
