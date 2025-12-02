@@ -1,5 +1,3 @@
-// File: src/lib/comments/index.ts
-
 import {
   IComment,
   ICreateComment,
@@ -30,7 +28,7 @@ function mapComment(c: any): IComment {
 }
 
 export const comments = {
-  /** Fetch all comments (optionally filtered) */
+  /** Fetch all*/
   getAll: async (params?: {
     blogId?: number;
     published?: boolean;

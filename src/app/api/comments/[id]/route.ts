@@ -94,6 +94,36 @@ export async function PUT(
   return NextResponse.json({ data: comment });
 }
 
+// PATCH
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: { id: string } },
+) {
+  const commentId = parseInt(params.id);
+  const body = await request.json();
+
+  if (isNaN(commentId)) {
+    return NextResponse.json({ error: 'Invalid comment ID' }, { status: 400 });
+  }
+
+  const updatedComment = await db
+    .update(commentSchema)
+    .set({
+      ...body,
+      updatedAt: new Date(),
+    })
+    .where(eq(commentSchema.id, commentId))
+    .returning();
+
+  if (updatedComment.length === 0) {
+    return NextResponse.json({ error: 'Comment not found' }, { status: 404 });
+  }
+
+  const comment = await getCommentWithReplies(commentId);
+
+  return NextResponse.json({ data: comment });
+}
+
 // DELETE
 export async function DELETE(
   request: NextRequest,

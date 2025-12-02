@@ -12,6 +12,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { IBlog } from 'lib/type';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
+import CommentForms from '@/components/Comments/commentSection';
 
 export default function BlogPage() {
   const params = useParams();
@@ -33,7 +34,6 @@ export default function BlogPage() {
     enabled: !!slug,
   });
 
-  //Recent blogs
   const { data: recentBlogs, isLoading: loadingRecent } = useQuery<IBlog[]>({
     queryKey: ['recentBlogs'],
     queryFn: async () => {
@@ -152,7 +152,7 @@ export default function BlogPage() {
                           href={`/blog/${recentBlog.slug}`}
                           className="block group"
                         >
-                          <div className='border-b-2 p-2 border-gray-300'>
+                          <div className="border-b-2 p-2 border-gray-300">
                             <div className="flex gap-3 hover:opacity-80 transition-opacity">
                               {recentBlog.image && (
                                 <div className=" relative rounded-lg overflow-hidden flex-shrink-0">
@@ -201,6 +201,7 @@ export default function BlogPage() {
               </div>
             </aside>
           </div>
+          <CommentForms blogId={b?.id || 0} />
         </div>
       </Container>
       <Footer />

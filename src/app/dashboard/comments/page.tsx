@@ -3,10 +3,11 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import { FaTrash, FaReply } from 'react-icons/fa';
+import { FaTrash, FaPen } from 'react-icons/fa';
 import { useUser } from '../../../providers/UserProvider';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 import { IComment } from '../../../lib/comments/type';
+import Link from 'next/link';
 
 export default function BlogFeedbackPage() {
   const queryClient = useQueryClient();
@@ -46,9 +47,12 @@ export default function BlogFeedbackPage() {
     return result;
   };
 
-  const flatComments = flattenComments(comments);
+  const sortedComments = [...comments].sort((a, b) => {
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
 
-  // Delete mutation
+  const flatComments = flattenComments(sortedComments);
+
   const deleteComment = useMutation<void, Error, number>({
     mutationFn: (id) => axios.delete(`/api/comments/${id}`).then(() => {}),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['comments'] }),
@@ -91,7 +95,7 @@ export default function BlogFeedbackPage() {
       </div>
 
       {flatComments.length === 0 ? (
-        <p className="text-gray-400">No comments found.</p>
+        <p className="text-black">No comments found.</p>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-left border border-gray-700 rounded-lg">
@@ -111,8 +115,8 @@ export default function BlogFeedbackPage() {
               {flatComments.map((c, idx) => (
                 <tr
                   key={c.id}
-                  className={`border-t border-gray-700 ${
-                    c.depth > 0 ? 'bg-gray-50' : ''
+                  className={`hover:bg-gray-400 border-t border-gray-700 ${
+                    c.depth > 0 ? '' : ''
                   }`}
                 >
                   <td className="p-3">{c.id}</td>
@@ -123,17 +127,15 @@ export default function BlogFeedbackPage() {
                   </td>
                   <td className="p-3">{c.blogId}</td>
                   <td className="p-3">
-                    <div style={{ marginLeft: `${c.depth * 20}px` }}>
-                      {c.comment}
-                    </div>
+                    <div>{c.comment}</div>
                   </td>
                   <td className="p-3">
                     {c.is_published ? (
-                      <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
-                        Publishd
+                      <span className="bg-green-100 text-black px-2 py-1 rounded text-xs">
+                        Published
                       </span>
                     ) : (
-                      <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded text-xs">
+                      <span className="bg-yellow-100 text-black px-2 py-1 rounded text-xs">
                         Draft
                       </span>
                     )}
@@ -149,16 +151,33 @@ export default function BlogFeedbackPage() {
                     )}
                   </td>
                   <td className="p-3">
-                    {new Date(c.createdAt).toLocaleString()}
+                    {new Date(c.createdAt).toLocaleString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: true,
+                      timeZone: 'UTC',
+                    })}
                   </td>
                   <td className="p-3">
-                    <button
-                      onClick={() => handleDelete(c.id)}
-                      className="text-red-500 hover:text-red-700 transition-colors"
-                      title="Delete comment"
-                    >
-                      <FaTrash />
-                    </button>
+                    <div className="flex gap-3">
+                      <Link
+                        href={`/dashboard/comments/edit/${c.id}`}
+                        className="text-yellow-500 hover:text-yellow-300 transition"
+                        title="Edit"
+                      >
+                        <FaPen />
+                      </Link>
+                      <button
+                        onClick={() => handleDelete(c.id)}
+                        className="text-red-500 hover:text-red-700 transition-colors"
+                        title="Delete comment"
+                      >
+                        <FaTrash />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

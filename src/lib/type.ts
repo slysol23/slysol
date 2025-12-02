@@ -9,3 +9,4 @@ export interface ApiResponse<T> {
 export * from './auth/type';
 export * from './blog/type';
 export * from './author/type';
+export * from './comments/type';
