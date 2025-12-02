@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
-import { FaBlog, FaFacebookMessenger, FaUser, FaUsers } from 'react-icons/fa';
+import { FaBlog, FaCommentDots, FaUser, FaUsers } from 'react-icons/fa';
 import { useUser } from '../../providers/UserProvider';
 
 const Sidebar = () => {
@@ -23,7 +23,7 @@ const Sidebar = () => {
     {
       label: 'Comments',
       href: '/dashboard/comments',
-      icon: <FaFacebookMessenger />,
+      icon: <FaCommentDots />,
       adminOnly: false,
     },
     {

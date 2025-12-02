@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 
 interface CommentFormProps {
@@ -33,6 +33,14 @@ const CommentForm: React.FC<CommentFormProps> = ({
         headers: { 'Content-Type': 'application/json' },
       });
       return response.data;
+    },
+    onSuccess: () => {
+      setName('');
+      setEmail('');
+      setComment('');
+      if (onCancel) {
+        onCancel();
+      }
     },
     onError: (error: any) => {
       alert(error.response?.data?.error || 'Failed to post comment');
@@ -121,10 +129,10 @@ const CommentForm: React.FC<CommentFormProps> = ({
             className="px-6 py-2 bg-blue-500 text-black rounded-md hover:bg-gray-500 bg-gray-200 disabled:cursor-not-allowed transition-all font-medium shadow-sm"
           >
             {commentMutation.isPending
-              ? 'Posting...'
+              ? 'Saving...'
               : parentId
-              ? 'Post Reply'
-              : 'Post Comment'}
+              ? 'Reply'
+              : 'Comment'}
           </button>
           {onCancel && (
             <button

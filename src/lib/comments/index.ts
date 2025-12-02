@@ -28,7 +28,20 @@ function mapComment(c: any): IComment {
 }
 
 export const comments = {
-  /** Fetch all*/
+  getCounts: async (
+    blogIds?: number[],
+  ): Promise<{ blogId: number; count: number }[]> => {
+    const url =
+      blogIds && blogIds.length > 0
+        ? `/comments/count?blogIds=${blogIds.join(',')}`
+        : '/comments/count';
+
+    const response = await apiClient.get<{ blogId: number; count: number }[]>(
+      url,
+    );
+    return response.data;
+  },
+
   getAll: async (params?: {
     blogId?: number;
     published?: boolean;
@@ -54,7 +67,6 @@ export const comments = {
     };
   },
 
-  /** Fetch comment by ID */
   getById: async (id: number): Promise<ApiResponse<IComment>> => {
     const response = await apiClient.get<ApiResponse<IComment>>(
       `/comments/${id}`,
@@ -82,7 +94,6 @@ export const comments = {
     };
   },
 
-  /** Create a comment using FormData */
   createWithFormData: async (
     data: ICreateComment,
   ): Promise<ApiResponse<IComment>> => {
@@ -103,7 +114,6 @@ export const comments = {
     };
   },
 
-  /** Update comment by ID (PATCH) */
   update: async (
     id: number,
     data: IUpdateComment,
@@ -123,7 +133,6 @@ export const comments = {
     };
   },
 
-  /** Toggle is_published status */
   togglePublish: async (
     id: number,
     is_published: boolean,

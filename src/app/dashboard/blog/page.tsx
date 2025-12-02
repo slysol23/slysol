@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { blog } from 'lib/blog';
+import { comments } from 'lib/comments';
 import { BlogApiResponse, IBlog } from 'lib/type';
-import { FaPen, FaTrash, FaPlus, FaEye } from 'react-icons/fa';
+import { FaPen, FaTrash, FaPlus, FaEye, FaCommentDots } from 'react-icons/fa';
 import Link from 'next/link';
 import { useUser } from '../../../providers/UserProvider';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
@@ -17,7 +18,6 @@ export default function BlogDashboardPage() {
   const [page, setPage] = useState(1);
   const limit = 10;
 
-  // Fetch blogs
   const { data, isLoading, error } = useQuery<BlogApiResponse, Error>({
     queryKey: ['blogs', page],
     queryFn: () => blog.getAll(page, limit),
@@ -28,10 +28,39 @@ export default function BlogDashboardPage() {
   const blogs: IBlog[] = data?.data ?? [];
   const totalPages: number = data?.totalPages ?? 1;
 
-  // Delete mutation
+  const blogIds = blogs.map((b) => b.id);
+
+  const {
+    data: commentsData,
+    isLoading: commentsLoading,
+    error: commentsError,
+  } = useQuery<{ blogId: number; count: number }[], Error>({
+    queryKey: ['commentsCount', blogIds],
+    queryFn: () => comments.getCounts(blogIds),
+    staleTime: 1000 * 60,
+    enabled: blogs.length > 0,
+  });
+
+  useEffect(() => {
+    if (commentsError) {
+      console.error('Error fetching comments count:', commentsError);
+    }
+    if (commentsData) {
+      console.log('Comments data received:', commentsData);
+    }
+  }, [commentsData, commentsError]);
+
+  const commentsCountMap: Record<number, number> = {};
+  (commentsData || []).forEach((item) => {
+    commentsCountMap[item.blogId] = item.count;
+  });
+
   const deleteMutation = useMutation<void, Error, number>({
     mutationFn: (id) => axios.delete(`/api/blog/id/${id}`).then(() => {}),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['blogs'] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] });
+      queryClient.invalidateQueries({ queryKey: ['commentsCount'] });
+    },
     onError: (err) => alert(err.message),
   });
 
@@ -40,7 +69,6 @@ export default function BlogDashboardPage() {
     deleteMutation.mutate(id);
   };
 
-  // Helper function to display author name
   const getAuthorDisplay = (b: IBlog) => {
     if (Array.isArray(b.authors) && b.authors.length > 0) {
       return b.authors.map((a) => `${a.firstName} ${a.lastName}`).join(', ');
@@ -48,7 +76,6 @@ export default function BlogDashboardPage() {
     return 'No authors';
   };
 
-  // Helper function to get createdBy display
   const getCreatedByDisplay = (b: IBlog) => {
     if (!b.createdBy) return '—';
     if (typeof b.createdBy === 'string') return b.createdBy;
@@ -57,7 +84,6 @@ export default function BlogDashboardPage() {
     return '—';
   };
 
-  // Helper function to get updatedBy display
   const getUpdatedByDisplay = (b: IBlog) => {
     if (!b.updatedBy) return '—';
     if (typeof b.updatedBy === 'string') return b.updatedBy;
@@ -84,6 +110,7 @@ export default function BlogDashboardPage() {
   if (error) {
     return <p className="text-red-500">Error loading blogs: {error.message}</p>;
   }
+
   const normalizeImagePath = (
     imagePath: string | null | undefined,
   ): string | null => {
@@ -113,6 +140,12 @@ export default function BlogDashboardPage() {
         </Link>
       </div>
 
+      {commentsError && (
+        <div className="mb-4 p-3 bg-yellow-100 border border-yellow-400 text-yellow-800 rounded">
+          Warning: Could not load comment counts. {commentsError.message}
+        </div>
+      )}
+
       {blogs.length === 0 ? (
         <p className="text-gray-400">No blogs found.</p>
       ) : (
@@ -133,116 +166,133 @@ export default function BlogDashboardPage() {
                 </tr>
               </thead>
               <tbody>
-                {blogs.map((b) => (
-                  <tr
-                    key={b.id}
-                    className="border-t border-gray-700 hover:bg-gray-400 transition text-black"
-                  >
-                    <td className="p-3">
-                      {b.image && typeof b.image === 'string' ? (
-                        (() => {
-                          const normalizedPath = normalizeImagePath(b.image);
-                          return normalizedPath ? (
-                            <div className="relative w-20 h-12 rounded-lg">
-                              <Image
-                                src={normalizedPath}
-                                alt={b.title}
-                                width={80}
-                                height={48}
-                                className="object-cover"
-                              />
-                            </div>
-                          ) : (
-                            <span className="text-gray-400 text-sm">
-                              Invalid image
-                            </span>
-                          );
-                        })()
-                      ) : (
-                        <span className="text-gray-400 text-sm">No image</span>
-                      )}
-                    </td>
+                {blogs.map((b) => {
+                  const commentCount = commentsCountMap[b.id] || 0;
+                  console.log(`Blog ${b.id} comment count:`, commentCount); // Debug log
 
-                    <td
-                      className="p-3 font-semibold max-w-xs truncate"
-                      title={b.title}
+                  return (
+                    <tr
+                      key={b.id}
+                      className="border-t border-gray-700 hover:bg-gray-400 transition text-black"
                     >
-                      {b.title}
-                    </td>
+                      <td className="p-3">
+                        {b.image && typeof b.image === 'string' ? (
+                          (() => {
+                            const normalizedPath = normalizeImagePath(b.image);
+                            return normalizedPath ? (
+                              <div className="relative w-20 h-12 rounded-lg">
+                                <Image
+                                  src={normalizedPath}
+                                  alt={b.title}
+                                  width={80}
+                                  height={48}
+                                  className="object-cover"
+                                />
+                              </div>
+                            ) : (
+                              <span className="text-gray-400 text-sm">
+                                Invalid image
+                              </span>
+                            );
+                          })()
+                        ) : (
+                          <span className="text-gray-400 text-sm">
+                            No image
+                          </span>
+                        )}
+                      </td>
 
-                    <td className="p-3">
-                      <span
-                        className={`px-2 py-1 rounded text-xs font-medium ${
-                          b.is_published
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-yellow-100 text-yellow-800'
-                        }`}
+                      <td
+                        className="p-3 font-semibold max-w-xs truncate"
+                        title={b.title}
                       >
-                        {b.is_published ? 'Published' : 'Draft'}
-                      </span>
-                    </td>
+                        {b.title}
+                      </td>
 
-                    <td className="p-3 text-sm">{getAuthorDisplay(b)}</td>
-
-                    <td className="p-3 text-sm">
-                      {new Date(b.createdAt).toLocaleDateString('en-GB', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric',
-                      })}
-                    </td>
-
-                    <td className="p-3 text-sm">
-                      {new Date(b.updatedAt).toLocaleDateString('en-GB', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric',
-                      })}
-                    </td>
-
-                    <td className="p-3 text-sm">{getCreatedByDisplay(b)}</td>
-
-                    <td className="p-3 text-sm">{getUpdatedByDisplay(b)}</td>
-
-                    <td className="p-3">
-                      <div className="flex gap-3">
-                        <Link
-                          href={`/dashboard/blog/edit/${b.id}`}
-                          className="text-yellow-500 hover:text-yellow-300 transition"
-                          title="Edit"
+                      <td className="p-3">
+                        <span
+                          className={`px-2 py-1 rounded text-xs font-medium ${
+                            b.is_published
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-yellow-100 text-yellow-800'
+                          }`}
                         >
-                          <FaPen />
-                        </Link>
-                        <button
-                          onClick={() => handleDelete(b.id)}
-                          disabled={deleteMutation.isPending}
-                          className="text-red-500 hover:text-red-400 transition disabled:opacity-40"
-                          title="Delete"
-                        >
-                          <FaTrash />
-                        </button>
-                        <Link
-                          href={`/blog/${b.slug}`}
-                          className="text-blue-500 hover:text-blue-400 transition"
-                          title="View"
-                        >
-                          <FaEye />
-                        </Link>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                          {b.is_published ? 'Published' : 'Draft'}
+                        </span>
+                      </td>
+
+                      <td className="p-3 text-sm">{getAuthorDisplay(b)}</td>
+
+                      <td className="p-3 text-sm">
+                        {new Date(b.createdAt).toLocaleDateString('en-GB', {
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric',
+                        })}
+                      </td>
+
+                      <td className="p-3 text-sm">
+                        {new Date(b.updatedAt).toLocaleDateString('en-GB', {
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric',
+                        })}
+                      </td>
+
+                      <td className="p-3 text-sm">{getCreatedByDisplay(b)}</td>
+
+                      <td className="p-3 text-sm">{getUpdatedByDisplay(b)}</td>
+
+                      <td className="p-3">
+                        <div className="flex gap-3 items-center">
+                          <Link
+                            href={`/dashboard/blog/edit/${b.id}`}
+                            className="text-yellow-500 hover:text-yellow-300 transition"
+                            title="Edit"
+                          >
+                            <FaPen />
+                          </Link>
+                          <button
+                            onClick={() => handleDelete(b.id)}
+                            disabled={deleteMutation.isPending}
+                            className="text-red-500 hover:text-red-400 transition disabled:opacity-40"
+                            title="Delete"
+                          >
+                            <FaTrash />
+                          </button>
+
+                          <Link
+                            href={`/dashboard/blog/${b.id}/comments`}
+                            className="relative text-blue-500 hover:text-blue-400 transition inline-block"
+                            title={`View Comments (${commentCount})`}
+                          >
+                            <FaCommentDots size={18} />
+                            {commentCount > 0 && (
+                              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center leading-none">
+                                {commentCount > 99 ? '99+' : commentCount}
+                              </span>
+                            )}
+                            {commentsLoading && (
+                              <span className="absolute -top-2 -right-2 bg-gray-400 text-white text-xs px-1.5 py-0.5 rounded-full">
+                                ...
+                              </span>
+                            )}
+                          </Link>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex justify-center items-center gap-4 mt-6">
               <button
                 onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
                 disabled={page === 1}
-                className="px-4 py-2 rounded-lg bg-gray-200 text-black hover:bg-gray-500 transition"
+                className="px-4 py-2 rounded-lg bg-gray-200 text-black hover:bg-gray-500 transition disabled:opacity-40"
               >
                 ←
               </button>
