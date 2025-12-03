@@ -194,13 +194,13 @@ export default function AddBlogPage() {
 
   return (
     <div className="min-h-screen text-black">
-      <header className="border-b border-gray-200 px-6 py-4">
-        <h1 className="text-3xl font-bold">Add New Blog</h1>
+      <header className="border-b border-gray-200">
+        <h1 className="text-2xl font-bold">Add New Blog</h1>
         <div className="mt-4">
           <Breadcrumb items={breadCrumb} />
         </div>
       </header>
-      <div className="flex justify-end pt-6 px-6">
+      <div className="flex justify-end mt-4">
         <button
           type="submit"
           form="blog-form"
@@ -210,7 +210,7 @@ export default function AddBlogPage() {
           {createBlog.isPending ? 'Saving...' : 'Save Blog'}
         </button>
       </div>
-      <main className="flex-grow py-10 px-6">
+      <main className="flex-grow py-4">
         {errorMsg && (
           <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
             Error: {errorMsg}

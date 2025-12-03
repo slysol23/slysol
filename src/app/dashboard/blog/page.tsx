@@ -213,7 +213,7 @@ export default function BlogDashboardPage() {
                       <td className="p-3 text-sm">
                         {new Date(b.updatedAt).toLocaleDateString('en-GB', {
                           day: '2-digit',
-                          month: 'short',
+                          month: 'numeric',
                           year: 'numeric',
                         })}
                       </td>
@@ -221,22 +221,6 @@ export default function BlogDashboardPage() {
 
                       <td className="p-3">
                         <div className="flex items-center gap-1.5">
-                          <Link
-                            href={`/dashboard/blog/edit/${b.id}`}
-                            className="text-yellow-500 hover:text-yellow-300 transition"
-                            title="Edit"
-                          >
-                            <FaPen size={15} />
-                          </Link>
-
-                          <button
-                            onClick={() => handleDelete(b.id)}
-                            disabled={deleteMutation.isPending}
-                            className="text-red-500 hover:text-red-400 transition disabled:opacity-40"
-                            title="Delete"
-                          >
-                            <FaTrash size={15} />
-                          </button>
                           <Link
                             href={`/blog/${b.slug}`}
                             className="text-black hover:text-gray-600 transition"
@@ -261,6 +245,21 @@ export default function BlogDashboardPage() {
                               </span>
                             )}
                           </Link>
+                          <Link
+                            href={`/dashboard/blog/edit/${b.id}`}
+                            className="text-yellow-500 hover:text-yellow-300 transition"
+                            title="Edit"
+                          >
+                            <FaPen size={15} />
+                          </Link>
+                          <button
+                            onClick={() => handleDelete(b.id)}
+                            disabled={deleteMutation.isPending}
+                            className="text-red-500 hover:text-red-400 transition disabled:opacity-40"
+                            title="Delete"
+                          >
+                            <FaTrash size={15} />
+                          </button>
                         </div>
                       </td>
                     </tr>

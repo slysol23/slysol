@@ -103,9 +103,8 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
   const publishBlog = useMutation({
     mutationFn: (isPublished: boolean) => blog.publish(blogId, isPublished),
     onSuccess: (data) => {
-      // Safely access data
       const blogData = data?.data;
-      if (!blogData) return; // exit if data is undefined
+      if (!blogData) return;
 
       // Update React Query cache
       queryClient.setQueryData(['blog', blogId], blogData);
@@ -148,7 +147,6 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
     return defaultValue;
   };
 
-  // Blog filled data
   useEffect(() => {
     if (!blogData) return;
 
@@ -223,24 +221,24 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
   ];
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold mb-6">Edit Blog</h1>
-      <Breadcrumb items={breadCrumb} />
+    <div>
+      <header className="border-b border-gray-200">
+        <h1 className="text-2xl font-bold mb-6">Edit Blog</h1>
+        <Breadcrumb items={breadCrumb} />
+      </header>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <div className="flex justify-end gap-4">
-          <div>
-            <button
-              type="submit"
-              onClick={() => {
-                router.push('/dashboard/blog');
-              }}
-              className="px-4 py-2 bg-gray-200 text-black hover:bg-gray-500 rounded"
-              disabled={updateBlog.isPending}
-            >
-              {updateBlog.isPending ? 'Saving...' : 'Save'}
-            </button>
-          </div>
+        <div className="flex justify-end gap-4 mt-4">
+          <button
+            type="submit"
+            onClick={() => {
+              router.push('/dashboard/blog');
+            }}
+            className="px-4 py-2 bg-gray-200 text-black hover:bg-gray-500 rounded"
+            disabled={updateBlog.isPending}
+          >
+            {updateBlog.isPending ? 'Saving...' : 'Save'}
+          </button>
           <div>
             <button
               type="button"

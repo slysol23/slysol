@@ -116,7 +116,11 @@ export default function AuthorDashboardPage() {
                   <td className="p-3">{a.email}</td>
                   <td className="p-3">
                     {a.createdAt
-                      ? new Date(a.createdAt).toLocaleDateString('en-GB')
+                      ? new Date(a.createdAt).toLocaleDateString('en-GB', {
+                          day: '2-digit',
+                          month: 'numeric',
+                          year: 'numeric',
+                        })
                       : '-'}
                   </td>
                   <td className="p-3 flex gap-3 justify-center">
