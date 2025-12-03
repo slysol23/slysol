@@ -10,7 +10,6 @@ import { user } from 'lib/user';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 import { IUser } from 'lib/type';
 
-// Validation schema
 const UserSchema = z.object({
   username: z.string().min(2, 'Username must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
@@ -117,12 +116,14 @@ export default function EditUserPage() {
   ];
 
   return (
-    <div className="min-h-screen text-black p-8">
-      <h1 className="text-2xl font-bold mb-6">Edit User</h1>
-      <Breadcrumb items={breadCrumb} />
+    <div className="min-h-screen text-black">
+      <header className="border-b border-gray-200">
+        <h1 className="text-2xl font-bold mb-4">Edit User</h1>
+        <Breadcrumb items={breadCrumb} />
+      </header>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <div className="flex justify-end">
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="flex justify-end mt-4">
           <button
             type="submit"
             className="bg-gray-200 text-black py-2 px-4 rounded-md hover:bg-gray-500"
@@ -132,7 +133,7 @@ export default function EditUserPage() {
           </button>
         </div>
         {/* Username */}
-        <div>
+        <div className="mt-4">
           <label className="block text-black mb-2 font-medium">Username</label>
           <input
             type="text"
@@ -148,7 +149,7 @@ export default function EditUserPage() {
         </div>
 
         {/* Email */}
-        <div>
+        <div className="mt-4">
           <label className="block text-black mb-2 font-medium">Email</label>
           <input
             type="email"
@@ -162,7 +163,7 @@ export default function EditUserPage() {
         </div>
 
         {/* Password */}
-        <div>
+        <div className="mt-4">
           <label className="block text-black mb-2 font-medium">Password</label>
           <input
             type="password"
@@ -178,7 +179,7 @@ export default function EditUserPage() {
         </div>
 
         {/* Is Admin */}
-        <div>
+        <div className="mt-4">
           <label className="block text-black mb-2 font-medium">Is Admin</label>
           <select
             {...register('isAdmin')}

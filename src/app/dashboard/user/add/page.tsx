@@ -59,7 +59,7 @@ export default function AddUserPage() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors },
     setValue,
   } = useForm<UserForm>({
     resolver: zodResolver(UserSchema),
@@ -91,25 +91,23 @@ export default function AddUserPage() {
   return (
     <div className="min-h-screen text-black">
       {/* Header */}
-      <header className="border-b border-gray-200 text-black px-6 py-4">
-        <h1 className="text-3xl font-bold text-black">Add New User</h1>
+      <header className="border-b border-gray-200 text-black">
+        <h1 className="text-2xl font-bold text-black">Add New User</h1>
         <div className="pt-4">
           <Breadcrumb items={breadCrumb} />
         </div>
       </header>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 py-10 px-6">
-        <div className="flex justify-end gap-4">
-          {isValid && (
-            <button
-              type="submit"
-              disabled={createAuthorMutation.isPending}
-              className="px-6 py-3 rounded-lg border border-gray-300 hover:bg-gray-500 transition"
-            >
-              {createAuthorMutation.isPending ? 'Adding...' : 'Add Author'}
-            </button>
-          )}
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="flex justify-end mt-4">
+          <button
+            type="submit"
+            disabled={createAuthorMutation.isPending}
+            className="px-6 py-3 rounded-lg border border-gray-300 hover:bg-gray-500 transition"
+          >
+            {createAuthorMutation.isPending ? 'Adding...' : 'Add Author'}
+          </button>
         </div>
-        <div>
+        <div className="mt-4">
           <label className="block text-black font-medium mb-2">Name</label>
           <input
             type="text"
@@ -123,7 +121,7 @@ export default function AddUserPage() {
         </div>
 
         {/* Email */}
-        <div>
+        <div className="mt-4">
           <label className="block text-black font-medium mb-2">Email</label>
           <input
             type="email"
@@ -137,7 +135,7 @@ export default function AddUserPage() {
         </div>
 
         {/* Password */}
-        <div>
+        <div className="mt-4">
           <label className="block text-black font-medium mb-2">Password</label>
           <input
             type="password"
@@ -153,7 +151,7 @@ export default function AddUserPage() {
         </div>
 
         {/* Is Admin */}
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 mt-4">
           <label className="text-black font-medium">Is Admin?</label>
 
           <select
