@@ -244,29 +244,36 @@ export default function BlogDashboardPage() {
                       <td className="p-3 text-sm">{getUpdatedByDisplay(b)}</td>
 
                       <td className="p-3">
-                        <div className="flex gap-3 items-center">
+                        <div className="flex items-center gap-1.5">
                           <Link
                             href={`/dashboard/blog/edit/${b.id}`}
                             className="text-yellow-500 hover:text-yellow-300 transition"
                             title="Edit"
                           >
-                            <FaPen />
+                            <FaPen size={15} />
                           </Link>
+
                           <button
                             onClick={() => handleDelete(b.id)}
                             disabled={deleteMutation.isPending}
                             className="text-red-500 hover:text-red-400 transition disabled:opacity-40"
                             title="Delete"
                           >
-                            <FaTrash />
+                            <FaTrash size={15} />
                           </button>
-
+                          <Link
+                            href={`/blog/${b.slug}`}
+                            className="text-black hover:text-gray-600 transition"
+                            title="View"
+                          >
+                            <FaEye size={15} />
+                          </Link>
                           <Link
                             href={`/dashboard/blog/${b.id}/comments`}
                             className="relative text-blue-500 hover:text-blue-400 transition inline-block"
                             title={`View Comments (${commentCount})`}
                           >
-                            <FaCommentDots size={18} />
+                            <FaCommentDots size={17} />
                             {commentCount > 0 && (
                               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center leading-none">
                                 {commentCount > 99 ? '99+' : commentCount}
