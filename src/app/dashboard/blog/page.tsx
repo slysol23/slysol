@@ -76,14 +76,6 @@ export default function BlogDashboardPage() {
     return 'No authors';
   };
 
-  const getCreatedByDisplay = (b: IBlog) => {
-    if (!b.createdBy) return '—';
-    if (typeof b.createdBy === 'string') return b.createdBy;
-    if (typeof b.createdBy === 'object' && b.createdBy.name)
-      return b.createdBy.name;
-    return '—';
-  };
-
   const getUpdatedByDisplay = (b: IBlog) => {
     if (!b.updatedBy) return '—';
     if (typeof b.updatedBy === 'string') return b.updatedBy;
@@ -154,13 +146,11 @@ export default function BlogDashboardPage() {
             <table className="w-full text-left border border-gray-700 rounded-lg">
               <thead className="bg-blue text-white">
                 <tr>
-                  <th className="p-3">Image</th>
+                  <th className="p-3">Cover</th>
                   <th className="p-3">Title</th>
                   <th className="p-3">Status</th>
                   <th className="p-3">Author</th>
-                  <th className="p-3">Created At</th>
                   <th className="p-3">Updated At</th>
-                  <th className="p-3">Created By</th>
                   <th className="p-3">Updated By</th>
                   <th className="p-3">Actions</th>
                 </tr>
@@ -168,7 +158,6 @@ export default function BlogDashboardPage() {
               <tbody>
                 {blogs.map((b) => {
                   const commentCount = commentsCountMap[b.id] || 0;
-                  console.log(`Blog ${b.id} comment count:`, commentCount); // Debug log
 
                   return (
                     <tr
@@ -220,17 +209,7 @@ export default function BlogDashboardPage() {
                           {b.is_published ? 'Published' : 'Draft'}
                         </span>
                       </td>
-
                       <td className="p-3 text-sm">{getAuthorDisplay(b)}</td>
-
-                      <td className="p-3 text-sm">
-                        {new Date(b.createdAt).toLocaleDateString('en-GB', {
-                          day: '2-digit',
-                          month: 'short',
-                          year: 'numeric',
-                        })}
-                      </td>
-
                       <td className="p-3 text-sm">
                         {new Date(b.updatedAt).toLocaleDateString('en-GB', {
                           day: '2-digit',
@@ -238,9 +217,6 @@ export default function BlogDashboardPage() {
                           year: 'numeric',
                         })}
                       </td>
-
-                      <td className="p-3 text-sm">{getCreatedByDisplay(b)}</td>
-
                       <td className="p-3 text-sm">{getUpdatedByDisplay(b)}</td>
 
                       <td className="p-3">

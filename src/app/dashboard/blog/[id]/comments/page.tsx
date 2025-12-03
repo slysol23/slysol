@@ -29,17 +29,32 @@ export default function BlogCommentsPage({
         const blogData = await blogRes.json();
         const commentsData = await commentsRes.json();
 
-        console.log('📦 Blog Data:', blogData);
-        console.log('💬 Comments Data:', commentsData);
-
         setBlog(blogData.data || blogData);
-        setComments(commentsData.data || []);
+
+        const sortedComments = (commentsData.data || [])
+          .map((c: any) => ({
+            ...c,
+            replies: c.replies
+              ? [...c.replies].sort(
+                  (a: any, b: any) =>
+                    new Date(b.createdAt).getTime() -
+                    new Date(a.createdAt).getTime(),
+                )
+              : [],
+          }))
+          .sort(
+            (a: any, b: any) =>
+              new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+          );
+
+        setComments(sortedComments);
       } catch (err) {
         console.error('Failed to load data:', err);
       } finally {
         setLoading(false);
       }
     }
+
     loadData();
   }, [params.id]);
 
@@ -47,29 +62,30 @@ export default function BlogCommentsPage({
     { label: 'Blogs', href: '/dashboard/blog' },
     {
       label: blog?.title || 'Comments',
-      href: `/dashboard/blog/${params.id}/comments`,
+      href: `/dashboard/blog`,
+    },
+    {
+      label: 'Comments',
+      href: `/dashboard/comments`,
     },
   ];
 
   return (
     <div className="p-6">
-      <div className="mb-6">
-        <Breadcrumb items={breadCrumb} />
-      </div>
-
-      {/* ✅ Display blog title */}
+      {/* Title + Comment Count */}
       <div className="flex items-center gap-5 mb-6">
         <div>
-          <h2 className="text-2xl font-bold inline-flex gap-2">
-            Blog Name:
-            <span>
-              {loading ? 'Loading...' : blog?.title || 'Blog Comments'}
+          <h2 className="text-2xl font-bold flex items-center gap-2">
+            {loading ? 'Loading...' : blog?.title || 'Blog Comments'}
+            <span className="text-gray-500 text-sm">
+              {comments.length} {comments.length === 1 ? 'comment' : 'comments'}
             </span>
           </h2>
-          <p className="text-black text-sm mt-1 ">
-            {comments.length} {comments.length === 1 ? 'comment' : 'comments'}
-          </p>
         </div>
+      </div>
+
+      <div>
+        <Breadcrumb items={breadCrumb} />
       </div>
 
       {loading ? (
@@ -78,7 +94,7 @@ export default function BlogCommentsPage({
         <p className="text-gray-500">No comments yet.</p>
       ) : (
         <div className="space-y-4">
-          {comments.map((c) => (
+          {comments.map((c: any) => (
             <div
               key={c.id}
               className="p-4 border rounded-lg shadow-sm bg-white"
@@ -95,6 +111,7 @@ export default function BlogCommentsPage({
                       timeZone: 'UTC',
                     })}
                   </span>
+
                   <span
                     className={`ml-2 px-2 py-[2px] rounded text-xs ${
                       c.is_published
@@ -135,14 +152,15 @@ export default function BlogCommentsPage({
                       <div className="flex justify-between text-xs text-gray-500 mb-1">
                         <span>
                           {new Date(r.createdAt).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'long',
                             day: 'numeric',
+                            month: '2-digit',
+                            year: '2-digit',
                             hour: '2-digit',
                             minute: '2-digit',
                             timeZone: 'UTC',
                           })}
                         </span>
+
                         <span
                           className={`px-2 py-[2px] rounded text-xs ${
                             r.is_published
@@ -153,6 +171,7 @@ export default function BlogCommentsPage({
                           {r.is_published ? 'Published' : 'Draft'}
                         </span>
                       </div>
+
                       <p className="text-gray-700">{r.comment}</p>
                     </div>
                   ))}

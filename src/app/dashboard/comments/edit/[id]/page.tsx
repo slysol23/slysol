@@ -13,7 +13,6 @@ const CommentSchema = z.object({
   blogId: z.number().min(1, 'Blog ID is required'),
   name: z.string().min(2, 'Name must be at least 2 characters'),
   comment: z.string().min(2, 'Comment must be at least 2 characters'),
-  is_published: z.boolean(),
 });
 
 type CommentForm = z.infer<typeof CommentSchema>;
@@ -48,32 +47,6 @@ export default function EditCommentPage() {
     },
   });
 
-  const togglePublish = useMutation({
-    mutationFn: (newStatus: boolean) => comments.togglePublish(id, newStatus),
-
-    onMutate: async (newStatus) => {
-      await queryClient.cancelQueries({ queryKey: ['comment', id] });
-
-      const previousData = queryClient.getQueryData(['comment', id]);
-      queryClient.setQueryData(['comment', id], (old: any) => ({
-        ...old,
-        is_published: newStatus,
-      }));
-
-      return { previousData };
-    },
-
-    onError: (_err, _vars, context) => {
-      if (context?.previousData) {
-        queryClient.setQueryData(['comment', id], context.previousData);
-      }
-    },
-
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['comment', id] });
-    },
-  });
-
   const { register, handleSubmit, reset, formState } = useForm<CommentForm>({
     resolver: zodResolver(CommentSchema),
   });
@@ -84,19 +57,12 @@ export default function EditCommentPage() {
         blogId: data.blogId,
         name: data.name,
         comment: data.comment,
-        is_published: data.is_published,
       });
     }
   }, [data, reset]);
 
   const onSubmit = (formData: CommentForm) => {
     updateComment.mutate(formData);
-  };
-
-  const handleTogglePublish = () => {
-    if (data) {
-      togglePublish.mutate(!data.is_published);
-    }
   };
 
   if (isLoading) return <p>Loading comment...</p>;
@@ -113,23 +79,13 @@ export default function EditCommentPage() {
       <Breadcrumb items={breadCrumb} />
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 mt-6">
-        <div className="flex justify-end gap-4">
+        <div className="flex justify-end">
           <button
             type="submit"
             className="px-4 py-2 bg-gray-200 text-black hover:bg-gray-500 rounded"
             disabled={updateComment.isPending}
           >
             {updateComment.isPending ? 'Saving...' : 'Save'}
-          </button>
-
-          <button
-            type="button"
-            className="px-4 py-2 rounded-lg bg-gray-200 text-black hover:bg-gray-500 flex items-center gap-2"
-            onClick={handleTogglePublish}
-            disabled={togglePublish.isPending}
-          >
-            {togglePublish.isPending && <div className="loader"></div>}
-            {data?.is_published ? 'Unpublish' : 'Publish'}
           </button>
         </div>
 
