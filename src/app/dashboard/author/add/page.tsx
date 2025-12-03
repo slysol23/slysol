@@ -39,7 +39,7 @@ export default function AddAuthorPage() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm<AuthorForm>({
     resolver: zodResolver(AuthorSchema),
     mode: 'onChange',
@@ -55,26 +55,24 @@ export default function AddAuthorPage() {
   ];
   return (
     <div className="min-h-screen text-black">
-      <header className="border-b border-gray-200 px-6">
-        <h1 className="text-3xl font-bold">Add New Author</h1>
+      <header className="border-b border-gray-200">
+        <h1 className="text-2xl font-bold">Add New Author</h1>
         <div className="mt-4">
           <Breadcrumb items={breadCrumbItems} />
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="flex-grow py-4 px-6">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+      <main className="flex-grow py-4">
+        <form onSubmit={handleSubmit(onSubmit)}>
           <div className="flex justify-end mt-4">
-            {isValid && (
-              <button
-                type="submit"
-                disabled={createAuthorMutation.isPending}
-                className="px-6 py-3 rounded-lg border border-gray-300 hover:bg-gray-400 transition"
-              >
-                {createAuthorMutation.isPending ? 'Saving...' : 'Add Author'}
-              </button>
-            )}
+            <button
+              type="submit"
+              disabled={createAuthorMutation.isPending}
+              className="px-6 py-3 rounded-lg border border-gray-300 hover:bg-gray-400 transition"
+            >
+              {createAuthorMutation.isPending ? 'Saving...' : 'Add Author'}
+            </button>
           </div>
           <div>
             <label className="block text-black font-medium mb-2">
@@ -93,7 +91,7 @@ export default function AddAuthorPage() {
             )}
           </div>
 
-          <div>
+          <div className="mt-4">
             <label className="block text-black font-medium mb-2">
               Last Name
             </label>
@@ -110,7 +108,7 @@ export default function AddAuthorPage() {
             )}
           </div>
 
-          <div>
+          <div className="mt-4">
             <label className="block text-black font-medium mb-2">Email</label>
             <input
               type="email"

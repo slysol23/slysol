@@ -97,7 +97,7 @@ export default function EditAuthorPage() {
     { label: 'Edit', href: '/dashboard/author/edit/id' },
   ];
   return (
-    <div className="p-8">
+    <div>
       <h1 className="text-2xl font-bold text-black mb-6">Edit Author</h1>
       <Breadcrumb items={breadCrumb} />
 
