@@ -3,32 +3,17 @@ import { db } from 'db';
 import { userSchema } from 'db/schema';
 import { eq } from 'drizzle-orm';
 import bcrypt from 'bcryptjs';
-import { auth } from 'auth';
 
 export async function POST(req: Request) {
   try {
-    // Check if user is authenticated and is admin
-    const session = await auth();
-
-    if (!session?.user) {
-      return NextResponse.json(
-        { error: 'Unauthorized - Please login' },
-        { status: 401 },
-      );
-    }
-
-    if (!(session.user as any).isAdmin) {
-      return NextResponse.json(
-        { error: 'Forbidden - Only admins can register users' },
-        { status: 403 },
-      );
-    }
-
-    // Parse request body
     const body = await req.json();
-    const { name, email, password } = body;
+    const { name, email, password, secretKey } = body;
 
-    // Validate input
+    if (secretKey !== process.env.ADMIN_SECRET) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+    }
+
+    // Validate fields
     if (!name || !email || !password) {
       return NextResponse.json(
         { error: 'Name, email, and password are required' },
@@ -45,7 +30,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // Validate password length
+    // Validate password
     if (password.length < 6) {
       return NextResponse.json(
         { error: 'Password must be at least 6 characters long' },
@@ -53,7 +38,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // Check if user already exists
+    // Check existing
     const [existingUser] = await db
       .select()
       .from(userSchema)
@@ -70,24 +55,26 @@ export async function POST(req: Request) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user
+    // Create user (admin)
     const [newUser] = await db
       .insert(userSchema)
       .values({
         name,
         email,
         password: hashedPassword,
+        isAdmin: true,
       })
       .returning({
         id: userSchema.id,
         name: userSchema.name,
         email: userSchema.email,
         createdAt: userSchema.createdAt,
+        isAdmin: userSchema.isAdmin,
       });
 
     return NextResponse.json(
       {
-        message: 'User registered successfully',
+        message: 'Admin created successfully',
         user: newUser,
       },
       { status: 201 },
