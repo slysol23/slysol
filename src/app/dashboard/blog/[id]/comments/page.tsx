@@ -4,21 +4,35 @@ import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 import { useEffect, useState } from 'react';
 import { FaChevronDown, FaChevronRight } from 'react-icons/fa';
 
-export default function BlogCommentsPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+const sortReplies = (comment: any): any => {
+  if (!comment.replies || comment.replies.length === 0) {
+    return comment;
+  }
+
+  const sortedReplies = [...comment.replies]
+    .sort(
+      (a: any, b: any) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    )
+    .map(sortReplies);
+
+  return {
+    ...comment,
+    replies: sortedReplies,
+  };
+};
+
+export default function BlogComments({ params }: { params: { id: string } }) {
   const [comments, setComments] = useState<any[]>([]);
   const [blog, setBlog] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [openReply, setOpenReply] = useState<number | null>(null);
+  const [openReplies, setOpenReplies] = useState<Set<number>>(new Set());
 
   useEffect(() => {
     async function loadData() {
       setLoading(true);
       setComments([]);
-      setOpenReply(null);
+      setOpenReplies(new Set());
 
       try {
         const [blogRes, commentsRes] = await Promise.all([
@@ -32,16 +46,7 @@ export default function BlogCommentsPage({
         setBlog(blogData.data || blogData);
 
         const sortedComments = (commentsData.data || [])
-          .map((c: any) => ({
-            ...c,
-            replies: c.replies
-              ? [...c.replies].sort(
-                  (a: any, b: any) =>
-                    new Date(b.createdAt).getTime() -
-                    new Date(a.createdAt).getTime(),
-                )
-              : [],
-          }))
+          .map(sortReplies)
           .sort(
             (a: any, b: any) =>
               new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
@@ -58,12 +63,32 @@ export default function BlogCommentsPage({
     loadData();
   }, [params.id]);
 
-  const togglePublish = async (
-    id: number,
-    current: boolean,
-    isReply = false,
-    parentId?: number,
-  ) => {
+  const updateNestedReplies = (
+    comments: any[],
+    targetId: number,
+    newPublishStatus: boolean,
+  ): any[] => {
+    return comments.map((comment) => {
+      if (comment.id === targetId) {
+        return { ...comment, is_published: newPublishStatus };
+      }
+
+      if (comment.replies && comment.replies.length > 0) {
+        return {
+          ...comment,
+          replies: updateNestedReplies(
+            comment.replies,
+            targetId,
+            newPublishStatus,
+          ),
+        };
+      }
+
+      return comment;
+    });
+  };
+
+  const togglePublish = async (id: number, current: boolean) => {
     try {
       const res = await fetch(`/api/comments/${id}`, {
         method: 'PATCH',
@@ -79,28 +104,109 @@ export default function BlogCommentsPage({
         throw new Error('Failed to update publish status');
       }
 
-      // Optimistic UI update
-      setComments((prev) =>
-        prev.map((comment) => {
-          if (!isReply && comment.id === id) {
-            return { ...comment, is_published: !current };
-          }
-
-          if (isReply && comment.id === parentId) {
-            return {
-              ...comment,
-              replies: comment.replies.map((reply: any) =>
-                reply.id === id ? { ...reply, is_published: !current } : reply,
-              ),
-            };
-          }
-
-          return comment;
-        }),
-      );
+      setComments((prev) => updateNestedReplies(prev, id, !current));
     } catch (err) {
       console.error('Toggle publish failed:', err);
     }
+  };
+
+  const toggleReplies = (commentId: number) => {
+    setOpenReplies((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(commentId)) {
+        newSet.delete(commentId);
+      } else {
+        newSet.add(commentId);
+      }
+      return newSet;
+    });
+  };
+
+  const RenderComment = ({
+    comment,
+    depth = 0,
+  }: {
+    comment: any;
+    depth?: number;
+  }) => {
+    const isOpen = openReplies.has(comment.id);
+    const hasReplies = comment.replies && comment.replies.length > 0;
+
+    return (
+      <div
+        key={comment.id}
+        className={`${
+          depth > 0 ? 'ml-4 mt-3 border-l-2 border-gray-300 pl-3' : ''
+        }`}
+      >
+        <div
+          className={`p-${depth > 0 ? '2' : '4'} border rounded-lg shadow-sm ${
+            depth > 0 ? 'bg-gray-50' : 'bg-white'
+          }`}
+        >
+          <div>
+            <div className="flex justify-between items-center">
+              <span
+                className={`${depth > 0 ? 'text-xs' : 'text-sm'} text-gray-600`}
+              >
+                {new Date(comment.createdAt).toLocaleDateString('en-US', {
+                  year: depth > 0 ? '2-digit' : 'numeric',
+                  month: depth > 0 ? '2-digit' : 'short',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: false,
+                  timeZone: 'UTC',
+                })}
+              </span>
+              <span
+                onClick={() => togglePublish(comment.id, comment.is_published)}
+                className={`ml-2 px-2 py-[2px] rounded text-xs cursor-pointer hover:opacity-80 ${
+                  comment.is_published
+                    ? 'bg-green-100 text-green-700'
+                    : 'bg-yellow-100 text-yellow-700'
+                }`}
+              >
+                {comment.is_published ? 'Published' : 'Draft'}
+              </span>
+            </div>
+
+            <p
+              className={`mt-2 ${
+                depth > 0 ? 'text-gray-700' : 'text-gray-800'
+              }`}
+            >
+              {comment.comment}
+            </p>
+
+            {hasReplies && (
+              <button
+                className="flex items-center gap-1 text-gray-700 hover:text-gray-900 mt-3"
+                onClick={() => toggleReplies(comment.id)}
+              >
+                {isOpen ? <FaChevronDown /> : <FaChevronRight />}
+                <span className="text-xs">
+                  {comment.replies.length}{' '}
+                  {comment.replies.length === 1 ? 'Reply' : 'Replies'}
+                </span>
+              </button>
+            )}
+          </div>
+
+          {isOpen && hasReplies && (
+            <div className="space-y-3 mt-3">
+              {comment.replies.map((reply: any) => (
+                <RenderComment
+                  key={reply.id}
+                  comment={reply}
+                  depth={depth + 1}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    );
   };
 
   const breadCrumb: BreadcrumbItem[] = [
@@ -140,93 +246,7 @@ export default function BlogCommentsPage({
       ) : (
         <div className="space-y-4">
           {comments.map((c: any) => (
-            <div
-              key={c.id}
-              className="p-4 border rounded-lg shadow-sm bg-white"
-            >
-              <div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">
-                    {new Date(c.createdAt).toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit',
-                      hour12: false,
-                      timeZone: 'UTC',
-                    })}
-                  </span>
-                  <span
-                    onClick={() => togglePublish(c.id, c.is_published)}
-                    className={`ml-2 px-2 py-[2px] rounded text-xs cursor-pointer hover:opacity-80 ${
-                      c.is_published
-                        ? 'bg-green-100 text-green-700'
-                        : 'bg-yellow-100 text-yellow-700'
-                    }`}
-                  >
-                    {c.is_published ? 'Published' : 'Draft'}
-                  </span>
-                </div>
-
-                <p className="mt-2 text-gray-800">{c.comment}</p>
-
-                {c.replies?.length > 0 && (
-                  <button
-                    className="flex items-center gap-1 text-gray-700 hover:text-gray-900 mt-3"
-                    onClick={() =>
-                      setOpenReply(openReply === c.id ? null : c.id)
-                    }
-                  >
-                    {openReply === c.id ? (
-                      <FaChevronDown />
-                    ) : (
-                      <FaChevronRight />
-                    )}
-                    <span className="text-xs">
-                      {c.replies.length}{' '}
-                      {c.replies.length === 1 ? 'Reply' : 'Replies'}
-                    </span>
-                  </button>
-                )}
-              </div>
-
-              {openReply === c.id && c.replies?.length > 0 && (
-                <div className="ml-4 mt-3 border-l-2 border-gray-300 pl-3 space-y-3">
-                  {c.replies.map((r: any) => (
-                    <div key={r.id} className="p-2 bg-gray-50 rounded border">
-                      <div className="flex justify-between text-xs text-gray-500 mb-1">
-                        <span>
-                          {new Date(r.createdAt).toLocaleDateString('en-US', {
-                            day: 'numeric',
-                            month: '2-digit',
-                            year: '2-digit',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            hour12: false,
-                            timeZone: 'UTC',
-                          })}
-                        </span>
-                        <span
-                          onClick={() =>
-                            togglePublish(r.id, r.is_published, true, c.id)
-                          }
-                          className={`px-2 py-[2px] rounded text-xs cursor-pointer hover:opacity-80 ${
-                            r.is_published
-                              ? 'bg-green-100 text-green-700'
-                              : 'bg-yellow-100 text-yellow-700'
-                          }`}
-                        >
-                          {r.is_published ? 'Published' : 'Draft'}
-                        </span>
-                      </div>
-
-                      <p className="text-gray-700">{r.comment}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            <RenderComment key={c.id} comment={c} />
           ))}
         </div>
       )}

@@ -10,9 +10,11 @@ type commentReplies = Comment & {
 };
 
 function buildNestedComments(comments: Comment[]): commentReplies[] {
+  // Create a map of all comments first
   const map: Record<number, commentReplies> = {};
   const roots: commentReplies[] = [];
 
+  // First pass: create the map with all comments
   comments.forEach((comment) => {
     map[comment.id] = {
       ...comment,
@@ -20,13 +22,18 @@ function buildNestedComments(comments: Comment[]): commentReplies[] {
     };
   });
 
+  // Second pass: build the tree structure
   comments.forEach((comment) => {
-    if (comment.parentId) {
-      const parent = map[comment.parentId];
-      if (parent) parent.replies.push(map[comment.id]);
-    } else {
-      roots.push(map[comment.id]);
+    const currentComment = map[comment.id];
+
+    if (comment.parentId && map[comment.parentId]) {
+      // This is a reply, add it to its parent's replies array
+      map[comment.parentId].replies.push(currentComment);
+    } else if (!comment.parentId) {
+      // This is a root comment (no parent)
+      roots.push(currentComment);
     }
+    // If parentId exists but parent not in map, it's an orphan (skip it)
   });
 
   return roots;
@@ -43,28 +50,35 @@ export async function GET(request: NextRequest) {
   let comments: Comment[];
 
   try {
-    let query = db.select().from(commentSchema);
-    if (publishedOnly) {
-      if (blogId) {
-        comments = await query
+    // When fetching comments for a specific blog, get ALL comments
+    // Don't apply pagination when building nested structure
+    // because we need all comments to properly nest replies
+
+    if (blogId) {
+      // Fetch ALL comments for this blog to ensure proper nesting
+      if (publishedOnly) {
+        comments = await db
+          .select()
+          .from(commentSchema)
           .where(
             and(
               eq(commentSchema.blogId, parseInt(blogId)),
               eq(commentSchema.is_published, true),
             ),
-          )
-          .limit(limit)
-          .offset((page - 1) * limit);
+          );
       } else {
-        comments = await query
-          .where(eq(commentSchema.is_published, true))
-          .limit(limit)
-          .offset((page - 1) * limit);
+        comments = await db
+          .select()
+          .from(commentSchema)
+          .where(eq(commentSchema.blogId, parseInt(blogId)));
       }
     } else {
-      if (blogId) {
+      // When not filtering by blogId, apply pagination
+      let query = db.select().from(commentSchema);
+
+      if (publishedOnly) {
         comments = await query
-          .where(eq(commentSchema.blogId, parseInt(blogId)))
+          .where(eq(commentSchema.is_published, true))
           .limit(limit)
           .offset((page - 1) * limit);
       } else {
