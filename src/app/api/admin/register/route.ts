@@ -9,11 +9,8 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { name, email, password, secretKey } = body;
 
-    if (secretKey !== process.env.ADMIN_CREATION_SECRET) {
-      return NextResponse.json(
-        { error: 'Invalid secret key' },
-        { status: 403 },
-      );
+    if (secretKey !== process.env.ADMIN_SECRET) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
     // Validate fields
