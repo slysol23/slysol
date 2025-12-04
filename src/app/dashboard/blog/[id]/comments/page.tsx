@@ -58,6 +58,51 @@ export default function BlogCommentsPage({
     loadData();
   }, [params.id]);
 
+  const togglePublish = async (
+    id: number,
+    current: boolean,
+    isReply = false,
+    parentId?: number,
+  ) => {
+    try {
+      const res = await fetch(`/api/comments/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          is_published: !current,
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error('Failed to update publish status');
+      }
+
+      // Optimistic UI update
+      setComments((prev) =>
+        prev.map((comment) => {
+          if (!isReply && comment.id === id) {
+            return { ...comment, is_published: !current };
+          }
+
+          if (isReply && comment.id === parentId) {
+            return {
+              ...comment,
+              replies: comment.replies.map((reply: any) =>
+                reply.id === id ? { ...reply, is_published: !current } : reply,
+              ),
+            };
+          }
+
+          return comment;
+        }),
+      );
+    } catch (err) {
+      console.error('Toggle publish failed:', err);
+    }
+  };
+
   const breadCrumb: BreadcrumbItem[] = [
     { label: 'Blogs', href: '/dashboard/blog' },
     {
@@ -71,13 +116,13 @@ export default function BlogCommentsPage({
   ];
 
   return (
-    <div className="p-6">
+    <div>
       {/* Title + Comment Count */}
       <div className="flex items-center gap-5 mb-6">
         <div>
           <h2 className="text-2xl font-bold flex items-center gap-2">
             {loading ? 'Loading...' : blog?.title || 'Blog Comments'}
-            <span className="text-gray-500 text-sm">
+            <span className="text-gray-500 text-sm font-medium  ">
               {comments.length} {comments.length === 1 ? 'comment' : 'comments'}
             </span>
           </h2>
@@ -104,16 +149,17 @@ export default function BlogCommentsPage({
                   <span className="text-sm text-gray-600">
                     {new Date(c.createdAt).toLocaleDateString('en-US', {
                       year: 'numeric',
-                      month: 'long',
+                      month: 'short',
                       day: 'numeric',
                       hour: '2-digit',
                       minute: '2-digit',
+                      hour12: false,
                       timeZone: 'UTC',
                     })}
                   </span>
-
                   <span
-                    className={`ml-2 px-2 py-[2px] rounded text-xs ${
+                    onClick={() => togglePublish(c.id, c.is_published)}
+                    className={`ml-2 px-2 py-[2px] rounded text-xs cursor-pointer hover:opacity-80 ${
                       c.is_published
                         ? 'bg-green-100 text-green-700'
                         : 'bg-yellow-100 text-yellow-700'
@@ -157,12 +203,15 @@ export default function BlogCommentsPage({
                             year: '2-digit',
                             hour: '2-digit',
                             minute: '2-digit',
+                            hour12: false,
                             timeZone: 'UTC',
                           })}
                         </span>
-
                         <span
-                          className={`px-2 py-[2px] rounded text-xs ${
+                          onClick={() =>
+                            togglePublish(r.id, r.is_published, true, c.id)
+                          }
+                          className={`px-2 py-[2px] rounded text-xs cursor-pointer hover:opacity-80 ${
                             r.is_published
                               ? 'bg-green-100 text-green-700'
                               : 'bg-yellow-100 text-yellow-700'

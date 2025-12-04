@@ -14,6 +14,7 @@ import { MdDashboard } from 'react-icons/md';
 import 'jsoneditor-react/es/editor.min.css';
 import { useUser } from 'providers/UserProvider';
 import { FaGlobeAsia, FaImage, FaUser } from 'react-icons/fa';
+import toast from 'react-hot-toast';
 
 const JsonEditor = dynamic(
   () => import('jsoneditor-react').then((mod) => mod.JsonEditor),
@@ -56,7 +57,6 @@ type BlogForm = z.infer<typeof BlogSchema>;
 
 export default function AddBlogPage() {
   const router = useRouter();
-  const queryClient = useQueryClient();
   const { user, isLoading: userLoading } = useUser();
   const [errorMsg, setErrorMsg] = useState<string>('');
 
@@ -80,8 +80,8 @@ export default function AddBlogPage() {
       return res.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['blogs'] });
-      alert('Blog created successfully!');
+      toast.success('Successfully Created blog');
+      setTimeout(() => router.push('/dashboard/blog'), 500);
       router.push('/dashboard/blog');
     },
     onError: (error) => {

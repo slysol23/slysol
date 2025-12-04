@@ -13,6 +13,7 @@ import Link from 'next/link';
 import { IBlog } from 'lib/type';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 import CommentForms from '@/components/Comments/commentSection';
+import { Toaster } from 'react-hot-toast';
 
 export default function BlogPage() {
   const params = useParams();
@@ -38,7 +39,6 @@ export default function BlogPage() {
     queryKey: ['recentBlogs'],
     queryFn: async () => {
       const res = await blog.getAll(1, 3);
-      console.log('Recent blogs response:', res);
       const blogs = res?.data || [];
       const sorted = blogs.sort((a, b) => {
         const dateA = new Date(a.createdAt || 0).getTime();
@@ -201,7 +201,9 @@ export default function BlogPage() {
               </div>
             </aside>
           </div>
+
           <CommentForms blogId={b?.id || 0} />
+          <Toaster position="top-right" />
         </div>
       </Container>
       <Footer />

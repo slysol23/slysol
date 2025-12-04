@@ -77,6 +77,7 @@ const CommentDisplay: React.FC<CommentDisplayProps> = ({
           <CommentForm
             blogId={blogId}
             parentId={comment.id}
+            type="reply"
             onCancel={() => setShowReplyForm(false)}
             placeholder={`Reply to ${comment.name}...`}
           />
