@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { signIn } from 'auth';
 import { AuthError } from 'next-auth';
+import path from 'path';
 
 export async function POST(req: Request) {
   try {
@@ -26,6 +27,7 @@ export async function POST(req: Request) {
       {
         message: 'Login successful',
         success: true,
+        path: '/api/dashboard/blog',
       },
       { status: 200 },
     );

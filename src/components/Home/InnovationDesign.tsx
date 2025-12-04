@@ -10,7 +10,7 @@ const InnovationDesign = () => {
   const dotLottieRef = React.useRef<DotLottie | null>(null);
 
   return (
-    <div className="relative md:block hidden h-screen">
+    <div className="relative md:block hidden w-full h-screen">
       <div className="absolute w-full h-full opacity-40" />
       <DotLottieReact
         src={'/lotties/innovation-design-lottie.json'}
@@ -20,6 +20,7 @@ const InnovationDesign = () => {
           height: '100%',
           width: '100%',
           opacity: 0.5,
+          objectFit: 'cover',
         }}
         dotLottieRefCallback={(dotLottie) => {
           dotLottieRef.current = dotLottie;
