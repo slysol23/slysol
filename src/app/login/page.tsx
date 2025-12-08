@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { FaGoogle, FaGithub } from 'react-icons/fa';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/20/solid';
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -50,7 +51,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-purple-300 via-pink-200 to-indigo-200 animate-gradient">
+    <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-r from-[#CBFCD8] via-[#B9E6E6] to-[#96BCFD] animate-gradient">
       {/* Floating particles */}{' '}
       <div className="absolute inset-0 z-0">
         {Array.from({ length: 20 }).map((_, i) => (
@@ -68,7 +69,9 @@ export default function LoginPage() {
         ))}{' '}
       </div>
       <div className="relative z-10 backdrop-blur-xl bg-white/30 border border-white/20 shadow-2xl rounded-3xl p-10 w-full max-w-md animate-fadeInSlow">
-        <p className="text-center text-gray-600 mb-6">Sign in to continue</p>
+        <p className="text-center font-bold text-gray-600 mb-6">
+          Sign in to continue
+        </p>
 
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 animate-shake">
@@ -77,19 +80,17 @@ export default function LoginPage() {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="relative">
+          <div>
             <input
               type="email"
               name="email"
               value={formData.email}
               onChange={handleChange}
               required
-              className="peer w-full px-4 py-3 bg-white/60 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none transition placeholder-transparent"
+              className="w-full px-4 py-3 bg-white/60 border border-gray-300 rounded-lg 
+               focus:ring-2 focus:ring-indigo-400 outline-none transition"
               placeholder="Email Address"
             />
-            <label className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-600 transition-all peer-focus:top-1 peer-focus:text-xs peer-focus:text-indigo-500 peer-valid:top-1 peer-valid:text-xs">
-              Email Address
-            </label>
           </div>
 
           <div className="relative">
@@ -99,35 +100,20 @@ export default function LoginPage() {
               value={formData.password}
               onChange={handleChange}
               required
-              className="peer w-full px-4 py-3 bg-white/60 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none transition placeholder-transparent"
+              className="w-full px-4 py-3 bg-white/60 border border-gray-300 rounded-lg 
+               focus:ring-2 focus:ring-indigo-400 outline-none transition"
               placeholder="Password"
             />
-            <label className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-600 transition-all peer-focus:top-1 peer-focus:text-xs peer-focus:text-indigo-500 peer-valid:top-1 peer-valid:text-xs">
-              Password
-            </label>
 
-            <span
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 cursor-pointer hover:text-gray-700"
+            {/* Toggle password visibility button */}
+            <button
+              type="button"
               onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 w-5"
             >
-              {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
-            </span>
+              {showPassword ? <EyeSlashIcon /> : <EyeIcon />}
+            </button>
           </div>
-
-          {formData.password && (
-            <div
-              className={`text-sm font-medium ${
-                passwordStrength === 'Weak'
-                  ? 'text-red-500'
-                  : passwordStrength === 'Medium'
-                  ? 'text-yellow-500'
-                  : 'text-green-500'
-              }`}
-            >
-              Password Strength: {passwordStrength}
-            </div>
-          )}
-
           <button
             type="submit"
             disabled={loading}
