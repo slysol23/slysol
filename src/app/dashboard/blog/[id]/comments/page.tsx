@@ -63,7 +63,7 @@ export default function BlogComments({ params }: { params: { id: string } }) {
     loadData();
   }, [params.id]);
 
-  const updateNestedReplies = (
+  const updatedReplies = (
     comments: any[],
     targetId: number,
     newPublishStatus: boolean,
@@ -76,11 +76,7 @@ export default function BlogComments({ params }: { params: { id: string } }) {
       if (comment.replies && comment.replies.length > 0) {
         return {
           ...comment,
-          replies: updateNestedReplies(
-            comment.replies,
-            targetId,
-            newPublishStatus,
-          ),
+          replies: updatedReplies(comment.replies, targetId, newPublishStatus),
         };
       }
 
@@ -104,7 +100,7 @@ export default function BlogComments({ params }: { params: { id: string } }) {
         throw new Error('Failed to update publish status');
       }
 
-      setComments((prev) => updateNestedReplies(prev, id, !current));
+      setComments((prev) => updatedReplies(prev, id, !current));
     } catch (err) {
       console.error('Toggle publish failed:', err);
     }
@@ -120,6 +116,32 @@ export default function BlogComments({ params }: { params: { id: string } }) {
       }
       return newSet;
     });
+  };
+
+  const commentDate = (dateString: string) => {
+    const date = new Date(dateString);
+    date.setHours(date.getHours() + 8);
+    const day = String(date.getDate()).padStart(2, '0');
+    const monthNames = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    const month = monthNames[date.getMonth()];
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    return `${day} ${month} ${year} ${hours}:${minutes}`;
   };
 
   const RenderComment = ({
@@ -149,15 +171,7 @@ export default function BlogComments({ params }: { params: { id: string } }) {
               <span
                 className={`${depth > 0 ? 'text-xs' : 'text-sm'} text-gray-600`}
               >
-                {new Date(comment.createdAt).toLocaleDateString('en-US', {
-                  year: depth > 0 ? '2-digit' : 'numeric',
-                  month: depth > 0 ? '2-digit' : 'short',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  hour12: false,
-                  timeZone: 'UTC',
-                })}
+                {commentDate(comment.createdAt)}
               </span>
               <span
                 onClick={() => togglePublish(comment.id, comment.is_published)}
