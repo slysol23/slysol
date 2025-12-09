@@ -40,11 +40,11 @@ export default function BlogPage() {
     queryFn: async () => {
       const res = await blog.getAll(1, 3);
       const blogs = res?.data || [];
-      const sorted = blogs.sort((a, b) => {
-        const dateA = new Date(a.createdAt || 0).getTime();
-        const dateB = new Date(b.createdAt || 0).getTime();
-        return dateB - dateA;
-      });
+      const sorted = blogs.sort(
+        (a, b) =>
+          new Date(b.createdAt || 0).getTime() -
+          new Date(a.createdAt || 0).getTime(),
+      );
       return sorted;
     },
   });
@@ -117,13 +117,13 @@ export default function BlogPage() {
                   : ''}
               </p>
 
-              <div
-                className="prose prose-lg text-black text-xl max-w-none"
-                dangerouslySetInnerHTML={{ __html: b?.content || '' }}
-              />
+              <div className="prose prose-lg text-black">
+                <div dangerouslySetInnerHTML={{ __html: b?.content || '' }} />
+              </div>
 
+              {/* Tags Section */}
               <div className="text-gray-700 rounded-lg p-2 bg-gray-200 mb-4 mt-5">
-                <h1 className="font-medium">Tags:</h1>
+                <h2 className="font-medium">Tags:</h2>
                 {b?.tags && b.tags.length > 0 && (
                   <div className="flex flex-wrap gap-2 mb-3">
                     {b.tags.map((tag: string, idx: number) => (
@@ -136,6 +136,7 @@ export default function BlogPage() {
               </div>
             </div>
 
+            {/* Sidebar: Recent Blogs */}
             <aside className="lg:w-100 mt-6">
               <div className="top-10 bg-gray-100 rounded-2xl p-5">
                 <h2 className="text-xl font-bold mb-2 text-black">
@@ -155,7 +156,7 @@ export default function BlogPage() {
                           <div className="border-b-2 p-2 border-gray-300">
                             <div className="flex gap-3 hover:opacity-80 transition-opacity">
                               {recentBlog.image && (
-                                <div className=" relative rounded-lg overflow-hidden flex-shrink-0">
+                                <div className="relative rounded-lg overflow-hidden flex-shrink-0">
                                   <Image
                                     src={
                                       recentBlog.image.startsWith('/')
@@ -170,7 +171,6 @@ export default function BlogPage() {
                                   />
                                 </div>
                               )}
-
                               <div className="flex-1 min-w-0">
                                 <p className="text-xs text-gray-500 mb-1">
                                   {recentBlog.createdAt

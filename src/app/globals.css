@@ -63,3 +63,38 @@ iframe.skiptranslate {
 .jsoneditor {
   border: 1px solid #393e58 !important;
 }
+
+.root {
+  --ck-border-radius: 4px;
+}
+
+/* Editor content area */
+.ck.ck-editor__editable_inline {
+  transition: 0.3s;
+  padding: 1rem;
+}
+
+.ck.ck-editor__editable_inline:hover {
+  border-color: #666;
+}
+
+/* Blockquotes */
+blockquote {
+  border-left: 4px solid #ccc;
+  margin-left: 0;
+  margin-right: 0;
+  padding-left: 1rem;
+  color: #555;
+  font-style: italic;
+}
+
+/* Lists */
+ul,
+ol {
+  margin-left: 1.5rem;
+}
+
+/* globals.css or component CSS */
+.ck-content img {
+  max-width: 50%;
+}
