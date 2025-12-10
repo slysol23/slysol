@@ -66,8 +66,5 @@ export const sendMailAPI = async ({
         }),
       },
     );
-    console.log(data); // logs response data
-  } catch (error) {
-    console.log(error); // logs any error
-  }
+  } catch (error) {}
 };

@@ -44,7 +44,6 @@ export default function BlogDashboardPage() {
   useEffect(() => {
     if (commentsError)
       console.error('Error fetching comments count:', commentsError);
-    if (commentsData) console.log('Comments data received:', commentsData);
   }, [commentsData, commentsError]);
 
   const commentsCountMap: Record<number, number> = {};
