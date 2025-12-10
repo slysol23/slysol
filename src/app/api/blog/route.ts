@@ -1,4 +1,4 @@
-import { NextRequest } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { db } from '../../../db';
 import {
   blogSchema,
@@ -6,10 +6,7 @@ import {
   blogAuthorsSchema,
 } from '../../../db/schema';
 import { eq, inArray, sql } from 'drizzle-orm';
-import fs from 'fs/promises';
-import path from 'path';
 import { auth } from 'auth';
-import { NextResponse } from 'next/server';
 
 function slugify(title: string) {
   return title
@@ -17,6 +14,16 @@ function slugify(title: string) {
     .trim()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '');
+}
+
+/**
+ * Convert File to Base64 string
+ */
+async function fileToBase64(file: File): Promise<string> {
+  const arrayBuffer = await file.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+  const base64 = buffer.toString('base64');
+  return `data:${file.type};base64,${base64}`;
 }
 
 /**
@@ -91,7 +98,7 @@ export async function GET(req: Request) {
 }
 
 /**
- * 🟡 POST — Create a new blog
+ * 🟡 POST — Create a new blog with Base64 image
  */
 export async function POST(req: NextRequest) {
   try {
@@ -129,23 +136,35 @@ export async function POST(req: NextRequest) {
     }
 
     // Image upload
-    let imageUrl = '';
+    let imageBase64 = '';
     const imageFile = formData.get('image') as File | null;
     if (imageFile && imageFile.size > 0) {
-      const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-      await fs.mkdir(uploadDir, { recursive: true });
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (imageFile.size > maxSize) {
+        return NextResponse.json(
+          { error: 'Image size must be less than 5MB' },
+          { status: 400 },
+        );
+      }
 
-      const timestamp = Date.now();
-      const sanitizedName = imageFile.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-      const uniqueFileName = `${timestamp}-${sanitizedName}`;
-      const filePath = path.join(uploadDir, uniqueFileName);
+      const allowedTypes = [
+        'image/jpeg',
+        'image/jpg',
+        'image/png',
+        'image/webp',
+        'image/gif',
+      ];
+      if (!allowedTypes.includes(imageFile.type)) {
+        return NextResponse.json(
+          { error: 'Invalid image type. Allowed: JPEG, PNG, WebP, GIF' },
+          { status: 400 },
+        );
+      }
 
-      const arrayBuffer = await imageFile.arrayBuffer();
-      await fs.writeFile(filePath, Buffer.from(arrayBuffer));
-      imageUrl = `/uploads/${uniqueFileName}`;
+      imageBase64 = await fileToBase64(imageFile);
     }
 
-    // 👇 Parse tags - handle both string and already-parsed
+    //tags
     let tags: any[] = [];
     const tagsRaw = formData.get('tags');
     if (tagsRaw) {
@@ -161,7 +180,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 👇 Parse meta - handle both string and already-parsed
+    // meta
     let meta: any = [];
     const metaRaw = formData.get('meta');
     if (metaRaw) {
@@ -197,7 +216,7 @@ export async function POST(req: NextRequest) {
         description,
         content,
         authorId: authorIds[0],
-        image: imageUrl,
+        image: imageBase64,
         tags,
         meta,
         createdBy: session.user.name,

@@ -1,6 +1,4 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
 import { db } from '../../../../../db/index';
 import {
   blogSchema,
@@ -10,27 +8,22 @@ import {
 import { and, eq, inArray, ne } from 'drizzle-orm';
 import { auth } from 'auth';
 
-// Save uploaded file
-async function saveFile(file: File) {
-  const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
-  if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir);
-
-  const arrayBuffer = await file.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
-
-  const fileName = `${Date.now()}-${file.name}`;
-  const filePath = path.join(uploadsDir, fileName);
-  await fs.promises.writeFile(filePath, buffer);
-
-  return fileName;
-}
-
 // Slugify helper
 function slugify(title: string) {
   return title
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)/g, '');
+}
+
+/**
+ * Convert File to Base64 string
+ */
+async function fileToBase64(file: File): Promise<string> {
+  const arrayBuffer = await file.arrayBuffer();
+  const buffer = Buffer.from(arrayBuffer);
+  const base64 = buffer.toString('base64');
+  return `data:${file.type};base64,${base64}`;
 }
 
 // 🔹 GET blog by ID
@@ -47,7 +40,6 @@ export async function GET(
       .select()
       .from(blogSchema)
       .where(eq(blogSchema.id, blogId));
-
     if (!blogResult)
       return NextResponse.json({ error: 'Blog not found' }, { status: 404 });
 
@@ -55,8 +47,8 @@ export async function GET(
       .select()
       .from(blogAuthorsSchema)
       .where(eq(blogAuthorsSchema.blogId, blogId));
-
     const authorIds = relations.map((r) => r.authorId);
+
     const authors = authorIds.length
       ? await db
           .select()
@@ -69,9 +61,9 @@ export async function GET(
       data: {
         ...blogResult,
         authors,
-        // 👇 Return tags and meta as-is (should already be arrays/objects)
         tags: blogResult.tags || [],
         meta: blogResult.meta || [],
+        image: blogResult.image || null,
       },
     });
   } catch (error) {
@@ -86,6 +78,7 @@ export async function GET(
   }
 }
 
+// 🔹 PUT blog (update)
 export async function PUT(
   req: Request,
   { params }: { params: { id: string } },
@@ -109,7 +102,7 @@ export async function PUT(
     const description = formData.get('description')?.toString();
     const content = formData.get('content')?.toString();
 
-    // 👇 Parse tags - handle both string and already-parsed array
+    // Parse tags
     let tags: any[] | undefined;
     const tagsRaw = formData.get('tags');
     if (tagsRaw) {
@@ -124,7 +117,7 @@ export async function PUT(
       }
     }
 
-    // 👇 Parse meta - handle both string and already-parsed array/object
+    // Parse meta
     let meta: any;
     const metaRaw = formData.get('meta');
     if (metaRaw) {
@@ -141,18 +134,51 @@ export async function PUT(
       .map((id) => Number(id))
       .filter((id) => !isNaN(id));
 
-    // Image
-    const imageFile = formData.get('image') as File | null;
-
     const updateData: any = {};
     if (title) updateData.title = title;
     if (description) updateData.description = description;
     if (content) updateData.content = content;
-    if (tags !== undefined) updateData.tags = tags;
-    if (meta !== undefined) updateData.meta = meta;
-    if (imageFile && imageFile.size > 0) {
-      const fileName = await saveFile(imageFile);
-      updateData.image = `/uploads/${fileName}`; // ✅ Add leading slash
+    if (tags) updateData.tags = tags;
+    if (meta) updateData.meta = meta;
+
+    const imageFile = formData.get('image') as File | null;
+    const existingImage = formData.get('existingImage')?.toString();
+    const removeImage = formData.get('removeImage')?.toString();
+
+    // If user wants to remove the image
+    if (removeImage === 'true') {
+      updateData.image = null;
+    }
+    // If new image file uploaded, convert to base64
+    else if (imageFile && imageFile.size > 0) {
+      const maxSize = 5 * 1024 * 1024; // 5MB
+      if (imageFile.size > maxSize) {
+        return NextResponse.json(
+          { error: 'Image size must be less than 5MB' },
+          { status: 400 },
+        );
+      }
+
+      const allowedTypes = [
+        'image/jpeg',
+        'image/jpg',
+        'image/png',
+        'image/webp',
+        'image/gif',
+      ];
+      if (!allowedTypes.includes(imageFile.type)) {
+        return NextResponse.json(
+          { error: 'Invalid image type. Allowed: JPEG, PNG, WebP, GIF' },
+          { status: 400 },
+        );
+      }
+
+      const imageBase64 = await fileToBase64(imageFile);
+      updateData.image = imageBase64;
+    }
+    // If no new image but existing image provided, keep it
+    else if (existingImage) {
+      updateData.image = existingImage;
     }
 
     updateData.updatedBy = session.user.name;
@@ -164,11 +190,11 @@ export async function PUT(
         .select({ slug: blogSchema.slug })
         .from(blogSchema)
         .where(and(eq(blogSchema.slug, baseSlug), ne(blogSchema.id, blogId)));
-      if (existing.length > 0) baseSlug = `${baseSlug}-${Date.now()}`;
+      if (existing.length) baseSlug += `-${Date.now()}`;
       updateData.slug = baseSlug;
     }
 
-    if (Object.keys(updateData).length === 0 && authorIds.length === 0)
+    if (!Object.keys(updateData).length && !authorIds.length)
       return NextResponse.json(
         { error: 'No valid fields to update' },
         { status: 400 },
@@ -179,11 +205,10 @@ export async function PUT(
       .set(updateData)
       .where(eq(blogSchema.id, blogId))
       .returning();
-
     if (!updatedBlog)
       return NextResponse.json({ error: 'Blog not found' }, { status: 404 });
 
-    // Update authors if provided
+    // Update authors
     if (authorIds.length > 0) {
       await db
         .delete(blogAuthorsSchema)
@@ -208,7 +233,6 @@ export async function PUT(
         authors,
         updatedBy: session.user.name,
         updatedAt: updateData.updatedAt,
-        // 👇 Return as-is (already arrays/objects)
         tags: updatedBlog.tags || [],
         meta: updatedBlog.meta || [],
       },
@@ -225,38 +249,7 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  _req: Request,
-  { params }: { params: { id: string } },
-) {
-  try {
-    const blogId = Number(params.id);
-    if (isNaN(blogId))
-      return NextResponse.json({ error: 'Invalid blog ID' }, { status: 400 });
-
-    const [deletedBlog] = await db
-      .delete(blogSchema)
-      .where(eq(blogSchema.id, blogId))
-      .returning();
-    if (!deletedBlog)
-      return NextResponse.json(
-        { error: 'Blog not found or already deleted.' },
-        { status: 404 },
-      );
-
-    return NextResponse.json({ message: 'Blog deleted successfully' });
-  } catch (error) {
-    console.error('Error deleting blog:', error);
-    return NextResponse.json(
-      {
-        error: 'Internal server error',
-        details: error instanceof Error ? error.message : 'Unknown error',
-      },
-      { status: 500 },
-    );
-  }
-}
-
+// 🔹 PATCH blog (publish/unpublish)
 export async function PATCH(
   req: Request,
   { params }: { params: { id: string } },
@@ -267,14 +260,13 @@ export async function PATCH(
       return NextResponse.json({ error: 'Invalid blog ID' }, { status: 400 });
 
     const body = await req.json();
-    const { isPublished } = body; // new state
+    const { isPublished } = body;
 
     const [updatedBlog] = await db
       .update(blogSchema)
       .set({ is_published: isPublished })
       .where(eq(blogSchema.id, blogId))
       .returning();
-
     if (!updatedBlog)
       return NextResponse.json({ error: 'Blog not found' }, { status: 404 });
 
@@ -282,7 +274,6 @@ export async function PATCH(
       .select()
       .from(blogAuthorsSchema)
       .where(eq(blogAuthorsSchema.blogId, blogId));
-
     const authorIds = relations.map((r) => r.authorId);
     const authors = authorIds.length
       ? await db
@@ -300,7 +291,34 @@ export async function PATCH(
       },
     });
   } catch (error) {
-    console.error('Error updating blog:', error);
+    console.error('Error publishing blog:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 },
+    );
+  }
+}
+
+// 🔹 DELETE blog
+export async function DELETE(
+  _req: Request,
+  { params }: { params: { id: string } },
+) {
+  try {
+    const blogId = Number(params.id);
+    if (isNaN(blogId))
+      return NextResponse.json({ error: 'Invalid blog ID' }, { status: 400 });
+
+    const [deletedBlog] = await db
+      .delete(blogSchema)
+      .where(eq(blogSchema.id, blogId))
+      .returning();
+    if (!deletedBlog)
+      return NextResponse.json({ error: 'Blog not found' }, { status: 404 });
+
+    return NextResponse.json({ message: 'Blog deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting blog:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 },

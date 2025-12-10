@@ -39,7 +39,6 @@ interface EditBlogPageProps {
 }
 
 const DEFAULT_TAGS = ['example'];
-
 const DEFAULT_META = [
   { property: 'og:title', content: '' },
   { property: 'og:description', content: '' },
@@ -94,22 +93,21 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
       queryClient.invalidateQueries({ queryKey: ['blogs'] });
       queryClient.invalidateQueries({ queryKey: ['blog', blogId] });
       alert('Blog updated successfully!');
+      router.push('/dashboard/blog');
     },
     onError: (error) => {
       console.error('Error updating blog:', error);
       alert('Failed to update blog');
     },
   });
+
   const publishBlog = useMutation({
     mutationFn: (isPublished: boolean) => blog.publish(blogId, isPublished),
     onSuccess: (data) => {
       const blogData = data?.data;
       if (!blogData) return;
-
-      // Update React Query cache
       queryClient.setQueryData(['blog', blogId], blogData);
       queryClient.invalidateQueries({ queryKey: ['blogs'] });
-
       alert(
         `✓ Blog ${
           blogData.is_published ? 'published' : 'unpublished'
@@ -128,11 +126,6 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
         meta: DEFAULT_META,
       },
     });
-
-  const getImagePath = (image: string | null | undefined) => {
-    if (!image) return null;
-    return image.startsWith('/uploads/') ? image : `/uploads/${image}`;
-  };
 
   const parseJsonField = (value: any, defaultValue: any) => {
     if (!value) return defaultValue;
@@ -163,7 +156,7 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
     });
 
     setSelectedAuthors(blogData.authors || []);
-    setImagePreview(getImagePath(blogData.image));
+    setImagePreview(blogData.image || null);
   }, [blogData, reset]);
 
   const toggleAuthor = (author: any) => {
@@ -189,8 +182,12 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] || null;
-    setImageFile(file);
-    if (file) setImagePreview(URL.createObjectURL(file));
+    if (file) {
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => setImagePreview(reader.result as string);
+      reader.readAsDataURL(file);
+    }
   };
 
   const onSubmit = (data: BlogForm) => {
@@ -199,7 +196,10 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
     formData.append('description', data.description);
     formData.append('content', data.content);
     selectedAuthors.forEach((a) => formData.append('authorId', String(a.id)));
+
     if (imageFile) formData.append('image', imageFile);
+    else if (imagePreview) formData.append('existingImage', imagePreview);
+    else formData.append('removeImage', 'true');
 
     if (data.tags) formData.append('tags', JSON.stringify(data.tags));
     if (data.meta) formData.append('meta', JSON.stringify(data.meta));
@@ -211,7 +211,6 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
     if (!blogData) return;
     const action = blogData.is_published ? 'unpublish' : 'publish';
     if (!confirm(`Are you sure you want to ${action} this blog?`)) return;
-
     publishBlog.mutate(!blogData.is_published);
   };
 
@@ -242,12 +241,8 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
           <div>
             <button
               type="button"
-              className={`px-4 py-2 rounded-lg ${
-                blogData?.is_published
-                  ? 'bg-gray-200 text-black'
-                  : 'bg-gray-200 text-black'
-              } hover:bg-gray-500`}
-              onClick={() => togglePublish()}
+              className="px-4 py-2 bg-gray-200 text-black hover:bg-gray-500 rounded"
+              onClick={togglePublish}
               disabled={publishBlog.isPending}
             >
               {blogData?.is_published
@@ -288,41 +283,35 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label
-              className=" text-black font-medium mb-2 flex items-center gap-1 cursor-pointer"
+              className="text-black font-medium mb-2 flex items-center gap-1 cursor-pointer"
               htmlFor="imageInput"
-              onClick={() => document.getElementById('imageInput')}
             >
               Cover <FaImage />
             </label>
             <input
               type="file"
               accept="image/*"
-              {...register('image')}
               id="imageInput"
               className="hidden"
-              onClick={() => document.getElementById('imageInput')?.click()}
-              onChange={(e) => {
-                if (e.target.files && e.target.files.length > 0) {
-                  const file = e.target.files[0];
-                  setImageFile(file);
-                  setImagePreview(URL.createObjectURL(file));
-                }
-              }}
+              onChange={handleImageChange}
             />
+            <button
+              type="button"
+              onClick={() => document.getElementById('imageInput')?.click()}
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+            >
+              Choose Image
+            </button>
 
             {imagePreview && (
-              <div className="relative inline-block mt-2">
+              <div className="relative inline-block mt-4 w-full">
                 <button
                   type="button"
                   onClick={() => {
                     setImagePreview(null);
                     setImageFile(null);
-                    const input = document.getElementById(
-                      'imageInput',
-                    ) as HTMLInputElement;
-                    if (input) input.value = '';
                   }}
-                  className="absolute top-2 right-2 bg-white text-red-600 border border-red-500 rounded-full px-2 py-1 text-xs shadow cursor-pointer"
+                  className="absolute top-2 right-2 bg-white text-red-600 border border-red-500 rounded-full w-8 h-8 flex items-center justify-center shadow-lg cursor-pointer z-10 hover:bg-red-50 transition"
                 >
                   ✕
                 </button>
@@ -331,7 +320,7 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
                   width={240}
                   src={imagePreview}
                   alt="Preview"
-                  className="rounded-lg border"
+                  className="w-full h-auto max-h-64 object-cover rounded-lg border border-gray-300 shadow-md"
                 />
               </div>
             )}

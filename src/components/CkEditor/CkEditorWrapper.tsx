@@ -98,7 +98,6 @@ const CKEditorWrapper: React.FC<CKEditorWrapperProps> = ({
               'resizeImage:50',
               'resizeImage:75',
             ],
-            styles: ['alignLeft', 'alignCenter', 'alignRight'],
           },
           table: {
             contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells'],

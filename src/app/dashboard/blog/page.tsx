@@ -9,8 +9,8 @@ import Link from 'next/link';
 import { useUser } from '../../../providers/UserProvider';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import Image from 'next/image';
 import axios from 'axios';
+import Image from 'next/image';
 
 export default function BlogDashboardPage() {
   const queryClient = useQueryClient();
@@ -42,12 +42,9 @@ export default function BlogDashboardPage() {
   });
 
   useEffect(() => {
-    if (commentsError) {
+    if (commentsError)
       console.error('Error fetching comments count:', commentsError);
-    }
-    if (commentsData) {
-      console.log('Comments data received:', commentsData);
-    }
+    if (commentsData) console.log('Comments data received:', commentsData);
   }, [commentsData, commentsError]);
 
   const commentsCountMap: Record<number, number> = {};
@@ -99,21 +96,8 @@ export default function BlogDashboardPage() {
     );
   }
 
-  if (error) {
+  if (error)
     return <p className="text-red-500">Error loading blogs: {error.message}</p>;
-  }
-
-  const normalizeImagePath = (
-    imagePath: string | null | undefined,
-  ): string | null => {
-    if (!imagePath) return null;
-    if (typeof imagePath !== 'string') return null;
-    if (imagePath.startsWith('/')) return imagePath;
-    if (!imagePath.startsWith('http')) {
-      return `/uploads/${imagePath}`;
-    }
-    return imagePath;
-  };
 
   return (
     <>
@@ -164,26 +148,21 @@ export default function BlogDashboardPage() {
                       key={b.id}
                       className="border-t border-gray-700 hover:bg-gray-400 transition text-black"
                     >
+                      {/* Cover Image */}
                       <td className="p-3">
-                        {b.image && typeof b.image === 'string' ? (
-                          (() => {
-                            const normalizedPath = normalizeImagePath(b.image);
-                            return normalizedPath ? (
-                              <div className="relative w-20 h-12 rounded-lg">
-                                <Image
-                                  src={normalizedPath}
-                                  alt={b.title}
-                                  width={80}
-                                  height={48}
-                                  className="object-cover"
-                                />
-                              </div>
-                            ) : (
-                              <span className="text-gray-400 text-sm">
-                                Invalid image
-                              </span>
-                            );
-                          })()
+                        {b.image ? (
+                          <Image
+                            width={100}
+                            height={100}
+                            unoptimized
+                            src={
+                              b.image.startsWith('data:')
+                                ? b.image
+                                : `data:image/jpeg;base64,${b.image}`
+                            }
+                            alt={b.title}
+                            className="w-20 h-12 object-cover rounded-lg"
+                          />
                         ) : (
                           <span className="text-gray-400 text-sm">
                             No image
@@ -191,6 +170,7 @@ export default function BlogDashboardPage() {
                         )}
                       </td>
 
+                      {/* Title */}
                       <td
                         className="p-3 font-semibold max-w-xs truncate"
                         title={b.title}
@@ -198,6 +178,7 @@ export default function BlogDashboardPage() {
                         {b.title}
                       </td>
 
+                      {/* Status */}
                       <td className="p-3">
                         <span
                           className={`px-2 py-1 rounded text-xs font-medium ${
@@ -209,7 +190,11 @@ export default function BlogDashboardPage() {
                           {b.is_published ? 'Published' : 'Draft'}
                         </span>
                       </td>
+
+                      {/* Author */}
                       <td className="p-3 text-sm">{getAuthorDisplay(b)}</td>
+
+                      {/* Updated At */}
                       <td className="p-3 text-sm">
                         {new Date(b.updatedAt).toLocaleDateString('en-GB', {
                           day: '2-digit',
@@ -217,8 +202,11 @@ export default function BlogDashboardPage() {
                           year: 'numeric',
                         })}
                       </td>
+
+                      {/* Updated By */}
                       <td className="p-3 text-sm">{getUpdatedByDisplay(b)}</td>
 
+                      {/* Actions */}
                       <td className="p-3">
                         <div className="flex items-center gap-1.5">
                           <Link
@@ -269,6 +257,7 @@ export default function BlogDashboardPage() {
             </table>
           </div>
 
+          {/* Pagination */}
           {totalPages > 1 && (
             <div className="flex justify-center items-center gap-4 mt-6">
               <button

@@ -1,4 +1,3 @@
-// lib/blog.ts
 import {
   IBlog,
   ICreateBlog,
@@ -7,6 +6,21 @@ import {
   ApiResponse,
 } from 'lib/type';
 import apiClient from 'lib/client';
+
+async function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        resolve(reader.result);
+      } else {
+        reject(new Error('Failed to read file'));
+      }
+    };
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
 
 /**
  * Map backend response to IBlog
@@ -74,23 +88,36 @@ export const blog = {
 
   /** Create a new blog */
   create: async (data: ICreateBlog): Promise<ApiResponse<IBlog>> => {
-    let payload: ICreateBlog | FormData = data;
-
-    if (data.image instanceof File || data.tags || data.meta) {
-      const formData = new FormData();
-      formData.append('title', data.title);
-      formData.append('description', data.description);
-      formData.append('content', data.content);
+    const formData = new FormData();
+    formData.append('title', data.title);
+    formData.append('description', data.description);
+    formData.append('content', data.content);
+    if (data.authorIds && data.authorIds.length > 0) {
+      data.authorIds.forEach((id) => formData.append('authorId', String(id)));
+    } else if (data.authorId) {
+      // Fallback to single authorId if authorIds not provided
       formData.append('authorId', String(data.authorId));
-      data.authorIds?.forEach((id) => formData.append('authorId', String(id)));
-      if (data.image) formData.append('image', data.image);
-      if (data.tags) formData.append('tags', JSON.stringify(data.tags));
-      if (data.meta) formData.append('meta', JSON.stringify(data.meta));
-      // ❌ REMOVED: createdBy and updatedBy - backend handles it
-      payload = formData;
+    }
+    if (data.image instanceof File) {
+      formData.append('image', data.image);
+    }
+    if (data.tags) {
+      formData.append('tags', JSON.stringify(data.tags));
+    }
+    if (data.meta) {
+      formData.append('meta', JSON.stringify(data.meta));
     }
 
-    const response = await apiClient.post<ApiResponse<IBlog>>('/blog', payload);
+    const response = await apiClient.post<ApiResponse<IBlog>>(
+      '/blog',
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      },
+    );
+
     return {
       ...response.data,
       data: mapBlog(response.data.data),
@@ -102,40 +129,57 @@ export const blog = {
     id: number,
     data: IUpdateBlog,
   ): Promise<ApiResponse<IBlog>> => {
-    let payload: IUpdateBlog | FormData = data;
+    const formData = new FormData();
 
-    if (data.image instanceof File || data.tags || data.meta) {
-      const formData = new FormData();
-      if (data.title) formData.append('title', data.title);
-      if (data.description) formData.append('description', data.description);
-      if (data.content) formData.append('content', data.content);
-      if (data.authorId) formData.append('authorId', String(data.authorId));
-      data.authorIds?.forEach((id) => formData.append('authorId', String(id)));
-      if (data.image) formData.append('image', data.image);
-      if (data.tags) formData.append('tags', JSON.stringify(data.tags));
-      if (data.meta) formData.append('meta', JSON.stringify(data.meta));
-      // ❌ REMOVED: updatedBy - backend handles it
-      payload = formData;
+    // Add fields only if they exist
+    if (data.title) formData.append('title', data.title);
+    if (data.description) formData.append('description', data.description);
+    if (data.content) formData.append('content', data.content);
+    if (data.authorIds && data.authorIds.length > 0) {
+      data.authorIds.forEach((id) => formData.append('authorId', String(id)));
+    } else if (data.authorId) {
+      formData.append('authorId', String(data.authorId));
+    }
+    if (data.image instanceof File) {
+      formData.append('image', data.image);
+    } else if (
+      typeof data.image === 'string' &&
+      data.image.startsWith('data:image/')
+    ) {
+      formData.append('existingImage', data.image);
+    } else if (data.image === null || data.image === '') {
+      formData.append('removeImage', 'true');
+    }
+
+    if (data.tags) {
+      formData.append('tags', JSON.stringify(data.tags));
+    }
+    if (data.meta) {
+      formData.append('meta', JSON.stringify(data.meta));
     }
 
     const response = await apiClient.put<ApiResponse<IBlog>>(
       `/blog/id/${id}`,
-      payload,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      },
     );
+
     return {
       ...response.data,
       data: mapBlog(response.data.data),
     };
   },
-  /** Publish a blog */
-  // blog.ts (frontend API)
   publish: async (
     id: number,
     isPublished: boolean,
   ): Promise<ApiResponse<IBlog>> => {
     const response = await apiClient.patch<ApiResponse<IBlog>>(
       `/blog/id/${id}`,
-      { isPublished }, // send the new state
+      { isPublished },
     );
 
     return {
@@ -149,3 +193,5 @@ export const blog = {
     await apiClient.delete(`/blog/id/${id}`);
   },
 };
+
+export { fileToBase64 };
