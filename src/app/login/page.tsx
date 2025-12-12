@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { FiEye, FiEyeOff } from 'react-icons/fi';
-import { FaGoogle, FaGithub } from 'react-icons/fa';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/20/solid';
+import Link from 'next/link';
+import Image from 'next/image';
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -69,6 +69,16 @@ export default function LoginPage() {
         ))}{' '}
       </div>
       <div className="relative z-10 backdrop-blur-xl bg-white/30 border border-white/20 shadow-2xl rounded-3xl p-10 w-full max-w-md animate-fadeInSlow">
+        <Link href="/">
+          <div className="flex justify-center">
+            <Image
+              src={'/icons/slysol.svg'}
+              alt="Next"
+              width={80}
+              height={50}
+            />
+          </div>
+        </Link>
         <p className="text-center font-bold text-gray-600 mb-6">
           Sign in to continue
         </p>
