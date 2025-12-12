@@ -69,20 +69,6 @@ export default function AddUserPage() {
     createUserMutation.mutate(data);
   };
 
-  const createAuthorMutation = useMutation({
-    mutationFn: async (data: UserForm) => {
-      return await user.create(data);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['authors'] });
-      alert('✅ Author created successfully!');
-      router.push('/dashboard/author');
-    },
-    onError: (err) => {
-      console.error('Error creating author:', err);
-      alert('❌ Author with this email already exist.');
-    },
-  });
   const breadCrumb: BreadcrumbItem[] = [
     { label: 'Users', href: '/dashboard/user' },
     { label: 'Add User', href: '/dashboard/user/add' },
@@ -101,10 +87,10 @@ export default function AddUserPage() {
         <div className="flex justify-end mt-4">
           <button
             type="submit"
-            disabled={createAuthorMutation.isPending}
+            disabled={createUserMutation.isPending}
             className="px-6 py-3 rounded-lg border border-gray-300 hover:bg-gray-500 transition"
           >
-            {createAuthorMutation.isPending ? 'Adding...' : 'Add Author'}
+            {createUserMutation.isPending ? 'Adding...' : 'Add User'}
           </button>
         </div>
         <div className="mt-4">
