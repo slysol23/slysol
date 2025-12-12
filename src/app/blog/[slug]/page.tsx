@@ -7,13 +7,13 @@ import Container from '@/components/Container';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import MainHeading from '@/components/MainHeading';
-import Image from 'next/image';
 import Head from 'next/head';
 import Link from 'next/link';
 import { IBlog } from 'lib/type';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 import CommentForms from '@/components/Comments/commentSection';
 import { Toaster } from 'react-hot-toast';
+import Image from 'next/image';
 
 export default function BlogPage() {
   const params = useParams();
@@ -40,12 +40,11 @@ export default function BlogPage() {
     queryFn: async () => {
       const res = await blog.getAll(1, 3);
       const blogs = res?.data || [];
-      const sorted = blogs.sort((a, b) => {
-        const dateA = new Date(a.createdAt || 0).getTime();
-        const dateB = new Date(b.createdAt || 0).getTime();
-        return dateB - dateA;
-      });
-      return sorted;
+      return blogs.sort(
+        (a, b) =>
+          new Date(b.createdAt || 0).getTime() -
+          new Date(a.createdAt || 0).getTime(),
+      );
     },
   });
 
@@ -83,15 +82,7 @@ export default function BlogPage() {
             <div className="flex-1">
               {b?.image && (
                 <div className="w-full h-96 relative rounded-3xl overflow-hidden my-6 bg-gray-100">
-                  <Image
-                    src={
-                      b.image.startsWith('/') ? b.image : `/uploads/${b.image}`
-                    }
-                    alt={b.title}
-                    fill
-                    className="object-cover"
-                    sizes="100vw"
-                  />
+                  <Image src={b.image} alt={b.title || 'Blog image'} fill />
                 </div>
               )}
 
@@ -117,13 +108,13 @@ export default function BlogPage() {
                   : ''}
               </p>
 
-              <div
-                className="prose prose-lg text-black text-xl max-w-none"
-                dangerouslySetInnerHTML={{ __html: b?.content || '' }}
-              />
+              <div className="prose prose-lg text-black">
+                <div dangerouslySetInnerHTML={{ __html: b?.content || '' }} />
+              </div>
 
+              {/* Tags Section */}
               <div className="text-gray-700 rounded-lg p-2 bg-gray-200 mb-4 mt-5">
-                <h1 className="font-medium">Tags:</h1>
+                <h2 className="font-medium">Tags:</h2>
                 {b?.tags && b.tags.length > 0 && (
                   <div className="flex flex-wrap gap-2 mb-3">
                     {b.tags.map((tag: string, idx: number) => (
@@ -136,6 +127,7 @@ export default function BlogPage() {
               </div>
             </div>
 
+            {/* Sidebar: Recent Blogs */}
             <aside className="lg:w-100 mt-6">
               <div className="top-10 bg-gray-100 rounded-2xl p-5">
                 <h2 className="text-xl font-bold mb-2 text-black">
@@ -155,22 +147,16 @@ export default function BlogPage() {
                           <div className="border-b-2 p-2 border-gray-300">
                             <div className="flex gap-3 hover:opacity-80 transition-opacity">
                               {recentBlog.image && (
-                                <div className=" relative rounded-lg overflow-hidden flex-shrink-0">
+                                <div className="rounded-lg overflow-hidden flex-shrink-0">
                                   <Image
-                                    src={
-                                      recentBlog.image.startsWith('/')
-                                        ? recentBlog.image
-                                        : `/uploads/${recentBlog.image}`
-                                    }
+                                    src={recentBlog.image}
                                     alt={recentBlog.title}
-                                    width={80}
-                                    height={60}
-                                    className="object-cover"
-                                    sizes="80px"
+                                    className="w-20 h-12 object-cover"
+                                    width={100}
+                                    height={50}
                                   />
                                 </div>
                               )}
-
                               <div className="flex-1 min-w-0">
                                 <p className="text-xs text-gray-500 mb-1">
                                   {recentBlog.createdAt

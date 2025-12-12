@@ -2,7 +2,6 @@ import type { Config } from 'tailwindcss';
 const plugin = require('tailwindcss/plugin');
 
 const config: Config = {
-  // important: true,
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -82,7 +81,6 @@ const config: Config = {
         mute: '#7b7e86',
       },
       fontFamily: {
-        // sans: ['var(--font-neue)'],
         neue: ['var(--font-neue)'],
         basic: ['var(--font-basic)'],
       },
@@ -104,11 +102,11 @@ const config: Config = {
             };
           },
         },
-        {
-          values: theme('transitionDelay'),
-        },
+        { values: theme('transitionDelay') },
       );
     }),
+    require('@tailwindcss/typography'),
   ],
 };
+
 export default config;

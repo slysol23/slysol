@@ -9,7 +9,7 @@ import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 import { IComment } from '../../../lib/comments/type';
 import Link from 'next/link';
 
-export default function BlogFeedbackPage() {
+export default function CommentPage() {
   const queryClient = useQueryClient();
   const { user, isLoading: userLoading } = useUser();
   const [page, setPage] = useState(1);
@@ -18,7 +18,6 @@ export default function BlogFeedbackPage() {
   const { data, isLoading, error } = useQuery({
     queryKey: ['comments', page],
     queryFn: async () => {
-      // Fetch all comments without any filters
       const res = await axios.get(`/api/comments?page=${page}&limit=${limit}`);
       return res.data;
     },
@@ -84,13 +83,14 @@ export default function BlogFeedbackPage() {
     togglePublish.mutate({ id, isPublished: currentStatus });
   };
 
-  const formatDateTime = (dateString: string) => {
+  const commentDate = (dateString: string) => {
     const date = new Date(dateString);
-    const day = String(date.getUTCDate()).padStart(2, '0');
-    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-    const year = String(date.getUTCFullYear()).slice(-2);
-    const hours = String(date.getUTCHours()).padStart(2, '0');
-    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+    date.setHours(date.getHours() + 8);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = String(date.getFullYear()).slice(-2);
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
 
     return `${day}/${month}/${year} ${hours}:${minutes}`;
   };
@@ -184,7 +184,7 @@ export default function BlogFeedbackPage() {
                     )}
                   </td>
                   <td className="p-3 whitespace-nowrap">
-                    {formatDateTime(c.createdAt)}
+                    {commentDate(c.createdAt)}
                   </td>
                   <td className="p-3">
                     <div className="flex gap-3">

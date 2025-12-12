@@ -82,11 +82,7 @@ export default function BlogPage() {
                   {b.image && (
                     <div className="relative w-full h-56 mb-4 bg-gray-800 rounded-2xl overflow-hidden">
                       <Image
-                        src={
-                          b.image.startsWith('/')
-                            ? b.image
-                            : `/uploads/${b.image}`
-                        }
+                        src={b.image}
                         height={800}
                         width={500}
                         alt={b.title}
@@ -119,7 +115,7 @@ export default function BlogPage() {
                     </span>
                   </p>
 
-                  <p className="text-gray-300 line-clamp-3 mb-3">
+                  <p className="text-gray-500 line-clamp-3 mb-3">
                     {b.description}
                   </p>
 

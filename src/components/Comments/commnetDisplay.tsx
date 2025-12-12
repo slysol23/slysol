@@ -20,6 +20,32 @@ const CommentDisplay: React.FC<CommentDisplayProps> = ({
   const [openReplies, setOpenReplies] = useState(false);
   const replyCount = comment.replies?.length || 0;
 
+  const commentDate = (dateString: string) => {
+    const date = new Date(dateString);
+    date.setHours(date.getHours() + 8);
+    const day = String(date.getDate()).padStart(2, '0');
+    const monthNames = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    const month = monthNames[date.getMonth()];
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    return `${day} ${month} ${year} ${hours}:${minutes}`;
+  };
+
   return (
     <div className={`${depth > 0 ? 'ml-8 mt-4' : 'mt-6'}`}>
       <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
@@ -35,14 +61,7 @@ const CommentDisplay: React.FC<CommentDisplayProps> = ({
             </div>
 
             <p className="text-sm text-gray-500 mb-2">
-              {new Date(comment.createdAt).toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                timeZone: 'UTC',
-              })}
+              {commentDate(comment.createdAt)}
             </p>
 
             <p className="text-black whitespace-pre-wrap">{comment.comment}</p>
