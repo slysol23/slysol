@@ -13,6 +13,7 @@ function mapComment(c: any): IComment {
     id: c.id ?? 0,
     blogId: c.blogId ?? 0,
     parentId: c.parentId ?? null,
+    blogSlug: c.blogSlug ?? '',
     name: c.name ?? '',
     email: c.email ?? null,
     comment: c.comment ?? '',

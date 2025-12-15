@@ -3,11 +3,12 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import { FaTrash, FaPen, FaEye, FaEyeSlash } from 'react-icons/fa';
+import { FaTrash, FaPen } from 'react-icons/fa';
 import { useUser } from '../../../providers/UserProvider';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 import { IComment } from '../../../lib/comments/type';
 import Link from 'next/link';
+import { MdPublicOff, MdPublish } from 'react-icons/md';
 
 export default function CommentPage() {
   const queryClient = useQueryClient();
@@ -156,7 +157,15 @@ export default function CommentPage() {
                       <span>{c.name}</span>
                     </div>
                   </td>
-                  <td className="p-3">{c.blogId}</td>
+                  <td className="p-3">
+                    <Link
+                      href={`/blog/${c.blogSlug}`}
+                      className="hover:text-sky-700"
+                    >
+                      {c.blogId}
+                    </Link>
+                  </td>
+
                   <td className="p-3">
                     <div className="max-w-xs truncate" title={c.comment}>
                       {c.comment}
@@ -199,7 +208,7 @@ export default function CommentPage() {
                         } transition-colors`}
                         title={c.is_published ? 'Unpublish' : 'Publish'}
                       >
-                        {c.is_published ? <FaEyeSlash /> : <FaEye />}
+                        {c.is_published ? <MdPublicOff /> : <MdPublish />}
                       </button>
                       <Link
                         href={`/dashboard/comments/edit/${c.id}`}

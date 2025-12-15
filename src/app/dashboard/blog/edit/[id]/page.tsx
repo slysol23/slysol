@@ -13,7 +13,6 @@ import Image from 'next/image';
 import 'jsoneditor-react/es/editor.min.css';
 import { JsonEditor as Editor, JsonEditor } from 'jsoneditor-react';
 import { blog } from 'lib/blog';
-import { useUser } from 'providers/UserProvider';
 import { FaGlobeAsia, FaImage, FaUser } from 'react-icons/fa';
 import { MdDashboard } from 'react-icons/md';
 
@@ -295,13 +294,6 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
               className="hidden"
               onChange={handleImageChange}
             />
-            <button
-              type="button"
-              onClick={() => document.getElementById('imageInput')?.click()}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-            >
-              Choose Image
-            </button>
 
             {imagePreview && (
               <div className="relative inline-block mt-4 w-full">

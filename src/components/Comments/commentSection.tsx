@@ -35,7 +35,7 @@ export default function Comments({ blogId }: CommentsProps) {
     );
 
   return (
-    <div className="mx-auto py-8 px-4">
+    <div className="mx-auto py-8">
       <h2 className="text-3xl font-bold text-gray-900 mb-8">Comments</h2>
 
       <div>

@@ -58,7 +58,14 @@ export default function BlogPage() {
 
   const breadCrumb: BreadcrumbItem[] = [
     { label: 'Blogs', href: '/blog' },
-    { label: b?.title || 'Blog', href: `/blog/${b?.slug}` },
+    {
+      label: b?.title
+        ? b.title.split(' ').length > 3
+          ? b.title.split(' ').slice(0, 4).join(' ') + ' .....'
+          : b.title
+        : 'Blog',
+      href: `/blog/${b?.slug}`,
+    },
   ];
 
   return (
@@ -107,24 +114,6 @@ export default function BlogPage() {
                     })
                   : ''}
               </p>
-
-              <div className="prose prose-lg text-black">
-                <div dangerouslySetInnerHTML={{ __html: b?.content || '' }} />
-              </div>
-
-              {/* Tags Section */}
-              <div className="text-gray-700 rounded-lg p-2 bg-gray-200 mb-4 mt-5">
-                <h2 className="font-medium">Tags:</h2>
-                {b?.tags && b.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {b.tags.map((tag: string, idx: number) => (
-                      <span key={idx} className="text-xs">
-                        #{tag.trim()}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
             </div>
 
             {/* Sidebar: Recent Blogs */}
@@ -169,8 +158,12 @@ export default function BlogPage() {
                                       })
                                     : ''}
                                 </p>
-                                <h3 className="text-sm text-black font-semibold line-clamp-2 group-hover:text-blue-300 transition-colors">
-                                  {recentBlog.title}
+                                <h3 className="text-sm text-black font-semibold group-hover:text-blue-300 transition-colors">
+                                  {recentBlog.title
+                                    .split(' ')
+                                    .slice(0, 3)
+                                    .join(' ')}
+                                  ...
                                 </h3>
                               </div>
                             </div>
@@ -188,6 +181,25 @@ export default function BlogPage() {
             </aside>
           </div>
 
+          {/* CkEditor Content */}
+
+          <div className="prose prose-lg text-black max-w-full">
+            <div dangerouslySetInnerHTML={{ __html: b?.content || '' }} />
+          </div>
+
+          {/* Tags Section */}
+          <div className="text-gray-700 rounded-lg p-2 bg-gray-200 mb-4 mt-4">
+            <h2 className="font-medium mb-3">Tags:</h2>
+            {b?.tags && b.tags.length > 0 && (
+              <div className="flex flex-wrap gap-3 mb-3">
+                {b.tags.map((tag: string, idx: number) => (
+                  <span key={idx} className="text-xs">
+                    #{tag.trim()}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
           <CommentForms blogId={b?.id || 0} />
           <Toaster position="top-right" />
         </div>
