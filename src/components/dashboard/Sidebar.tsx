@@ -3,15 +3,18 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { FaBlog, FaCommentDots, FaUser, FaUsers } from 'react-icons/fa';
 import { useUser } from '../../providers/UserProvider';
+import { useQueryClient } from '@tanstack/react-query';
+import router from 'next/router';
 
 const Sidebar = () => {
   const pathname = usePathname();
-  const router = useRouter();
   const { user, isAdmin, isLoading } = useUser();
   const [hovered, setHovered] = useState<string | null>(null);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const queryClient = useQueryClient();
 
   const menu = [
     {
@@ -40,37 +43,50 @@ const Sidebar = () => {
     },
   ];
 
-  if (isLoading) {
-    return (
-      <div className="w-64 bg-blue p-4 text-white">Loading Sidebar...</div>
-    );
-  }
-
-  if (!user) {
-    return <div className="w-64 bg-blue p-4 text-white">No session found</div>;
-  }
-
   const filteredMenu = menu.filter((item) => !item.adminOnly || isAdmin);
 
   const handleLogout = async () => {
-    await fetch('/api/auth/logout', { method: 'POST' });
-    router.push('/login');
+    try {
+      setIsLoggingOut(true);
+      queryClient.setQueryData(['session'], null);
+      queryClient.cancelQueries({ queryKey: ['session'] });
+      await fetch('/api/logout', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Cache-Control': 'no-cache',
+          Pragma: 'no-cache',
+        },
+        cache: 'no-store',
+      });
+
+      queryClient.clear();
+      await new Promise((resolve) => setTimeout(resolve, 400));
+      router.push('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+      window.location.replace('/login');
+    }
   };
+  if (isLoading) {
+    return null;
+  }
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="w-64 bg-blue flex flex-col justify-between min-h-screen shadow-lg">
-      {' '}
       <div>
-        {' '}
         <Link href="/">
-          {' '}
           <Image
             height={500}
             width={500}
             src="/icons/slysol-white.svg"
             alt="icon"
             className="w-20 h-auto mx-auto my-5 transition-transform duration-300 hover:scale-110"
-          />{' '}
+          />
         </Link>
         <nav className="flex flex-col gap-2 px-4">
           {filteredMenu.map((item) => {
@@ -96,10 +112,11 @@ const Sidebar = () => {
       </div>
       <div className="p-4">
         <button
-          className="w-full bg-red-500 py-2 rounded-lg text-white hover:bg-red-600 transition-colors duration-200 active:scale-95"
+          className="w-full bg-red-500 py-2 rounded-lg text-white hover:bg-red-600 transition-colors duration-200 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={handleLogout}
+          disabled={isLoggingOut}
         >
-          Logout
+          {isLoggingOut ? 'Logging out...' : 'Logout'}
         </button>
       </div>
     </div>
