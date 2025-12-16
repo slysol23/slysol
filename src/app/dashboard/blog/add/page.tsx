@@ -381,6 +381,7 @@ export default function AddBlogPage() {
               control={control}
               render={({ field }) => (
                 <CKEditorWrapper
+                  id="blog-content-editor"
                   initialData={field.value}
                   onChange={field.onChange}
                 />

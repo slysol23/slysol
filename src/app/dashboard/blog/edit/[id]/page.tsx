@@ -387,6 +387,7 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
             control={control}
             render={({ field }) => (
               <CKEditorWrapper
+                id="blog-content-editor"
                 initialData={field.value}
                 onChange={field.onChange}
               />
