@@ -11,12 +11,11 @@ import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 import axios from 'axios';
 import Image from 'next/image';
 import { MdDashboard } from 'react-icons/md';
-import 'jsoneditor-react/es/editor.min.css';
 import { useUser } from 'providers/UserProvider';
 import { FaGlobeAsia, FaImage, FaUser } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 
-const JsonEditor = dynamic(
+const JsonEditorWrapper = dynamic(
   () => import('jsoneditor-react').then((mod) => mod.JsonEditor),
   { ssr: false },
 );
@@ -394,51 +393,40 @@ export default function AddBlogPage() {
             )}
           </div>
 
-          {/* Tags - JSON Editor */}
+          {/* Tags */}
           <Controller
             name="tags"
             control={control}
             render={({ field }) => (
               <div>
-                <label className="block text-black font-medium mb-4">
+                <label className="block text-black font-medium mb-2">
                   Tags
                 </label>
                 <div className="border rounded-lg p-2">
-                  <JsonEditor
-                    value={field.value || DEFAULT_TAGS}
-                    onChange={(v: any) => field.onChange(v)}
-                    mode="code"
-                    allowedModes={['tree', 'code']}
-                    navigationBar={true}
-                    search={true}
-                    mainMenuBar={true}
-                    history={true}
+                  <JsonEditorWrapper
+                    value={field.value}
+                    onChange={field.onChange}
+                    height="300px"
                   />
                 </div>
               </div>
             )}
           />
 
-          {/* Meta - JSON Editor */}
+          {/* Meta */}
           <Controller
             name="meta"
             control={control}
             render={({ field }) => (
               <div>
-                <label className="block text-black font-medium mb-4">
+                <label className="block text-black font-medium mb-2">
                   Meta
                 </label>
                 <div className="border rounded-lg p-2">
-                  <JsonEditor
-                    value={field.value || DEFAULT_META}
-                    onChange={(v: any) => field.onChange(v)}
-                    mode="code"
-                    allowedModes={['tree', 'code']}
-                    navigationBar={true}
-                    mainMenuBar={true}
-                    history={true}
-                    search={true}
-                    htmlElementProps={{ style: { height: '500px' } }}
+                  <JsonEditorWrapper
+                    value={field.value}
+                    onChange={field.onChange}
+                    height="500px"
                   />
                 </div>
               </div>

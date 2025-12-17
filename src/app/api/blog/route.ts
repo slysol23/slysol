@@ -36,6 +36,13 @@ export async function GET(req: Request) {
     const limit = parseInt(searchParams.get('limit') ?? '10');
     const offset = (page - 1) * limit;
 
+    const [{ count }] = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(blogSchema);
+
+    const totalCount = Number(count);
+    const totalPages = Math.ceil(totalCount / limit);
+
     const blogs = await db
       .select()
       .from(blogSchema)
@@ -50,8 +57,8 @@ export async function GET(req: Request) {
         message: 'Blogs fetched',
         page,
         limit,
-        total: 0,
-        totalPages: 0,
+        total: totalCount,
+        totalPages,
         data: [],
       });
     }
@@ -86,6 +93,8 @@ export async function GET(req: Request) {
       message: 'Blogs fetched successfully',
       page,
       limit,
+      total: totalCount,
+      totalPages,
       data: blogsWithAuthors,
     });
   } catch (err) {
