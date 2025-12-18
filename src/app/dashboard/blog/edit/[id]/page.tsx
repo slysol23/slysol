@@ -15,7 +15,10 @@ import { FaGlobeAsia, FaImage, FaUser } from 'react-icons/fa';
 import { MdDashboard } from 'react-icons/md';
 
 const JsonEditorWrapper = dynamic(
-  () => import('jsoneditor-react').then((mod) => mod.JsonEditor),
+  () =>
+    import('../../../../../components/jsoneditor/JSONEditorController').then(
+      (mod) => mod.JsonEditorWrapper,
+    ),
   { ssr: false },
 );
 

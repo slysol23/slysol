@@ -16,7 +16,10 @@ import { FaGlobeAsia, FaImage, FaUser } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 
 const JsonEditorWrapper = dynamic(
-  () => import('jsoneditor-react').then((mod) => mod.JsonEditor),
+  () =>
+    import('../../../../components/jsoneditor/JSONEditorController').then(
+      (mod) => mod.JsonEditorWrapper,
+    ),
   { ssr: false },
 );
 const CKEditorWrapper = dynamic(

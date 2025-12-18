@@ -20,7 +20,7 @@ export default function BlogPage() {
   // ✅ Fetch blogs
   const blogQuery = useQuery<BlogApiResponse, Error>({
     queryKey: ['blogs', page],
-    queryFn: async () => await blog.getAll(page, limit),
+    queryFn: async () => await blog.getAll(page, limit, true),
     staleTime: 2 * 60 * 1000,
   });
 
@@ -36,8 +36,8 @@ export default function BlogPage() {
 
   const allBlogs: IBlog[] = blogQuery.data?.data ?? [];
 
-  // ✅ Filter to show only published blogs on public page
-  const blogs = allBlogs.filter((b) => b.is_published);
+  // ✅ No need to filter since API already returns only published blogs
+  const blogs = allBlogs;
 
   const total = blogQuery.data?.total ?? 0;
   const totalPages = blogQuery.data?.totalPages ?? 1;

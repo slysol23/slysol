@@ -1,4 +1,3 @@
-// components/JsonEditorWrapper.tsx
 'use client';
 
 import React, { useEffect, useRef } from 'react';
@@ -14,32 +13,58 @@ interface JsonEditorWrapperProps {
 export const JsonEditorWrapper: React.FC<JsonEditorWrapperProps> = ({
   value,
   onChange,
-  height = '400px',
+  height = '200px',
 }) => {
   const editorRef = useRef<any>(null);
 
   useEffect(() => {
     if (editorRef.current && value !== undefined) {
-      // Only update if the value is different
-      const current = editorRef.current.jsonEditor.get();
-      if (JSON.stringify(current) !== JSON.stringify(value)) {
-        editorRef.current.jsonEditor.set(value);
+      try {
+        const current = editorRef.current.jsonEditor.get();
+        if (JSON.stringify(current) !== JSON.stringify(value)) {
+          editorRef.current.jsonEditor.set(value);
+        }
+      } catch (error) {
+        console.error('Error updating JSON editor:', error);
       }
     }
   }, [value]);
 
+  const handleChange = (updatedValue: any) => {
+    try {
+      onChange(updatedValue);
+    } catch (error) {
+      console.error('Error in onChange handler:', error);
+    }
+  };
+
   return (
-    <JsonEditor
-      ref={editorRef}
-      value={value}
-      onChange={onChange}
-      mode="code"
-      allowedModes={['tree', 'code']}
-      navigationBar
-      mainMenuBar
-      search
-      history
-      htmlElementProps={{ style: { height } }}
-    />
+    <div
+      style={{ height: typeof height === 'number' ? `${height}px` : height }}
+    >
+      <JsonEditor
+        ref={editorRef}
+        value={value || []}
+        onChange={handleChange}
+        mode="code"
+        modes={['code', 'tree', 'form']}
+        allowedModes={['code', 'tree', 'form']}
+        navigationBar={true}
+        statusBar={true}
+        search={true}
+        history={true}
+        indentation={2}
+        sortObjectKeys={false}
+        escapeUnicode={false}
+        htmlElementProps={{
+          style: {
+            height: '100%',
+            width: '100%',
+          },
+        }}
+      />
+    </div>
   );
 };
+
+export default JsonEditorWrapper;

@@ -1,210 +1,119 @@
-'use client';
-
-import { useParams } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
+import { Metadata } from 'next';
 import { blog } from 'lib/blog';
-import Container from '@/components/Container';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import MainHeading from '@/components/MainHeading';
-import Head from 'next/head';
-import Link from 'next/link';
 import { IBlog } from 'lib/type';
-import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
-import CommentForms from '@/components/Comments/commentSection';
-import { Toaster } from 'react-hot-toast';
-import Image from 'next/image';
+import BlogClient from './BlogClient';
 
-export default function BlogPage() {
-  const params = useParams();
-  const slugParam = params.slug;
-  const slug = Array.isArray(slugParam) ? slugParam[0] : slugParam;
+interface Props {
+  params: { slug: string };
+}
 
-  const {
-    data: b,
-    isLoading,
-    error,
-  } = useQuery<IBlog>({
-    queryKey: ['blog', slug],
-    queryFn: async () => {
-      if (!slug) throw new Error('Invalid blog slug');
-      const res = await blog.getBySlug(slug);
-      if (!res?.data) throw new Error('Blog not found');
-      return res.data;
+// Generate metadata for SEO and social sharing
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://slysol.com';
+  const siteName = 'Slysol';
+  const slug = params.slug;
+
+  let b: IBlog | undefined;
+
+  try {
+    const res = await blog.getBySlug(slug);
+    b = res?.data;
+  } catch (err) {
+    console.error('❌ Error fetching blog for metadata:', err);
+
+    // Return basic metadata on error
+    return {
+      title: 'Blog Not Found | Slysol',
+      description: 'The requested blog post could not be found.',
+      openGraph: {
+        siteName,
+        locale: 'en_US',
+        type: 'website',
+      },
+    };
+  }
+
+  if (!b) {
+    return {
+      title: 'Blog Not Found | Slysol',
+      description: 'The requested blog post could not be found.',
+      openGraph: {
+        siteName,
+        locale: 'en_US',
+        type: 'website',
+      },
+    };
+  }
+
+  const blogUrl = `${siteUrl}/blog/${b.slug}`;
+  const imageUrl = b.image
+    ? b.image.startsWith('http')
+      ? b.image
+      : `${siteUrl}${b.image}`
+    : `${siteUrl}/default-blog-image.jpg`; // Fallback image
+
+  const authorNames = b.authors?.length
+    ? b.authors.map((a) => `${a.firstName} ${a.lastName}`).join(', ')
+    : 'Slysol Team';
+
+  // Ensure publishedTime is a string
+  const publishedTime = b.createdAt
+    ? typeof b.createdAt === 'string'
+      ? b.createdAt
+      : new Date(b.createdAt).toISOString()
+    : new Date().toISOString();
+
+  const metaTitle = b.meta?.title || b.title || 'Untitled Blog';
+  const metaDescription =
+    b.meta?.description || b.description || 'Read this article on Slysol';
+
+  return {
+    title: `${metaTitle} | Slysol`,
+    description: metaDescription,
+    keywords: b.meta?.keywords || b.tags || [],
+    authors: [{ name: authorNames }],
+
+    openGraph: {
+      siteName,
+      locale: 'en_US',
+      title: metaTitle,
+      description: metaDescription,
+      type: 'article',
+      url: blogUrl,
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: b.title || 'Blog image',
+        },
+      ],
+      publishedTime,
+      authors: [authorNames],
+      tags: b.tags || [],
     },
-    enabled: !!slug,
-  });
 
-  const { data: recentBlogs, isLoading: loadingRecent } = useQuery<IBlog[]>({
-    queryKey: ['recentBlogs'],
-    queryFn: async () => {
-      const res = await blog.getAll(1, 3);
-      const blogs = res?.data || [];
-      return blogs.sort(
-        (a, b) =>
-          new Date(b.createdAt || 0).getTime() -
-          new Date(a.createdAt || 0).getTime(),
-      );
+    twitter: {
+      card: 'summary_large_image',
+      site: '@slysol',
+      title: metaTitle,
+      description: metaDescription,
+      images: [imageUrl],
+      creator: '@slysol',
     },
-  });
 
-  if (isLoading)
-    return <div className="text-center text-black py-20">Loading blog...</div>;
-
-  if (error instanceof Error)
-    return (
-      <div className="text-center text-red-500 py-20">{error.message}</div>
-    );
-
-  const breadCrumb: BreadcrumbItem[] = [
-    { label: 'Blogs', href: '/blog' },
-    {
-      label: b?.title
-        ? b.title.split(' ').length > 3
-          ? b.title.split(' ').slice(0, 4).join(' ') + ' .....'
-          : b.title
-        : 'Blog',
-      href: `/blog/${b?.slug}`,
+    alternates: {
+      canonical: blogUrl,
     },
-  ];
 
-  return (
-    <>
-      <Head>
-        <title>{b?.meta?.title || b?.title || 'Blog'}</title>
-        {b?.meta?.description && (
-          <meta name="description" content={b.meta.description} />
-        )}
-        {b?.meta?.keywords && b.meta.keywords.length > 0 && (
-          <meta name="keywords" content={b.meta.keywords.join(', ')} />
-        )}
-      </Head>
+    robots: {
+      index: b.is_published !== false, // Only index if published
+      follow: true,
+    },
+  };
+}
 
-      <Container hScreen={false}>
-        <Header />
-        <div className="pt-10 pb-20">
-          <Breadcrumb items={breadCrumb} />
-
-          <div className="flex flex-col lg:flex-row gap-8">
-            <div className="flex-1">
-              {b?.image && (
-                <div className="w-full h-96 relative rounded-3xl overflow-hidden my-6 bg-gray-100">
-                  <Image src={b.image} alt={b.title || 'Blog image'} fill />
-                </div>
-              )}
-
-              <MainHeading
-                text={b?.title ?? 'Untitled'}
-                className="font-bold"
-              />
-
-              <p className="text-sm text-gray-400 mb-2 mt-2">
-                Published by{' '}
-                {b?.authors && b.authors.length > 0
-                  ? b.authors
-                      .map((author) => `${author.firstName} ${author.lastName}`)
-                      .join(', ')
-                  : `Author #${b?.authorId}`}{' '}
-                on{' '}
-                {b?.createdAt
-                  ? new Date(b.createdAt).toLocaleDateString('en-GB', {
-                      day: '2-digit',
-                      month: 'long',
-                      year: 'numeric',
-                    })
-                  : ''}
-              </p>
-            </div>
-
-            {/* Sidebar: Recent Blogs */}
-            <aside className="lg:w-100 mt-6">
-              <div className="top-10 bg-gray-100 rounded-2xl p-5">
-                <h2 className="text-xl font-bold mb-2 text-black">
-                  Recent Blogs
-                </h2>
-                {loadingRecent ? (
-                  <p className="text-gray-400 text-sm">Loading...</p>
-                ) : (
-                  <div className="space-y-4">
-                    {recentBlogs && recentBlogs.length > 0 ? (
-                      recentBlogs.map((recentBlog) => (
-                        <Link
-                          key={recentBlog.id}
-                          href={`/blog/${recentBlog.slug}`}
-                          className="block group"
-                        >
-                          <div className="border-b-2 p-2 border-gray-300">
-                            <div className="flex gap-3 hover:opacity-80 transition-opacity">
-                              {recentBlog.image && (
-                                <div className="rounded-lg overflow-hidden flex-shrink-0">
-                                  <Image
-                                    src={recentBlog.image}
-                                    alt={recentBlog.title}
-                                    className="w-20 h-12 object-cover"
-                                    width={100}
-                                    height={50}
-                                  />
-                                </div>
-                              )}
-                              <div className="flex-1 min-w-0">
-                                <p className="text-xs text-gray-500 mb-1">
-                                  {recentBlog.createdAt
-                                    ? new Date(
-                                        recentBlog.createdAt,
-                                      ).toLocaleDateString('en-US', {
-                                        month: 'long',
-                                        day: 'numeric',
-                                        year: 'numeric',
-                                      })
-                                    : ''}
-                                </p>
-                                <h3 className="text-sm text-black font-semibold group-hover:text-blue-300 transition-colors">
-                                  {recentBlog.title
-                                    .split(' ')
-                                    .slice(0, 3)
-                                    .join(' ')}
-                                  ...
-                                </h3>
-                              </div>
-                            </div>
-                          </div>
-                        </Link>
-                      ))
-                    ) : (
-                      <p className="text-gray-400 text-sm">
-                        No recent blogs available
-                      </p>
-                    )}
-                  </div>
-                )}
-              </div>
-            </aside>
-          </div>
-
-          {/* CkEditor Content */}
-
-          <div className="prose prose-lg text-black max-w-full">
-            <div dangerouslySetInnerHTML={{ __html: b?.content || '' }} />
-          </div>
-
-          {/* Tags Section */}
-          <div className="text-gray-700 rounded-lg p-2 bg-gray-200 mb-4 mt-4">
-            <h2 className="font-medium mb-3">Tags:</h2>
-            {b?.tags && b.tags.length > 0 && (
-              <div className="flex flex-wrap gap-3 mb-3">
-                {b.tags.map((tag: string, idx: number) => (
-                  <span key={idx} className="text-xs">
-                    #{tag.trim()}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-          <CommentForms blogId={b?.id || 0} />
-          <Toaster position="top-right" />
-        </div>
-      </Container>
-      <Footer />
-    </>
-  );
+// Server Component that renders the client component
+export default function BlogPage({ params }: Props) {
+  return <BlogClient slug={params.slug} />;
 }
