@@ -86,14 +86,14 @@ export default function BlogClient({ slug }: BlogClientProps) {
     <>
       <Container hScreen={false}>
         <Header />
-        <div className="pt-6 md:pt-10 pb-4">
+        <div className="pt-2 md:pt-4 pb-4">
           <h1 className="font-bold text-xl md:text-2xl mb-4">Blogs</h1>
           <Breadcrumb items={breadCrumb} />
-          <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex flex-col md:flex-row gap-2">
             {/* Main Blog Content */}
             <div className="flex-1">
               {b?.image && (
-                <div className="w-full md:w-[775px] h-64 md:h-[400px] relative rounded-3xl overflow-hidden my-4 bg-gray-100">
+                <div className="md:w-[775px] h-64 md:h-[400px] relative rounded-3xl overflow-hidden my-4 bg-gray-100">
                   <Image
                     src={b.image}
                     alt={b.title || 'Blog image'}
@@ -126,7 +126,7 @@ export default function BlogClient({ slug }: BlogClientProps) {
             </div>
 
             {/* Sidebar: Recent Blogs */}
-            <aside className="md:w-80 lg:w-96 mt-6">
+            <aside className="  w-full md:w-80 flex-shrink-0 pt-4">
               <div className="top-10 bg-gray-100 rounded-2xl p-5">
                 <h2 className="text-xl font-bold mb-2 text-black">
                   Recent Blogs
@@ -172,7 +172,7 @@ export default function BlogClient({ slug }: BlogClientProps) {
                                   : ''}
                               </p>
                               <h3 className="text-sm text-black font-semibold group-hover:text-blue-300 transition-colors">
-                                {truncateWords(r.title, 4)}
+                                {truncateWords(r.title, 3)}
                               </h3>
                             </div>
                           </div>
