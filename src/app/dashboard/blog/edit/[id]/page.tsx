@@ -10,14 +10,11 @@ import dynamic from 'next/dynamic';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 import axios from 'axios';
 import Image from 'next/image';
+import 'jsoneditor-react/es/editor.min.css';
+import { JsonEditor as Editor, JsonEditor } from 'jsoneditor-react';
 import { blog } from 'lib/blog';
 import { FaGlobeAsia, FaImage, FaUser } from 'react-icons/fa';
 import { MdDashboard } from 'react-icons/md';
-
-const JsonEditorWrapper = dynamic(
-  () => import('jsoneditor-react').then((mod) => mod.JsonEditor),
-  { ssr: false },
-);
 
 const CKEditorWrapper = dynamic(
   () => import('../../../../../components/CkEditor/CkEditorWrapper'),
@@ -285,7 +282,7 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label
-              className="text-black font-medium mb-4 flex items-center gap-1 cursor-pointer"
+              className="text-black font-medium mb-2 flex items-center gap-1 cursor-pointer"
               htmlFor="imageInput"
             >
               Cover <FaImage />
@@ -299,7 +296,7 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
             />
 
             {imagePreview && (
-              <div className="relative inline-block">
+              <div className="relative inline-block mt-4 w-full">
                 <button
                   type="button"
                   onClick={() => {
@@ -405,26 +402,44 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
           render={({ field }) => (
             <div>
               <label className="block mb-4 font-medium">Tags</label>
-              <JsonEditorWrapper
-                value={field.value || DEFAULT_TAGS}
-                onChange={field.onChange}
-                height="200px"
-              />
+              {blogData && (
+                <JsonEditor
+                  key={`tags-${blogId}-${JSON.stringify(field.value)}`}
+                  value={field.value || DEFAULT_TAGS}
+                  onChange={(value) => field.onChange(value)}
+                  mode="code"
+                  allowedModes={['tree', 'code']}
+                  navigationBar={true}
+                  search={true}
+                  mainMenuBar={true}
+                  history={true}
+                />
+              )}
             </div>
           )}
         />
 
+        {/* Meta */}
         <Controller
           name="meta"
           control={control}
           render={({ field }) => (
             <div>
               <label className="block mb-4 font-medium">Meta</label>
-              <JsonEditorWrapper
-                value={field.value || DEFAULT_META}
-                onChange={field.onChange}
-                height="500px"
-              />
+              {blogData && (
+                <JsonEditor
+                  key={`meta-${blogId}-${JSON.stringify(field.value)}`}
+                  value={field.value || DEFAULT_META}
+                  onChange={(value) => field.onChange(value)}
+                  mode="code"
+                  allowedModes={['tree', 'code']}
+                  navigationBar={true}
+                  search={true}
+                  mainMenuBar={true}
+                  history={true}
+                  htmlElementProps={{ style: { height: '500px' } }}
+                />
+              )}
             </div>
           )}
         />
