@@ -19,29 +19,36 @@ const CKEditorWrapper: React.FC<CKEditorWrapperProps> = ({
 }) => {
   const editorRef = useRef<any>(null);
   const divRef = useRef<HTMLDivElement>(null);
+  const onChangeRef = useRef(onChange);
 
-  // Base64 image upload adapter
-  class Base64UploadAdapter {
-    loader: any;
-    constructor(loader: any) {
-      this.loader = loader;
-    }
-    upload() {
-      return this.loader.file.then(
-        (file: File) =>
-          new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve({ default: reader.result as string });
-            reader.onerror = (err) => reject(err);
-            reader.readAsDataURL(file);
-          }),
-      );
-    }
-    abort() {}
-  }
+  // Keep latest onChange in ref
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
 
   useEffect(() => {
     if (!divRef.current) return;
+
+    // Base64 image upload adapter inside effect
+    class Base64UploadAdapter {
+      loader: any;
+      constructor(loader: any) {
+        this.loader = loader;
+      }
+      upload() {
+        return this.loader.file.then(
+          (file: File) =>
+            new Promise((resolve, reject) => {
+              const reader = new FileReader();
+              reader.onload = () =>
+                resolve({ default: reader.result as string });
+              reader.onerror = (err) => reject(err);
+              reader.readAsDataURL(file);
+            }),
+        );
+      }
+      abort() {}
+    }
 
     ClassicPlusEditor.create(divRef.current, {
       toolbar: [
@@ -86,17 +93,14 @@ const CKEditorWrapper: React.FC<CKEditorWrapperProps> = ({
       .then((editor) => {
         editorRef.current = editor;
 
-        // Add Base64 upload adapter
         (editor.plugins.get('FileRepository') as any).createUploadAdapter = (
           loader: any,
-        ) => {
-          return new Base64UploadAdapter(loader);
-        };
+        ) => new Base64UploadAdapter(loader);
 
         editor.setData(initialData);
 
         editor.model.document.on('change:data', () => {
-          onChange?.(editor.getData());
+          onChangeRef.current?.(editor.getData());
         });
       })
       .catch((err) => console.error('CKEditor error:', err));
@@ -105,8 +109,9 @@ const CKEditorWrapper: React.FC<CKEditorWrapperProps> = ({
       editorRef.current?.destroy();
       editorRef.current = null;
     };
-  }, [divRef]);
+  }, [divRef, initialData]); // only depend on divRef and initialData
 
+  // Sync editor if initialData changes
   useEffect(() => {
     if (editorRef.current && initialData !== editorRef.current.getData()) {
       editorRef.current.setData(initialData);

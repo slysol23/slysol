@@ -148,5 +148,9 @@ ol {
 
 /* globals.css or component CSS */
 .ck-content img {
-  max-width: 60%;
+  width: auto !important;
+  /* important to let editor's width apply */
+  max-width: 100%;
+  /* optional to prevent overflow */
+  height: auto;
 }
