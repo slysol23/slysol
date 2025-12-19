@@ -13,7 +13,6 @@ import { Toaster } from 'react-hot-toast';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useMemo } from 'react';
-
 interface BlogClientProps {
   slug: string;
 }
@@ -47,7 +46,6 @@ export default function BlogClient({ slug }: BlogClientProps) {
     },
   });
 
-  // Frontend-only published blogs filter
   const publishedBlogs = useMemo(
     () =>
       (recentBlogs ?? []).filter(
@@ -126,7 +124,7 @@ export default function BlogClient({ slug }: BlogClientProps) {
             </div>
 
             {/* Sidebar: Recent Blogs */}
-            <aside className="  w-full md:w-80 flex-shrink-0 pt-4">
+            <aside className="w-full md:w-80 flex-shrink-0 pt-4">
               <div className="top-10 bg-gray-100 rounded-2xl p-5">
                 <h2 className="text-xl font-bold mb-2 text-black">
                   Recent Blogs
@@ -186,9 +184,10 @@ export default function BlogClient({ slug }: BlogClientProps) {
           </div>
 
           {/* Blog Content */}
-          <div className="prose prose-base md:prose-lg text-black max-w-full mt-8">
-            <div dangerouslySetInnerHTML={{ __html: b?.content || '' }} />
-          </div>
+          <div
+            className="ck-content"
+            dangerouslySetInnerHTML={{ __html: b?.content || '' }}
+          />
 
           {/* Tags */}
           <div className="text-gray-700 rounded-lg p-2 md:p-4 bg-gray-200 mb-4 mt-4">
@@ -208,6 +207,20 @@ export default function BlogClient({ slug }: BlogClientProps) {
         </div>
       </Container>
       <Footer />
+
+      {/* CKEditor 5 content styles for proper rendering */}
+      <style jsx global>{`
+        .ck-content ul,
+        .ck-content ol {
+          padding-left: 1.5em;
+          margin-bottom: 1em;
+        }
+
+        .ck-content p {
+          margin-bottom: 1em;
+        }
+        }
+      `}</style>
     </>
   );
 }

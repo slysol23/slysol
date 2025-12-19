@@ -68,7 +68,6 @@ export default function RootLayout({
           name="google-site-verification"
           content="WSFplsjjbt13v0ikzPDoAG_kE1hkZhqI1kD2wv5WpiM"
         />
-        <script src="/ckeditor/ckeditor.js" async></script>
       </head>
       <body className={`${NeueMachina.variable} ${basic.variable} text-dark`}>
         <SessionProvider>
