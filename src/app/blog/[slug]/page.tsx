@@ -7,6 +7,22 @@ interface Props {
   params: { slug: string };
 }
 
+// ✅ ADD THIS: Generate static params for all published blogs
+export async function generateStaticParams() {
+  try {
+    // Fetch all published blogs
+    const response = await blog.getAll(1, 100, true); // page=1, limit=100, published=true
+    const blogs = response.data || [];
+
+    return blogs.map((b) => ({
+      slug: b.slug,
+    }));
+  } catch (error) {
+    console.error('❌ Error generating static params:', error);
+    return [];
+  }
+}
+
 // Generate metadata for SEO and social sharing
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://slysol.com';
@@ -50,13 +66,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? b.image.startsWith('http')
       ? b.image
       : `${siteUrl}${b.image}`
-    : `${siteUrl}/default-blog-image.jpg`; // Fallback image
+    : `${siteUrl}/default-blog-image.jpg`;
 
   const authorNames = b.authors?.length
     ? b.authors.map((a) => `${a.firstName} ${a.lastName}`).join(', ')
     : 'Slysol Team';
 
-  // Ensure publishedTime is a string
   const publishedTime = b.createdAt
     ? typeof b.createdAt === 'string'
       ? b.createdAt
@@ -107,7 +122,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
 
     robots: {
-      index: b.is_published !== false, // Only index if published
+      index: b.is_published !== false,
       follow: true,
     },
   };

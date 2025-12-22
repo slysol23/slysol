@@ -56,13 +56,20 @@ function mapBlog(b: any): IBlog {
 
 /** Get base URL for API calls - works on both server and client */
 function getBaseURL(): string {
+  // Server-side (during build or SSR)
   if (typeof window === 'undefined') {
+    // ✅ CRITICAL: For Vercel, use the deployment URL during build
+    if (process.env.VERCEL_URL) {
+      return `https://${process.env.VERCEL_URL}/api`;
+    }
+    // Fallback to explicit API_URL
     return (
       process.env.API_URL ||
       process.env.NEXT_PUBLIC_API_URL ||
       'http://localhost:3000/api'
     );
   }
+  // Client-side
   return process.env.NEXT_PUBLIC_API_URL || '/api';
 }
 
