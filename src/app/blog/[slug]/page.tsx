@@ -1,18 +1,88 @@
 import { Metadata } from 'next';
-import { blog } from 'lib/blog';
 import { IBlog } from 'lib/type';
 import BlogClient from './BlogClient';
+import { db } from '../../../db';
+import {
+  blogSchema,
+  blogAuthorsSchema,
+  authorSchema,
+} from '../../../db/schema';
+import { eq, inArray } from 'drizzle-orm';
 
 interface Props {
-  params: { slug: string };
+  params: Promise<{ slug: string }> | { slug: string };
 }
 
-// ✅ ADD THIS: Generate static params for all published blogs
+// Helper function to fetch blog directly from database
+async function getBlogBySlug(slug: string): Promise<IBlog | null> {
+  try {
+    const [blogResult] = await db
+      .select()
+      .from(blogSchema)
+      .where(eq(blogSchema.slug, slug))
+      .limit(1);
+
+    if (!blogResult) {
+      return null;
+    }
+
+    // Fetch authors
+    const relations = await db
+      .select()
+      .from(blogAuthorsSchema)
+      .where(eq(blogAuthorsSchema.blogId, blogResult.id));
+
+    const authorIds = relations.map((r) => r.authorId);
+
+    const authors = authorIds.length
+      ? await db
+          .select()
+          .from(authorSchema)
+          .where(inArray(authorSchema.id, authorIds))
+      : [];
+
+    // Helper to safely convert createdBy/updatedBy
+    const parseUserField = (field: any) => {
+      if (!field) return { name: '—' };
+      if (typeof field === 'string') return { name: field };
+      if (field && typeof field === 'object' && 'name' in field) return field;
+      return { name: '—' };
+    };
+
+    return {
+      id: blogResult.id,
+      authorId: blogResult.authorId,
+      authors,
+      title: blogResult.title,
+      description: blogResult.description,
+      content: blogResult.content,
+      image: blogResult.image,
+      slug: blogResult.slug,
+      tags: Array.isArray(blogResult.tags) ? blogResult.tags : [],
+      meta: blogResult.meta ?? { title: '', description: '', keywords: [] },
+      createdAt: blogResult.createdAt,
+      updatedAt: blogResult.updatedAt,
+      createdBy: parseUserField(blogResult.createdBy),
+      updatedBy: parseUserField(blogResult.updatedBy),
+      is_published: blogResult.is_published,
+      status: blogResult.is_published ? 'Published' : 'Draft',
+    } as IBlog;
+  } catch (error) {
+    console.error('Error fetching blog by slug:', error);
+    return null;
+  }
+}
+
+// Generate static params for all published blogs
 export async function generateStaticParams() {
   try {
-    // Fetch all published blogs
-    const response = await blog.getAll(1, 100, true); // page=1, limit=100, published=true
-    const blogs = response.data || [];
+    const blogs = await db
+      .select()
+      .from(blogSchema)
+      .where(eq(blogSchema.is_published, true))
+      .limit(100);
+
+    console.log(`✅ Generating static params for ${blogs.length} blogs`);
 
     return blogs.map((b) => ({
       slug: b.slug,
@@ -27,29 +97,16 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://slysol.com';
   const siteName = 'Slysol';
-  const slug = params.slug;
 
-  let b: IBlog | undefined;
+  const resolvedParams = await Promise.resolve(params);
+  const slug = resolvedParams.slug;
 
-  try {
-    const res = await blog.getBySlug(slug);
-    b = res?.data;
-  } catch (err) {
-    console.error('❌ Error fetching blog for metadata:', err);
+  console.log('🔍 Generating metadata for slug:', slug);
 
-    // Return basic metadata on error
-    return {
-      title: 'Blog Not Found | Slysol',
-      description: 'The requested blog post could not be found.',
-      openGraph: {
-        siteName,
-        locale: 'en_US',
-        type: 'website',
-      },
-    };
-  }
+  const b = await getBlogBySlug(slug);
 
   if (!b) {
+    console.log('❌ No blog data found for slug:', slug);
     return {
       title: 'Blog Not Found | Slysol',
       description: 'The requested blog post could not be found.',
@@ -60,6 +117,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       },
     };
   }
+
+  console.log('✅ Blog data fetched for metadata:', b.title);
 
   const blogUrl = `${siteUrl}/blog/${b.slug}`;
   const imageUrl = b.image
@@ -129,6 +188,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 // Server Component that renders the client component
-export default function BlogPage({ params }: Props) {
-  return <BlogClient slug={params.slug} />;
+export default async function BlogPage({ params }: Props) {
+  const resolvedParams = await Promise.resolve(params);
+  return <BlogClient slug={resolvedParams.slug} />;
 }
