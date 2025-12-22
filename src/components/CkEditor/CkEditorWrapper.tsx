@@ -1,4 +1,5 @@
 'use client';
+
 import React, { useEffect, useRef } from 'react';
 import ClassicPlusEditor from 'ckeditor5-build-classic-plus';
 
@@ -21,15 +22,22 @@ const CKEditorWrapper: React.FC<CKEditorWrapperProps> = ({
   const divRef = useRef<HTMLDivElement>(null);
   const onChangeRef = useRef(onChange);
 
-  // Keep latest onChange in ref
+  // keep latest onChange without re-rendering editor
   useEffect(() => {
     onChangeRef.current = onChange;
   }, [onChange]);
 
+  // normalize relative links
+  const normalizeLinks = (html: string) =>
+    html.replace(
+      /href="(?!https?:\/\/|mailto:|tel:|#)([^"]+)"/gi,
+      'href="https://$1"',
+    );
+
+  // initialize editor ONCE (no initialData usage here)
   useEffect(() => {
     if (!divRef.current) return;
 
-    // Base64 image upload adapter inside effect
     class Base64UploadAdapter {
       loader: any;
       constructor(loader: any) {
@@ -83,12 +91,15 @@ const CKEditorWrapper: React.FC<CKEditorWrapperProps> = ({
         'alignment',
         'removeFormat',
       ],
-      list: { properties: { styles: true, startIndex: true, reversed: true } },
-      image: {
-        toolbar: ['imageTextAlternative', '|', 'resizeImage'],
-        resizeUnit: '%',
+      link: {
+        defaultProtocol: 'https://',
       },
-      table: { contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells'] },
+      table: {
+        contentToolbar: ['tableColumn', 'tableRow', 'mergeTableCells'],
+      },
+      image: {
+        toolbar: ['imageTextAlternative'],
+      },
     } as any)
       .then((editor) => {
         editorRef.current = editor;
@@ -97,21 +108,22 @@ const CKEditorWrapper: React.FC<CKEditorWrapperProps> = ({
           loader: any,
         ) => new Base64UploadAdapter(loader);
 
-        editor.setData(initialData);
-
         editor.model.document.on('change:data', () => {
-          onChangeRef.current?.(editor.getData());
+          const data = normalizeLinks(editor.getData());
+          onChangeRef.current?.(data);
         });
       })
-      .catch((err) => console.error('CKEditor error:', err));
+      .catch((error) => {
+        console.error('CKEditor init error:', error);
+      });
 
     return () => {
       editorRef.current?.destroy();
       editorRef.current = null;
     };
-  }, [divRef, initialData]); // only depend on divRef and initialData
+  }, []);
 
-  // Sync editor if initialData changes
+  // sync external initialData changes (THIS removes the warning)
   useEffect(() => {
     if (editorRef.current && initialData !== editorRef.current.getData()) {
       editorRef.current.setData(initialData);
