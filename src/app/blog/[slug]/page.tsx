@@ -82,13 +82,10 @@ export async function generateStaticParams() {
       .where(eq(blogSchema.is_published, true))
       .limit(100);
 
-    console.log(`✅ Generating static params for ${blogs.length} blogs`);
-
     return blogs.map((b) => ({
       slug: b.slug,
     }));
   } catch (error) {
-    console.error('❌ Error generating static params:', error);
     return [];
   }
 }
@@ -101,12 +98,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const resolvedParams = await Promise.resolve(params);
   const slug = resolvedParams.slug;
 
-  console.log('🔍 Generating metadata for slug:', slug);
-
   const b = await getBlogBySlug(slug);
 
   if (!b) {
-    console.log('❌ No blog data found for slug:', slug);
     return {
       title: 'Blog Not Found | Slysol',
       description: 'The requested blog post could not be found.',
@@ -117,8 +111,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       },
     };
   }
-
-  console.log('✅ Blog data fetched for metadata:', b.title);
 
   const blogUrl = `${siteUrl}/blog/${b.slug}`;
   const imageUrl = b.image
