@@ -79,57 +79,59 @@ export default function BlogPage() {
                   key={b.id}
                   className="backdrop-blur p-6 rounded-3xl shadow-md hover:scale-[1.02] transition-all duration-300"
                 >
-                  {b.image && (
-                    <div className="relative w-full h-56 mb-4 bg-gray-800 rounded-2xl overflow-hidden">
-                      <Image
-                        src={b.image}
-                        height={800}
-                        width={500}
-                        alt={b.title}
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      />
-                    </div>
-                  )}
+                  <Link href={b.slug ? `/blog/${b.slug}` : `/blog/id/${b.id}`}>
+                    {b.image && (
+                      <div className="relative w-full h-56 mb-4 bg-gray-800 rounded-2xl overflow-hidden">
+                        <Image
+                          src={b.image}
+                          height={800}
+                          width={500}
+                          alt={b.title}
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        />
+                      </div>
+                    )}
 
-                  <h2 className="text-2xl font-bold text-blue mb-2 truncate">
-                    {b.title}
-                  </h2>
+                    <h2 className="text-2xl font-bold text-blue mb-2 truncate">
+                      {b.title}
+                    </h2>
 
-                  <p className="text-sm font-bold text-gray-400 mb-2">
-                    By:{' '}
-                    {b?.authors && b.authors.length > 0
-                      ? b.authors
-                          .map(
-                            (author) =>
-                              `${author.firstName} ${author.lastName}`,
-                          )
-                          .join(', ')
-                      : getAuthorName(b.authorId)}{' '}
-                    <span className="ml-2">
-                      {new Date(b.createdAt).toLocaleDateString('en-GB', {
-                        day: '2-digit',
-                        month: 'numeric',
-                        year: '2-digit',
-                      })}
-                    </span>
-                  </p>
-
-                  <p className="text-gray-500 line-clamp-3 mb-3">
-                    {b.description}
-                  </p>
-
-                  {!b.slug && (
-                    <p className="text-red-500 text-xs mb-2">
-                      ⚠️ Warning: This blog has no slug! ID: {b.id}
+                    <p className="text-sm font-bold text-gray-400 mb-2">
+                      By:{' '}
+                      {b?.authors && b.authors.length > 0
+                        ? b.authors
+                            .map(
+                              (author) =>
+                                `${author.firstName} ${author.lastName}`,
+                            )
+                            .join(', ')
+                        : getAuthorName(b.authorId)}{' '}
+                      <span className="ml-2">
+                        {new Date(b.createdAt).toLocaleDateString('en-GB', {
+                          day: '2-digit',
+                          month: 'numeric',
+                          year: '2-digit',
+                        })}
+                      </span>
                     </p>
-                  )}
 
-                  <Link
-                    href={b.slug ? `/blog/${b.slug}` : `/blog/id/${b.id}`}
-                    className="text-blue-500 hover:text-blue-400 hover:underline"
-                  >
-                    Read More
+                    <p className="text-gray-500 line-clamp-3 mb-3">
+                      {b.description}
+                    </p>
+
+                    {!b.slug && (
+                      <p className="text-red-500 text-xs mb-2">
+                        ⚠️ Warning: This blog has no slug! ID: {b.id}
+                      </p>
+                    )}
+
+                    <Link
+                      href={b.slug ? `/blog/${b.slug}` : `/blog/id/${b.id}`}
+                      className="text-blue-500 hover:text-blue-400 hover:underline"
+                    >
+                      Read More
+                    </Link>
                   </Link>
                 </article>
               ))}
