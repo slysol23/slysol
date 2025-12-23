@@ -50,6 +50,7 @@ const ContactForm = () => {
         setAlertMessage('failed');
       }
     } catch (error) {
+      console.log(error + 'i am error');
       setAlertMessage('failed');
     } finally {
       setLoading(false);
