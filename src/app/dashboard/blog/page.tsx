@@ -18,9 +18,10 @@ export default function BlogDashboardPage() {
   const [page, setPage] = useState(1);
   const limit = 10;
 
+  // In BlogDashboardPage
   const { data, isLoading, error } = useQuery<BlogApiResponse, Error>({
     queryKey: ['blogs', page],
-    queryFn: () => blog.getAll(page, limit),
+    queryFn: () => blog.getAll(page, limit, false),
     staleTime: 1000 * 60,
     enabled: !!user,
   });

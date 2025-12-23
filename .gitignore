@@ -37,3 +37,6 @@ next-env.d.ts
 
 # uploads folder 
 /public/uploads/
+
+# IDEs and editors
+/public/ckeditor

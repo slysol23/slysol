@@ -1,45 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from 'db';
-import { commentSchema } from '../../../db/schema';
+import { commentSchema, blogSchema } from '../../../db/schema';
 import { eq, and } from 'drizzle-orm';
 
 type Comment = typeof commentSchema.$inferSelect;
 
 type commentReplies = Comment & {
+  blogSlug: string;
   replies: commentReplies[];
 };
 
-function buildNestedComments(comments: Comment[]): commentReplies[] {
-  // Create a map of all comments first
+function buildNestedComments(
+  comments: (Comment & { blogSlug: string })[],
+): commentReplies[] {
   const map: Record<number, commentReplies> = {};
   const roots: commentReplies[] = [];
 
-  // First pass: create the map with all comments
   comments.forEach((comment) => {
     map[comment.id] = {
       ...comment,
       replies: [],
+      blogSlug: comment.blogSlug,
     };
   });
 
-  // Second pass: build the tree structure
   comments.forEach((comment) => {
     const currentComment = map[comment.id];
-
     if (comment.parentId && map[comment.parentId]) {
-      // This is a reply, add it to its parent's replies array
       map[comment.parentId].replies.push(currentComment);
     } else if (!comment.parentId) {
-      // This is a root comment (no parent)
       roots.push(currentComment);
     }
-    // If parentId exists but parent not in map, it's an orphan (skip it)
   });
 
   return roots;
 }
 
-// GET
 export async function GET(request: NextRequest) {
   const params = request.nextUrl.searchParams;
   const page = parseInt(params.get('page') || '1');
@@ -47,43 +43,39 @@ export async function GET(request: NextRequest) {
   const publishedOnly = params.get('published') === 'true';
   const blogId = params.get('blogId');
 
-  let comments: Comment[];
-
   try {
-    // When fetching comments for a specific blog, get ALL comments
-    // Don't apply pagination when building nested structure
-    // because we need all comments to properly nest replies
+    let comments: (Comment & { blogSlug: string })[];
+    const baseQuery = db
+      .select({
+        id: commentSchema.id,
+        blogId: commentSchema.blogId,
+        parentId: commentSchema.parentId,
+        name: commentSchema.name,
+        email: commentSchema.email,
+        comment: commentSchema.comment,
+        is_published: commentSchema.is_published,
+        createdAt: commentSchema.createdAt,
+        updatedAt: commentSchema.updatedAt,
+        blogSlug: blogSchema.slug,
+      })
+      .from(commentSchema)
+      .innerJoin(blogSchema, eq(commentSchema.blogId, blogSchema.id));
 
     if (blogId) {
-      // Fetch ALL comments for this blog to ensure proper nesting
-      if (publishedOnly) {
-        comments = await db
-          .select()
-          .from(commentSchema)
-          .where(
+      comments = publishedOnly
+        ? await baseQuery.where(
             and(
               eq(commentSchema.blogId, parseInt(blogId)),
               eq(commentSchema.is_published, true),
             ),
-          );
-      } else {
-        comments = await db
-          .select()
-          .from(commentSchema)
-          .where(eq(commentSchema.blogId, parseInt(blogId)));
-      }
+          )
+        : await baseQuery.where(eq(commentSchema.blogId, parseInt(blogId)));
     } else {
-      // When not filtering by blogId, apply pagination
-      let query = db.select().from(commentSchema);
+      const queryWithPublish = publishedOnly
+        ? baseQuery.where(eq(commentSchema.is_published, true))
+        : baseQuery;
 
-      if (publishedOnly) {
-        comments = await query
-          .where(eq(commentSchema.is_published, true))
-          .limit(limit)
-          .offset((page - 1) * limit);
-      } else {
-        comments = await query.limit(limit).offset((page - 1) * limit);
-      }
+      comments = await queryWithPublish.limit(limit).offset((page - 1) * limit);
     }
 
     const nestedComments = buildNestedComments(comments);
@@ -91,8 +83,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       data: nestedComments,
       total: comments.length,
-      page: page,
-      limit: limit,
+      page,
+      limit,
     });
   } catch (error) {
     console.error('Error fetching comments:', error);
@@ -159,8 +151,15 @@ export async function POST(request: NextRequest) {
       })
       .returning();
 
+    const blog = await db
+      .select({ slug: blogSchema.slug })
+      .from(blogSchema)
+      .where(eq(blogSchema.id, parseInt(blogId.toString())))
+      .limit(1);
+
     const commentReply: commentReplies = {
       ...newComment[0],
+      blogSlug: blog[0]?.slug || '',
       replies: [],
     };
 

@@ -78,6 +78,58 @@ iframe.skiptranslate {
   border-color: #666;
 }
 
+.ck-content h1 {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.ck-content h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.ck-content h3 {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.ck-content p {
+  font-size: 1rem;
+}
+
+.ck-content ul {
+  list-style-type: disc;
+  padding-left: 1.2em;
+}
+
+.ck-content ol {
+  list-style-type: decimal;
+  padding-left: 1.2em;
+}
+
+.ck-content figure.image {
+  display: block;
+  margin: 1em 0;
+}
+
+.ck-content figure.align-left {
+  float: left;
+  margin-right: 1em;
+}
+
+.ck-content figure.align-center {
+  display: block;
+  margin: 1em auto;
+  text-align: center;
+}
+
+.ck-content figure.align-right {
+  float: right;
+  margin-left: 1em;
+}
+
+
+
 /* Blockquotes */
 blockquote {
   border-left: 4px solid #ccc;
@@ -96,5 +148,9 @@ ol {
 
 /* globals.css or component CSS */
 .ck-content img {
-  max-width: 50%;
+  width: auto !important;
+  /* important to let editor's width apply */
+  max-width: 100%;
+  /* optional to prevent overflow */
+  height: auto;
 }

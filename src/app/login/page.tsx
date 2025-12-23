@@ -1,16 +1,20 @@
 'use client';
 
-import { useState } from 'react';
-import { FiEye, FiEyeOff } from 'react-icons/fi';
-import { FaGoogle, FaGithub } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
 import { EyeIcon, EyeSlashIcon } from '@heroicons/react/20/solid';
+import Link from 'next/link';
+import Image from 'next/image';
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [passwordStrength, setPasswordStrength] = useState('');
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -33,7 +37,6 @@ export default function LoginPage() {
         setLoading(false);
       }
     } catch (err) {
-      console.error('Login error:', err);
       setError('Something went wrong. Try again.');
       setLoading(false);
     }
@@ -41,34 +44,39 @@ export default function LoginPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-
-    if (e.target.name === 'password') {
-      const pwd = e.target.value;
-      if (pwd.length < 6) setPasswordStrength('Weak');
-      else if (pwd.length < 10) setPasswordStrength('Medium');
-      else setPasswordStrength('Strong');
-    }
   };
 
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-r from-[#CBFCD8] via-[#B9E6E6] to-[#96BCFD] animate-gradient">
-      {/* Floating particles */}{' '}
       <div className="absolute inset-0 z-0">
-        {Array.from({ length: 20 }).map((_, i) => (
-          <span
-            key={i}
-            className="absolute bg-white/30 rounded-full animate-float"
-            style={{
-              width: `${Math.random() * 8 + 4}px`,
-              height: `${Math.random() * 8 + 4}px`,
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              animationDuration: `${Math.random() * 6 + 4}s`,
-            }}
-          />
-        ))}{' '}
+        {mounted &&
+          Array.from({ length: 20 }).map((_, i) => (
+            <span
+              key={i}
+              className="absolute bg-white/30 rounded-full animate-float"
+              style={{
+                width: `${Math.random() * 8 + 4}px`,
+                height: `${Math.random() * 8 + 4}px`,
+                top: `${Math.random() * 100}%`,
+                left: `${Math.random() * 100}%`,
+                animationDuration: `${Math.random() * 6 + 4}s`,
+              }}
+            />
+          ))}
       </div>
+
       <div className="relative z-10 backdrop-blur-xl bg-white/30 border border-white/20 shadow-2xl rounded-3xl p-10 w-full max-w-md animate-fadeInSlow">
+        <Link href="/">
+          <div className="flex justify-center">
+            <Image
+              src={'/icons/slysol.svg'}
+              alt="Slysol Logo"
+              width={80}
+              height={50}
+              priority={true}
+            />
+          </div>
+        </Link>
         <p className="text-center font-bold text-gray-600 mb-6">
           Sign in to continue
         </p>
@@ -105,7 +113,6 @@ export default function LoginPage() {
               placeholder="Password"
             />
 
-            {/* Toggle password visibility button */}
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
@@ -114,6 +121,7 @@ export default function LoginPage() {
               {showPassword ? <EyeSlashIcon /> : <EyeIcon />}
             </button>
           </div>
+
           <button
             type="submit"
             disabled={loading}
@@ -130,6 +138,7 @@ export default function LoginPage() {
           </button>
         </form>
       </div>
+
       <style jsx>{`
         .animate-gradient {
           animation: gradientShift 10s ease infinite;

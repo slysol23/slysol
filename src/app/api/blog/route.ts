@@ -5,7 +5,7 @@ import {
   authorSchema,
   blogAuthorsSchema,
 } from '../../../db/schema';
-import { eq, inArray, sql } from 'drizzle-orm';
+import { eq, inArray, sql, and } from 'drizzle-orm';
 import { auth } from 'auth';
 
 function slugify(title: string) {
@@ -27,21 +27,104 @@ async function fileToBase64(file: File): Promise<string> {
 }
 
 /**
- * 🟢 GET — Get all blogs with pagination and multiple authors
+ * 🟢 GET — Get all blogs with pagination and multiple authors, or single blog by slug
  */
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
+    const slug = searchParams.get('slug');
+
+    if (slug) {
+      // Handle single blog by slug
+      const publishedFilter = searchParams.get('published');
+      const shouldFilterPublished = publishedFilter === 'true';
+
+      const blogs = await db
+        .select()
+        .from(blogSchema)
+        .where(
+          shouldFilterPublished
+            ? and(eq(blogSchema.slug, slug), eq(blogSchema.is_published, true))
+            : eq(blogSchema.slug, slug),
+        )
+        .limit(1);
+
+      if (blogs.length === 0) {
+        return NextResponse.json(
+          { message: 'Blog not found' },
+          { status: 404 },
+        );
+      }
+
+      const blog = blogs[0];
+      const blogIds = [blog.id];
+
+      const relations = await db
+        .select()
+        .from(blogAuthorsSchema)
+        .where(inArray(blogAuthorsSchema.blogId, blogIds));
+
+      const authorIds = relations.map((r) => r.authorId);
+
+      const authors = await db
+        .select()
+        .from(authorSchema)
+        .where(inArray(authorSchema.id, authorIds));
+
+      const authorMap = new Map(authors.map((a) => [a.id, a]));
+
+      const blogWithAuthors = {
+        ...blog,
+        authors: relations
+          .filter((r) => r.blogId === blog.id)
+          .map((r) => authorMap.get(r.authorId))
+          .filter(Boolean),
+      };
+
+      return NextResponse.json({
+        message: 'Blog fetched',
+        data: blogWithAuthors,
+      });
+    }
+
+    // Existing pagination logic
     const page = parseInt(searchParams.get('page') ?? '1');
     const limit = parseInt(searchParams.get('limit') ?? '10');
     const offset = (page - 1) * limit;
 
-    const blogs = await db
-      .select()
-      .from(blogSchema)
-      .orderBy(sql`${blogSchema.createdAt} DESC`)
-      .limit(limit)
-      .offset(offset);
+    // ✅ Add published filter parameter (optional)
+    const publishedFilter = searchParams.get('published');
+    const shouldFilterPublished = publishedFilter === 'true';
+
+    // ✅ Count with optional filter
+    const countQuery = shouldFilterPublished
+      ? db
+          .select({ count: sql<number>`count(*)::int` })
+          .from(blogSchema)
+          .where(eq(blogSchema.is_published, true))
+      : db.select({ count: sql<number>`count(*)::int` }).from(blogSchema);
+
+    const [{ count }] = await countQuery;
+    const totalCount = Number(count);
+    const totalPages = Math.ceil(totalCount / limit);
+
+    // ✅ Fetch with optional filter
+    const blogsQuery = shouldFilterPublished
+      ? db
+          .select()
+          .from(blogSchema)
+          .where(eq(blogSchema.is_published, true))
+          .orderBy(sql`${blogSchema.createdAt} DESC`)
+          .limit(limit)
+          .offset(offset)
+      : db
+          .select()
+          .from(blogSchema)
+          .orderBy(sql`${blogSchema.createdAt} DESC`)
+          .limit(limit)
+          .offset(offset);
+
+    const blogs = await blogsQuery;
 
     const blogIds = blogs.map((b) => b.id);
 
@@ -50,8 +133,8 @@ export async function GET(req: Request) {
         message: 'Blogs fetched',
         page,
         limit,
-        total: 0,
-        totalPages: 0,
+        total: totalCount,
+        totalPages,
         data: [],
       });
     }
@@ -86,6 +169,8 @@ export async function GET(req: Request) {
       message: 'Blogs fetched successfully',
       page,
       limit,
+      total: totalCount,
+      totalPages,
       data: blogsWithAuthors,
     });
   } catch (err) {

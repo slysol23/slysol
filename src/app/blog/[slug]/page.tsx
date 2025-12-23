@@ -1,198 +1,192 @@
-'use client';
-
-import { useParams } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
-import { blog } from 'lib/blog';
-import Container from '@/components/Container';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import MainHeading from '@/components/MainHeading';
-import Head from 'next/head';
-import Link from 'next/link';
+import { Metadata } from 'next';
 import { IBlog } from 'lib/type';
-import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
-import CommentForms from '@/components/Comments/commentSection';
-import { Toaster } from 'react-hot-toast';
-import Image from 'next/image';
+import BlogClient from './BlogClient';
+import { db } from '../../../db';
+import {
+  blogSchema,
+  blogAuthorsSchema,
+  authorSchema,
+} from '../../../db/schema';
+import { eq, inArray } from 'drizzle-orm';
 
-export default function BlogPage() {
-  const params = useParams();
-  const slugParam = params.slug;
-  const slug = Array.isArray(slugParam) ? slugParam[0] : slugParam;
+interface Props {
+  params: Promise<{ slug: string }> | { slug: string };
+}
 
-  const {
-    data: b,
-    isLoading,
-    error,
-  } = useQuery<IBlog>({
-    queryKey: ['blog', slug],
-    queryFn: async () => {
-      if (!slug) throw new Error('Invalid blog slug');
-      const res = await blog.getBySlug(slug);
-      if (!res?.data) throw new Error('Blog not found');
-      return res.data;
+// Helper function to fetch blog directly from database
+async function getBlogBySlug(slug: string): Promise<IBlog | null> {
+  try {
+    const [blogResult] = await db
+      .select()
+      .from(blogSchema)
+      .where(eq(blogSchema.slug, slug))
+      .limit(1);
+
+    if (!blogResult) {
+      return null;
+    }
+
+    // Fetch authors
+    const relations = await db
+      .select()
+      .from(blogAuthorsSchema)
+      .where(eq(blogAuthorsSchema.blogId, blogResult.id));
+
+    const authorIds = relations.map((r) => r.authorId);
+
+    const authors = authorIds.length
+      ? await db
+          .select()
+          .from(authorSchema)
+          .where(inArray(authorSchema.id, authorIds))
+      : [];
+
+    // Helper to safely convert createdBy/updatedBy
+    const parseUserField = (field: any) => {
+      if (!field) return { name: '—' };
+      if (typeof field === 'string') return { name: field };
+      if (field && typeof field === 'object' && 'name' in field) return field;
+      return { name: '—' };
+    };
+
+    return {
+      id: blogResult.id,
+      authorId: blogResult.authorId,
+      authors,
+      title: blogResult.title,
+      description: blogResult.description,
+      content: blogResult.content,
+      image: blogResult.image,
+      slug: blogResult.slug,
+      tags: Array.isArray(blogResult.tags) ? blogResult.tags : [],
+      meta: blogResult.meta ?? { title: '', description: '', keywords: [] },
+      createdAt: blogResult.createdAt,
+      updatedAt: blogResult.updatedAt,
+      createdBy: parseUserField(blogResult.createdBy),
+      updatedBy: parseUserField(blogResult.updatedBy),
+      is_published: blogResult.is_published,
+      status: blogResult.is_published ? 'Published' : 'Draft',
+    } as IBlog;
+  } catch (error) {
+    console.error('Error fetching blog by slug:', error);
+    return null;
+  }
+}
+
+// Generate static params for all published blogs
+export async function generateStaticParams() {
+  try {
+    const blogs = await db
+      .select()
+      .from(blogSchema)
+      .where(eq(blogSchema.is_published, true))
+      .limit(100);
+
+    return blogs.map((b) => ({
+      slug: b.slug,
+    }));
+  } catch (error) {
+    return [];
+  }
+}
+
+// Generate metadata for SEO and social sharing
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://slysol.com';
+  const siteName = 'Slysol';
+
+  const resolvedParams = await Promise.resolve(params);
+  const slug = resolvedParams.slug;
+
+  const b = await getBlogBySlug(slug);
+
+  if (!b) {
+    return {
+      title: 'Blog Not Found | Slysol',
+      description: 'The requested blog post could not be found.',
+      openGraph: {
+        siteName,
+        locale: 'en_US',
+        type: 'website',
+      },
+    };
+  }
+
+  const blogUrl = `${siteUrl}/blog/${b.slug}`;
+
+  // Use actual image URL for OpenGraph (not base64)
+  const imageUrl =
+    b.image && b.image.startsWith('http')
+      ? b.image
+      : b.image && !b.image.startsWith('data:')
+      ? `${siteUrl}${b.image}`
+      : `${siteUrl}/default-blog-image.jpg`;
+
+  // Always use logo for Twitter
+  const twitterImageUrl = `${siteUrl}/icons/slysol-logo.png`;
+
+  const authorNames = b.authors?.length
+    ? b.authors.map((a) => `${a.firstName} ${a.lastName}`).join(', ')
+    : 'Slysol Team';
+
+  const publishedTime = b.createdAt
+    ? typeof b.createdAt === 'string'
+      ? b.createdAt
+      : new Date(b.createdAt).toISOString()
+    : new Date().toISOString();
+
+  const metaTitle = b.meta?.title || b.title || 'Untitled Blog';
+  const metaDescription =
+    b.meta?.description || b.description || 'Read this article on Slysol';
+
+  return {
+    title: `${metaTitle} | Slysol`,
+    description: metaDescription,
+    keywords: b.meta?.keywords || b.tags || [],
+    authors: [{ name: authorNames }],
+
+    openGraph: {
+      siteName,
+      locale: 'en_US',
+      title: metaTitle,
+      description: metaDescription,
+      type: 'article',
+      url: blogUrl,
+      images: [
+        {
+          url: twitterImageUrl,
+          width: 1200,
+          height: 630,
+          alt: b.title || 'Blog image',
+        },
+      ],
+      publishedTime,
+      authors: [authorNames],
+      tags: b.tags || [],
     },
-    enabled: !!slug,
-  });
 
-  const { data: recentBlogs, isLoading: loadingRecent } = useQuery<IBlog[]>({
-    queryKey: ['recentBlogs'],
-    queryFn: async () => {
-      const res = await blog.getAll(1, 3);
-      const blogs = res?.data || [];
-      return blogs.sort(
-        (a, b) =>
-          new Date(b.createdAt || 0).getTime() -
-          new Date(a.createdAt || 0).getTime(),
-      );
+    twitter: {
+      card: 'summary_large_image',
+      site: '@slysol',
+      title: metaTitle,
+      description: metaDescription,
+      images: [twitterImageUrl],
+      creator: '@slysol',
     },
-  });
 
-  if (isLoading)
-    return <div className="text-center text-black py-20">Loading blog...</div>;
+    alternates: {
+      canonical: blogUrl,
+    },
 
-  if (error instanceof Error)
-    return (
-      <div className="text-center text-red-500 py-20">{error.message}</div>
-    );
+    robots: {
+      index: b.is_published !== false,
+      follow: true,
+    },
+  };
+}
 
-  const breadCrumb: BreadcrumbItem[] = [
-    { label: 'Blogs', href: '/blog' },
-    { label: b?.title || 'Blog', href: `/blog/${b?.slug}` },
-  ];
-
-  return (
-    <>
-      <Head>
-        <title>{b?.meta?.title || b?.title || 'Blog'}</title>
-        {b?.meta?.description && (
-          <meta name="description" content={b.meta.description} />
-        )}
-        {b?.meta?.keywords && b.meta.keywords.length > 0 && (
-          <meta name="keywords" content={b.meta.keywords.join(', ')} />
-        )}
-      </Head>
-
-      <Container hScreen={false}>
-        <Header />
-        <div className="pt-10 pb-20">
-          <Breadcrumb items={breadCrumb} />
-
-          <div className="flex flex-col lg:flex-row gap-8">
-            <div className="flex-1">
-              {b?.image && (
-                <div className="w-full h-96 relative rounded-3xl overflow-hidden my-6 bg-gray-100">
-                  <Image src={b.image} alt={b.title || 'Blog image'} fill />
-                </div>
-              )}
-
-              <MainHeading
-                text={b?.title ?? 'Untitled'}
-                className="font-bold"
-              />
-
-              <p className="text-sm text-gray-400 mb-2 mt-2">
-                Published by{' '}
-                {b?.authors && b.authors.length > 0
-                  ? b.authors
-                      .map((author) => `${author.firstName} ${author.lastName}`)
-                      .join(', ')
-                  : `Author #${b?.authorId}`}{' '}
-                on{' '}
-                {b?.createdAt
-                  ? new Date(b.createdAt).toLocaleDateString('en-GB', {
-                      day: '2-digit',
-                      month: 'long',
-                      year: 'numeric',
-                    })
-                  : ''}
-              </p>
-
-              <div className="prose prose-lg text-black">
-                <div dangerouslySetInnerHTML={{ __html: b?.content || '' }} />
-              </div>
-
-              {/* Tags Section */}
-              <div className="text-gray-700 rounded-lg p-2 bg-gray-200 mb-4 mt-5">
-                <h2 className="font-medium">Tags:</h2>
-                {b?.tags && b.tags.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {b.tags.map((tag: string, idx: number) => (
-                      <span key={idx} className="text-xs">
-                        #{tag.trim()}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* Sidebar: Recent Blogs */}
-            <aside className="lg:w-100 mt-6">
-              <div className="top-10 bg-gray-100 rounded-2xl p-5">
-                <h2 className="text-xl font-bold mb-2 text-black">
-                  Recent Blogs
-                </h2>
-                {loadingRecent ? (
-                  <p className="text-gray-400 text-sm">Loading...</p>
-                ) : (
-                  <div className="space-y-4">
-                    {recentBlogs && recentBlogs.length > 0 ? (
-                      recentBlogs.map((recentBlog) => (
-                        <Link
-                          key={recentBlog.id}
-                          href={`/blog/${recentBlog.slug}`}
-                          className="block group"
-                        >
-                          <div className="border-b-2 p-2 border-gray-300">
-                            <div className="flex gap-3 hover:opacity-80 transition-opacity">
-                              {recentBlog.image && (
-                                <div className="rounded-lg overflow-hidden flex-shrink-0">
-                                  <Image
-                                    src={recentBlog.image}
-                                    alt={recentBlog.title}
-                                    className="w-20 h-12 object-cover"
-                                    width={100}
-                                    height={50}
-                                  />
-                                </div>
-                              )}
-                              <div className="flex-1 min-w-0">
-                                <p className="text-xs text-gray-500 mb-1">
-                                  {recentBlog.createdAt
-                                    ? new Date(
-                                        recentBlog.createdAt,
-                                      ).toLocaleDateString('en-US', {
-                                        month: 'long',
-                                        day: 'numeric',
-                                        year: 'numeric',
-                                      })
-                                    : ''}
-                                </p>
-                                <h3 className="text-sm text-black font-semibold line-clamp-2 group-hover:text-blue-300 transition-colors">
-                                  {recentBlog.title}
-                                </h3>
-                              </div>
-                            </div>
-                          </div>
-                        </Link>
-                      ))
-                    ) : (
-                      <p className="text-gray-400 text-sm">
-                        No recent blogs available
-                      </p>
-                    )}
-                  </div>
-                )}
-              </div>
-            </aside>
-          </div>
-
-          <CommentForms blogId={b?.id || 0} />
-          <Toaster position="top-right" />
-        </div>
-      </Container>
-      <Footer />
-    </>
-  );
+// Server Component that renders the client component
+export default async function BlogPage({ params }: Props) {
+  const resolvedParams = await Promise.resolve(params);
+  return <BlogClient slug={resolvedParams.slug} />;
 }

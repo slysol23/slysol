@@ -1,20 +1,19 @@
 import { auth } from 'auth';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function middleware(req: Request) {
+export async function middleware(req: NextRequest) {
   const session = await auth();
-  const url = new URL(req.url);
-  const pathname = url.pathname;
+  const { pathname } = req.nextUrl;
 
   const isDashboard = pathname.startsWith('/dashboard');
-  const isAdminPage = pathname.startsWith('/dashboard/user'); // admin-only
+  const isAdminPage = pathname.startsWith('/dashboard/user');
 
-  // Protect all dashboard routes
-  if (isDashboard && !session?.user) {
-    return NextResponse.redirect(new URL('/login', req.url));
+  if (isDashboard && !session) {
+    const loginUrl = new URL('/login', req.url);
+    loginUrl.searchParams.set('callbackUrl', pathname);
+    return NextResponse.redirect(loginUrl);
   }
 
-  // Protect admin routes
   if (isAdminPage && !session?.user?.isAdmin) {
     return NextResponse.redirect(new URL('/dashboard/blog', req.url)); // send user to normal dashboard
   }

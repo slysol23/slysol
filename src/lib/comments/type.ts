@@ -5,6 +5,7 @@ export interface IComment {
   name: string;
   email?: string | null;
   comment: string;
+  blogSlug: string;
   replies: IComment[];
   is_published: boolean;
   createdAt: string;

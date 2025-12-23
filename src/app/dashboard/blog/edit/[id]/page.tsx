@@ -10,12 +10,17 @@ import dynamic from 'next/dynamic';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 import axios from 'axios';
 import Image from 'next/image';
-import 'jsoneditor-react/es/editor.min.css';
-import { JsonEditor as Editor, JsonEditor } from 'jsoneditor-react';
 import { blog } from 'lib/blog';
-import { useUser } from 'providers/UserProvider';
 import { FaGlobeAsia, FaImage, FaUser } from 'react-icons/fa';
 import { MdDashboard } from 'react-icons/md';
+
+const JsonEditorWrapper = dynamic(
+  () =>
+    import('../../../../../components/jsoneditor/JSONEditorController').then(
+      (mod) => mod.JsonEditorWrapper,
+    ),
+  { ssr: false },
+);
 
 const CKEditorWrapper = dynamic(
   () => import('../../../../../components/CkEditor/CkEditorWrapper'),
@@ -283,7 +288,7 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label
-              className="text-black font-medium mb-2 flex items-center gap-1 cursor-pointer"
+              className="text-black font-medium mb-4 flex items-center gap-1 cursor-pointer"
               htmlFor="imageInput"
             >
               Cover <FaImage />
@@ -295,16 +300,9 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
               className="hidden"
               onChange={handleImageChange}
             />
-            <button
-              type="button"
-              onClick={() => document.getElementById('imageInput')?.click()}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
-            >
-              Choose Image
-            </button>
 
             {imagePreview && (
-              <div className="relative inline-block mt-4 w-full">
+              <div className="relative inline-block">
                 <button
                   type="button"
                   onClick={() => {
@@ -395,6 +393,7 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
             control={control}
             render={({ field }) => (
               <CKEditorWrapper
+                id="blog-content-editor"
                 initialData={field.value}
                 onChange={field.onChange}
               />
@@ -409,44 +408,26 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
           render={({ field }) => (
             <div>
               <label className="block mb-4 font-medium">Tags</label>
-              {blogData && (
-                <JsonEditor
-                  key={`tags-${blogId}-${JSON.stringify(field.value)}`}
-                  value={field.value || DEFAULT_TAGS}
-                  onChange={(value) => field.onChange(value)}
-                  mode="code"
-                  allowedModes={['tree', 'code']}
-                  navigationBar={true}
-                  search={true}
-                  mainMenuBar={true}
-                  history={true}
-                />
-              )}
+              <JsonEditorWrapper
+                value={field.value || DEFAULT_TAGS}
+                onChange={field.onChange}
+                height="200px"
+              />
             </div>
           )}
         />
 
-        {/* Meta */}
         <Controller
           name="meta"
           control={control}
           render={({ field }) => (
             <div>
               <label className="block mb-4 font-medium">Meta</label>
-              {blogData && (
-                <JsonEditor
-                  key={`meta-${blogId}-${JSON.stringify(field.value)}`}
-                  value={field.value || DEFAULT_META}
-                  onChange={(value) => field.onChange(value)}
-                  mode="code"
-                  allowedModes={['tree', 'code']}
-                  navigationBar={true}
-                  search={true}
-                  mainMenuBar={true}
-                  history={true}
-                  htmlElementProps={{ style: { height: '500px' } }}
-                />
-              )}
+              <JsonEditorWrapper
+                value={field.value || DEFAULT_META}
+                onChange={field.onChange}
+                height="500px"
+              />
             </div>
           )}
         />

@@ -1,10 +1,4 @@
-declare module '@ckeditor/ckeditor5-react' {
-  import * as React from 'react';
-  const CKEditor: React.ComponentType<any>;
-  export default CKEditor;
-}
-
-declare module '@ckeditor/ckeditor5-build-classic' {
-  const ClassicEditor: any;
+declare module 'ckeditor5-build-classic-plus' {
+  import ClassicEditor from '@ckeditor/ckeditor5-editor-classic/src/classiceditor';
   export default ClassicEditor;
 }
