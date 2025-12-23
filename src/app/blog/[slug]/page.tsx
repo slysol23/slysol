@@ -133,6 +133,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const metaDescription =
     b.meta?.description || b.description || 'Read this article on Slysol';
 
+  const url = `${siteUrl}/icons/slysol-white.svg`;
+
   return {
     title: `${metaTitle} | Slysol`,
     description: metaDescription,
@@ -164,7 +166,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       site: '@slysol',
       title: metaTitle,
       description: metaDescription,
-      images: [imageUrl],
+      images: [url],
       creator: '@slysol',
     },
 
