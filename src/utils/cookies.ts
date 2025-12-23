@@ -1,5 +1,5 @@
-// import { cookies } from 'next/headers';
+import { cookies } from 'next/headers';
 
-// export const getPrefLangCookie = () => {
-//   return cookies().get('googtrans')?.value ?? 'en';
-// };
+export const getPrefLangCookie = () => {
+  return cookies().get('googtrans')?.value ?? 'en';
+};
