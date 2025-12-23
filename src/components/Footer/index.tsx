@@ -13,8 +13,6 @@ import Link from 'next/link';
 import Section from '../Section';
 import SiteLogo from '../SiteLogo';
 import GradientText from '../GradientText';
-import { getPrefLangCookie } from 'utils/cookies';
-
 interface Links {
   name: string;
   link: string;
@@ -72,20 +70,12 @@ const siteLinks = [
         link: '/services?section=ai-integration',
       },
       {
-        name: 'IT Consultant',
-        link: '/services?section=software-development',
-      },
-      {
         name: 'Digital Marketing',
         link: '/services?section=digital-marketing',
       },
       {
         name: 'Cloud Computing',
         link: '/services?section=software-development',
-      },
-      {
-        name: 'Content Creation',
-        link: '/services?section=digital-marketing',
       },
       {
         name: 'Software Designing',
@@ -149,8 +139,8 @@ const Footer = () => {
           </div>
           <div className="grid xl:grid-cols-5 md:grid-cols-3 sm:grid-cols-2 md:py-10 py-5 xl:gap-10 gap-5 border-b-[1px]">
             {siteLinks.map((link, index) => (
-              <>
-                <div key={link.title} className="flex flex-col gap-2">
+              <React.Fragment key={link.title}>
+                <div className="flex flex-col gap-2">
                   <div>
                     <GradientText className="md:text-base text-md font-bold mb-2">
                       {link.title}
@@ -173,7 +163,8 @@ const Footer = () => {
                       </GradientText>
                       <div className="flex">
                         <input
-                          type="text"
+                          type="email"
+                          name="email"
                           placeholder="Enter email address"
                           className="text-sm focus:outline-none p-2 bg-[#cbdfff]"
                         />
@@ -184,7 +175,7 @@ const Footer = () => {
                     </div>
                   )}
                 </div>
-              </>
+              </React.Fragment>
             ))}
           </div>
           <div className="sm:flex justify-between text-sm pt-5 text-center">

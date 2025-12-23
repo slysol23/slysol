@@ -36,13 +36,13 @@ export const MenuItems: MenuItemType[] = [
     title: 'Career | Slysol',
     description: 'A career page',
   },
-  // {
-  //   name: 'Blog',
-  //   slug: 'blog',
-  //   path: '/blog',
-  //   title: 'Blog | Slysol',
-  //   description: 'A blog page',
-  // },
+  {
+    name: 'Blog',
+    slug: 'blog',
+    path: '/blog',
+    title: 'Blog | Slysol',
+    description: 'A blog page',
+  },
   {
     name: 'Contact',
     slug: 'contact',
