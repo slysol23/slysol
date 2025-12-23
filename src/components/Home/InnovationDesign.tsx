@@ -3,26 +3,27 @@
 import React from 'react';
 import PerfectCenter from '../PerfectCenter';
 import Title from '../Title';
-import { DotLottieReact, DotLottie } from '@lottiefiles/dotlottie-react';
+import Lottie from 'react-lottie';
+import innovatinDesignLottie from '../../../public/lotties/innovation-design-lottie.json';
 import GradientText from '../GradientText';
 
 const InnovationDesign = () => {
-  const dotLottieRef = React.useRef<DotLottie | null>(null);
-
   return (
     <div className="relative md:block hidden h-screen">
       <div className="absolute w-full h-full opacity-40" />
-      <DotLottieReact
-        src={'/lotties/innovation-design-lottie.json'}
-        loop={true}
-        autoplay={true}
+      <Lottie
+        options={{
+          loop: true,
+          autoplay: true,
+          animationData: innovatinDesignLottie,
+          rendererSettings: {
+            preserveAspectRatio: 'xMidYMid slice',
+          },
+        }}
         style={{
           height: '100%',
           width: '100%',
           opacity: 0.5,
-        }}
-        dotLottieRefCallback={(dotLottie) => {
-          dotLottieRef.current = dotLottie;
         }}
       />
       <PerfectCenter>

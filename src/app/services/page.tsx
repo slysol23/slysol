@@ -1,4 +1,6 @@
-import React, { Suspense } from 'react';
+'use client';
+import React, { useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import SubTitle from '@/components/SubTitle';
 import Title from '@/components/Title';
@@ -12,9 +14,21 @@ import MainHeading from '@/components/MainHeading';
 import GradientBg from '@/components/GradientBg';
 import PerfectCenter from '@/components/PerfectCenter';
 import Footer from '@/components/Footer';
-import ScrollHandler from '@/components/ScrollHandler';
+import { idText } from 'typescript';
 
 const ServicesPage = () => {
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const section = searchParams.get('section');
+    if (section) {
+      const element = document.getElementById(section);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }, [searchParams]);
+
   const headerData = [
     {
       src: '/images/services/service-bg-1.svg',
@@ -83,14 +97,12 @@ const ServicesPage = () => {
   return (
     // Header
     <>
-      <Suspense fallback={null}>
-        <ScrollHandler />
-      </Suspense>
       <HeaderInfo />
       <Container hScreen={false}>
         <Header />
       </Container>
       <Carousal
+        // autoplay={true}
         autoplayTimeout={8000}
         autoplaySpeed={2000}
         items={1}
@@ -111,6 +123,7 @@ const ServicesPage = () => {
                 fill
                 className="object-cover animate-bgZoom md:opacity-100 opacity-0"
               />
+              {/* <div className="absolute w-full h-full bg-white md:hidden opacity-50"></div> */}
               <Container hScreen={false} className="relative">
                 <div className="lg:w-[60%] md:w-[70%] md:block flex flex-col items-center relative">
                   <SubTitle text={data.subTitle} />
@@ -150,59 +163,60 @@ const ServicesPage = () => {
             const even = (index + 1) % 2 === 0;
             const sectionId = service.id;
             return (
-              <div
-                id={sectionId}
-                key={sectionId}
-                className={`grid md:grid-cols-2 md:gap-0 gap-10 md:mb-0 mb-10 ${
-                  index === 0 && 'md:pt-20 pt-10'
-                } ${index === servicesData.length - 1 && 'mb-0'}`}
-              >
+              <>
                 <div
-                  className={`gradient-border relative ${
-                    even
-                      ? 'order-2 md:border-l-[1px]'
-                      : 'md:order-1 order-2 md:border-r-[1px]'
-                  }`}
-                >
-                  <PerfectCenter
-                    className={`w-full ${
-                      even ? 'justify-start' : 'justify-end'
-                    } md:flex hidden`}
-                  >
-                    <GradientBg
-                      className={`p-2 rounded-full w-fit ${
-                        even ? '-translate-x-[9px]' : 'translate-x-[9px]'
-                      } opacity-70 relative`}
-                    />
-                  </PerfectCenter>
-                  <Image
-                    src={service.src}
-                    alt={service.title}
-                    width={1000}
-                    height={1000}
-                    className="md:w-full sm:w-2/3 w-full h-auto m-auto"
-                  />
-                </div>
-                <div
-                  className={`flex items-center ${
-                    even ? 'order-1' : 'md:order-2 order-1'
-                  }`}
+                  id={sectionId}
+                  className={`grid md:grid-cols-2 md:gap-0 gap-10 md:mb-0 mb-10 ${
+                    index === 0 && 'md:pt-20 pt-10'
+                  } ${index === servicesData.length - 1 && 'mb-0'}`}
                 >
                   <div
-                    className={`relative lg:px-20 md:px-14 md:py-14 pt-14 ${
-                      even ? '!pl-0' : '!pr-0'
+                    className={`gradient-border relative ${
+                      even
+                        ? 'order-2 md:border-l-[1px]'
+                        : 'md:order-1 order-2 md:border-r-[1px]'
                     }`}
                   >
-                    <GradientText className="opacity-20 absolute top-0">
-                      <h1 className="font-neue text-9xl font-bold">
-                        0{index + 1}
-                      </h1>
-                    </GradientText>
-                    <MainHeading text={service.title} className="mb-3 pt-5" />
-                    <p className="text-mute">{service.description}</p>
+                    <PerfectCenter
+                      className={`w-full ${
+                        even ? 'justify-start' : 'justify-end'
+                      } md:flex hidden`}
+                    >
+                      <GradientBg
+                        className={`p-2 rounded-full w-fit ${
+                          even ? '-translate-x-[9px]' : 'translate-x-[9px]'
+                        } opacity-70 relative`}
+                      />
+                    </PerfectCenter>
+                    <Image
+                      src={service.src}
+                      alt={service.title}
+                      width={1000}
+                      height={1000}
+                      className="md:w-full sm:w-2/3 w-full h-auto m-auto"
+                    />
+                  </div>
+                  <div
+                    className={`flex items-center ${
+                      even ? 'order-1' : 'md:order-2 order-1'
+                    }`}
+                  >
+                    <div
+                      className={`relative lg:px-20 md:px-14 md:py-14 pt-14 ${
+                        even ? '!pl-0' : '!pr-0'
+                      }`}
+                    >
+                      <GradientText className="opacity-20 absolute top-0">
+                        <h1 className="font-neue text-9xl font-bold">
+                          0{index + 1}
+                        </h1>
+                      </GradientText>
+                      <MainHeading text={service.title} className="mb-3 pt-5" />
+                      <p className="text-mute">{service.description}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              </>
             );
           })}
         </Section>
