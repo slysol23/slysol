@@ -133,7 +133,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const metaDescription =
     b.meta?.description || b.description || 'Read this article on Slysol';
 
-  const url = `${siteUrl}/icons/slysol-white.svg`;
+  const url = `${siteUrl}/icons/slysol-logo.png`;
 
   return {
     title: `${metaTitle} | Slysol`,
