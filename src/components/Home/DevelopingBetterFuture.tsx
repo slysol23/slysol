@@ -4,24 +4,23 @@ import React from 'react';
 import PerfectCenter from '../PerfectCenter';
 import GradientText from '../GradientText';
 import Title from '../Title';
-import Lottie from 'react-lottie';
-import betterFutureLottie from '../../../public/lotties/better-future-lottie.json';
+import { DotLottieReact, DotLottie } from '@lottiefiles/dotlottie-react';
 
 const DevelopingBetterFuture = () => {
+  const dotLottieRef = React.useRef<DotLottie | null>(null);
+
   return (
     <div className="relative h-[400px] md:h-screen overflow-hidden w-full">
-      <Lottie
-        options={{
-          loop: true,
-          autoplay: true,
-          animationData: betterFutureLottie,
-          rendererSettings: {
-            preserveAspectRatio: 'xMidYMid slice',
-          },
-        }}
+      <DotLottieReact
+        src={'/lotties/better-future-lottie.json'}
+        loop={true}
+        autoplay={true}
         style={{
           height: '100%',
           width: '100%',
+        }}
+        dotLottieRefCallback={(dotLottie) => {
+          dotLottieRef.current = dotLottie;
         }}
       />
       <PerfectCenter className="text-center">
