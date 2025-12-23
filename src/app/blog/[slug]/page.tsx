@@ -113,11 +113,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const blogUrl = `${siteUrl}/blog/${b.slug}`;
-  const imageUrl = b.image
-    ? b.image.startsWith('http')
+
+  // Use actual image URL for OpenGraph (not base64)
+  const imageUrl =
+    b.image && b.image.startsWith('http')
       ? b.image
-      : `${siteUrl}${b.image}`
-    : `${siteUrl}/default-blog-image.jpg`;
+      : b.image && !b.image.startsWith('data:')
+      ? `${siteUrl}${b.image}`
+      : `${siteUrl}/default-blog-image.jpg`;
+
+  // Always use logo for Twitter
+  const twitterImageUrl = `${siteUrl}/icons/slysol-logo.png`;
 
   const authorNames = b.authors?.length
     ? b.authors.map((a) => `${a.firstName} ${a.lastName}`).join(', ')
@@ -132,8 +138,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const metaTitle = b.meta?.title || b.title || 'Untitled Blog';
   const metaDescription =
     b.meta?.description || b.description || 'Read this article on Slysol';
-
-  const url = `${siteUrl}/icons/slysol-logo.png`;
 
   return {
     title: `${metaTitle} | Slysol`,
@@ -166,7 +170,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       site: '@slysol',
       title: metaTitle,
       description: metaDescription,
-      images: [url],
+      images: [twitterImageUrl],
       creator: '@slysol',
     },
 
