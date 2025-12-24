@@ -24,7 +24,7 @@ export const blogSchema = pgTable('blog', {
     .references(() => authorSchema.id),
   title: text('title').notNull(),
   content: text('content').notNull(),
-  image: text('image').notNull(),
+  image: text('image'),
   description: text('description').notNull(),
   tags: jsonb('tags'),
   meta: jsonb('meta'),
