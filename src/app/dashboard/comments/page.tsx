@@ -1,20 +1,21 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { FaTrash, FaPen } from 'react-icons/fa';
+import { MdPublicOff, MdPublish } from 'react-icons/md';
 import { useUser } from '../../../providers/UserProvider';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 import { IComment } from '../../../lib/comments/type';
 import Link from 'next/link';
-import { MdPublicOff, MdPublish } from 'react-icons/md';
+import { toast } from 'react-toastify';
 
 export default function CommentPage() {
   const queryClient = useQueryClient();
   const { user, isLoading: userLoading } = useUser();
   const [page, setPage] = useState(1);
-  const limit = 1000; // Increased limit to get all comments
+  const limit = 1000; // Get all comments
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['comments', page],
@@ -31,35 +32,42 @@ export default function CommentPage() {
     ? [data.data]
     : [];
 
-  const flattenComments = (
-    commentsList: IComment[],
-    depth: number = 0,
-  ): Array<IComment & { depth: number }> => {
+  const flattenComments = (commentsList: IComment[], depth: number = 0) => {
     const result: Array<IComment & { depth: number }> = [];
-
     commentsList.forEach((comment) => {
       result.push({ ...comment, depth });
-
       if (comment.replies && comment.replies.length > 0) {
         result.push(...flattenComments(comment.replies, depth + 1));
       }
     });
-
     return result;
   };
 
-  const sortedComments = [...comments].sort((a, b) => {
-    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-  });
+  const sortedComments = [...comments].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
 
   const flatComments = flattenComments(sortedComments);
 
+  // Delete comment mutation with toast
   const deleteComment = useMutation<void, Error, number>({
     mutationFn: (id) => axios.delete(`/api/comments/${id}`).then(() => {}),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['comments'] }),
-    onError: (err) => alert(err.message),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['comments'] });
+      toast.success('Comment deleted successfully!', {
+        autoClose: 3000,
+        position: 'bottom-right',
+      });
+    },
+    onError: (err: any) => {
+      toast.error('Failed to delete comment: ' + err.message, {
+        autoClose: 3000,
+        position: 'bottom-right',
+      });
+    },
   });
 
+  // Publish/unpublish mutation with toast
   const togglePublish = useMutation<
     void,
     Error,
@@ -69,8 +77,19 @@ export default function CommentPage() {
       axios
         .patch(`/api/comments/${id}`, { is_published: !isPublished })
         .then(() => {}),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['comments'] }),
-    onError: (err) => alert(err.message),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['comments'] });
+      toast.success(
+        variables.isPublished ? 'Comment unpublished!' : 'Comment published!',
+        { autoClose: 3000, position: 'bottom-right' },
+      );
+    },
+    onError: (err: any) => {
+      toast.error('Failed to update comment: ' + err.message, {
+        autoClose: 3000,
+        position: 'bottom-right',
+      });
+    },
   });
 
   const handleDelete = (id: number) => {
@@ -92,7 +111,6 @@ export default function CommentPage() {
     const year = String(date.getFullYear()).slice(-2);
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
-
     return `${day}/${month}/${year} ${hours}:${minutes}`;
   };
 
@@ -100,19 +118,19 @@ export default function CommentPage() {
     { label: 'Comments', href: '/dashboard/feedBack' },
   ];
 
+  // Skeleton loader
   if (isLoading || userLoading) {
     return (
-      <div className="min-h-screen text-black flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
-          <p className="text-xl">Loading...</p>
-        </div>
+      <div className="overflow-x-auto animate-pulse space-y-2 p-3">
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="h-12 bg-gray-200 rounded w-full"></div>
+        ))}
       </div>
     );
   }
 
   if (error) {
-    return <p className="text-red-500">Error: {error.message}</p>;
+    return <p className="text-red-500">Error: {(error as Error).message}</p>;
   }
 
   return (
@@ -152,11 +170,7 @@ export default function CommentPage() {
                   }`}
                 >
                   <td className="p-3">{c.id}</td>
-                  <td className="p-3">
-                    <div className="flex items-center gap-2">
-                      <span>{c.name}</span>
-                    </div>
-                  </td>
+                  <td className="p-3">{c.name}</td>
                   <td className="p-3">
                     <Link
                       href={`/blog/${c.blogSlug}`}
@@ -165,7 +179,6 @@ export default function CommentPage() {
                       {c.blogId}
                     </Link>
                   </td>
-
                   <td className="p-3">
                     <div className="max-w-xs truncate" title={c.comment}>
                       {c.comment}
@@ -182,15 +195,8 @@ export default function CommentPage() {
                       </span>
                     )}
                   </td>
-
                   <td className="p-3">
-                    {c.parentId ? (
-                      <span className="text-center py-1 rounded">
-                        {c.parentId}
-                      </span>
-                    ) : (
-                      <span className="text-gray-400">—</span>
-                    )}
+                    {c.parentId || <span className="text-gray-400">—</span>}
                   </td>
                   <td className="p-3 whitespace-nowrap">
                     {commentDate(c.createdAt)}
@@ -201,11 +207,11 @@ export default function CommentPage() {
                         onClick={() =>
                           handleTogglePublish(c.id, c.is_published)
                         }
-                        className={`${
+                        className={`transition-colors ${
                           c.is_published
                             ? 'text-orange-500 hover:text-orange-700'
                             : 'text-green-500 hover:text-green-700'
-                        } transition-colors`}
+                        }`}
                         title={c.is_published ? 'Unpublish' : 'Publish'}
                       >
                         {c.is_published ? <MdPublicOff /> : <MdPublish />}

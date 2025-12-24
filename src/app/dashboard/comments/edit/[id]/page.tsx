@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 import { comments } from 'lib/comments';
+import { toast } from 'react-toastify';
 
 const CommentSchema = z.object({
   blogId: z.number().min(1, 'Blog ID is required'),
@@ -38,12 +39,11 @@ export default function EditCommentPage() {
   const updateComment = useMutation({
     mutationFn: (formData: CommentForm) => comments.update(id, formData),
     onSuccess: () => {
-      alert('✅ Comment updated successfully!');
+      toast.success('Comment updated successfully!');
       router.push('/dashboard/comments');
     },
     onError: (err) => {
-      console.error(err);
-      alert('❌ Failed to update comment');
+      toast.error('Failed to update comment');
     },
   });
 

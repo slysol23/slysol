@@ -159,13 +159,7 @@ export async function PUT(
         );
       }
 
-      const allowedTypes = [
-        'image/jpeg',
-        'image/jpg',
-        'image/png',
-        'image/webp',
-        'image/gif',
-      ];
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
       if (!allowedTypes.includes(imageFile.type)) {
         return NextResponse.json(
           { error: 'Invalid image type. Allowed: JPEG, PNG, WebP, GIF' },

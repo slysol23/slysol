@@ -1,15 +1,51 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { author } from 'lib/author';
 import { FaPen, FaTrash, FaPlus } from 'react-icons/fa';
 import Link from 'next/link';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import { useSearchParams, useRouter } from 'next/navigation';
 
 export default function AuthorDashboardPage() {
   const queryClient = useQueryClient();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  // Show toast messages based on URL query params
+  useEffect(() => {
+    const created = searchParams.get('created');
+    const updated = searchParams.get('updated');
+    const deleted = searchParams.get('deleted');
+
+    if (created === 'true') {
+      toast.success('Author created successfully!', {
+        autoClose: 3000,
+        position: 'bottom-right',
+      });
+      router.replace('/dashboard/author', { scroll: false });
+    }
+
+    if (updated === 'true') {
+      toast.success('Author updated successfully!', {
+        autoClose: 3000,
+        position: 'bottom-right',
+      });
+      router.replace('/dashboard/author', { scroll: false });
+    }
+
+    if (deleted === 'true') {
+      toast.success('Author deleted successfully!', {
+        autoClose: 3000,
+        position: 'bottom-right',
+      });
+      router.replace('/dashboard/author', { scroll: false });
+    }
+  }, [searchParams, router]);
+
   const {
     data: authors = [],
     isLoading,
@@ -23,7 +59,6 @@ export default function AuthorDashboardPage() {
     },
   });
 
-  // Mutation for deleting author
   const deleteAuthor = useMutation({
     mutationFn: async (id: number) => {
       const res = await axios.delete(`/api/author/${id}`);
@@ -31,47 +66,46 @@ export default function AuthorDashboardPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['authors'] });
-      alert('Author deleted successfully!');
+      router.push('/dashboard/author?deleted=true'); // Trigger toast
     },
     onError: (error: any) => {
       if (error.response?.status === 409) {
         const data = error.response.data;
-        alert(
-          `${data.message}\n\nThis author is associated with ${data.blogsCount} blog(s). Please remove the author from these blogs first.`,
+        toast.error(
+          `Cannot delete author. This author is associated with total ${data.blogsCount} blog. Please remove the author from these blogs first.`,
+          { autoClose: 5000, position: 'bottom-right' },
         );
       } else {
-        alert(
+        toast.error(
           'Failed to delete author: ' +
             (error.response?.data?.message || error.message),
+          { autoClose: 3000, position: 'bottom-right' },
         );
       }
     },
   });
 
-  const handleDelete = (id: number) => {
-    if (confirm('Are you sure you want to delete this author?')) {
-      deleteAuthor.mutate(id);
-    }
-  };
   if (isLoading) {
     return (
-      <div className="min-h-screen text-black flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
-          <p className="text-xl">Loading...</p>
-        </div>
+      <div className="overflow-x-auto animate-pulse space-y-2 p-3">
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="h-12 bg-gray-200 rounded w-full"></div>
+        ))}
       </div>
     );
   }
+
   if (isError)
     return (
       <p className="text-red-400">
         {(error as Error)?.message || 'Failed to load authors'}
       </p>
     );
+
   const breadCrumb: BreadcrumbItem[] = [
     { label: 'Authors', href: '/dashboard/author' },
   ];
+
   return (
     <>
       <div className="flex justify-between items-center mb-6">
@@ -131,14 +165,7 @@ export default function AuthorDashboardPage() {
                       <FaPen />
                     </Link>
                     <button
-                      onClick={() => {
-                        if (
-                          confirm(
-                            'Are you sure you want to delete this author?',
-                          )
-                        )
-                          deleteAuthor.mutate(a.id);
-                      }}
+                      onClick={() => handleDelete(a.id)}
                       className="text-red-500 hover:text-red-400"
                     >
                       <FaTrash />
@@ -152,4 +179,10 @@ export default function AuthorDashboardPage() {
       )}
     </>
   );
+
+  function handleDelete(id: number) {
+    if (confirm('Are you sure you want to delete this author?')) {
+      deleteAuthor.mutate(id);
+    }
+  }
 }

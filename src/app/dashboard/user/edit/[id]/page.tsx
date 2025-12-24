@@ -9,6 +9,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { user } from 'lib/user';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 import { IUser } from 'lib/type';
+import { toast } from 'react-toastify';
 
 const UserSchema = z.object({
   username: z.string().min(2, 'Username must be at least 2 characters'),
@@ -53,7 +54,6 @@ export default function EditUserPage() {
         isAdmin: data.isAdmin === 'yes',
       };
 
-      // Only include password if it's not empty
       if (data.password && data.password.trim() !== '') {
         payload.password = data.password;
       }
@@ -61,15 +61,13 @@ export default function EditUserPage() {
       return await user.update(id, payload);
     },
     onSuccess: () => {
-      // Invalidate both the user list and the specific user query
       queryClient.invalidateQueries({ queryKey: ['users'] });
-      queryClient.invalidateQueries({ queryKey: ['user', id] });
-      alert('✅ User updated successfully!');
-      router.push('/dashboard/user');
+      router.push('/dashboard/user?updated=true');
     },
-    onError: (err) => {
-      console.error('Error updating user:', err);
-      alert('❌ Failed to update user.');
+    onError: (error: any) => {
+      toast.error('Failed to update user: ' + error.message, {
+        autoClose: 3000,
+      });
     },
   });
 

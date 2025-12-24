@@ -13,6 +13,8 @@ import Image from 'next/image';
 import { blog } from 'lib/blog';
 import { FaGlobeAsia, FaImage, FaUser } from 'react-icons/fa';
 import { MdDashboard } from 'react-icons/md';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const JsonEditorWrapper = dynamic(
   () =>
@@ -96,13 +98,10 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['blogs'] });
-      queryClient.invalidateQueries({ queryKey: ['blog', blogId] });
-      alert('Blog updated successfully!');
-      router.push('/dashboard/blog');
+      router.push('/dashboard/blog?updated=true');
     },
-    onError: (error) => {
-      console.error('Error updating blog:', error);
-      alert('Failed to update blog');
+    onError: () => {
+      toast.error('Failed to update blog', { autoClose: 3000 });
     },
   });
 
@@ -113,11 +112,11 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
       if (!blogData) return;
       queryClient.setQueryData(['blog', blogId], blogData);
       queryClient.invalidateQueries({ queryKey: ['blogs'] });
-      alert(
-        `✓ Blog ${
-          blogData.is_published ? 'published' : 'unpublished'
-        } successfully!`,
-      );
+
+      router.push(`/dashboard/blog?published=${blogData.is_published}`);
+    },
+    onError: () => {
+      toast.error('Failed to update publish status', { autoClose: 3000 });
     },
   });
 
@@ -186,8 +185,23 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] || null;
-    if (file) {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+
+      if (file.type === 'image/webp' || file.type === 'image/gif') {
+        setImageFile(null);
+        setImagePreview(null);
+        const input = document.getElementById('imageInput') as HTMLInputElement;
+        if (input) input.value = '';
+        toast.error(
+          'WebP and GIF images are not allowed. Please upload JPG, PNG or JPEG.',
+          {
+            autoClose: 3000,
+          },
+        );
+        return;
+      }
+
       setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => setImagePreview(reader.result as string);
@@ -235,14 +249,12 @@ export default function EditBlogPage({ params }: EditBlogPageProps) {
         <div className="flex justify-end gap-4 mt-4">
           <button
             type="submit"
-            onClick={() => {
-              router.push('/dashboard/blog');
-            }}
             className="px-4 py-2 bg-gray-200 text-black hover:bg-gray-500 rounded"
             disabled={updateBlog.isPending}
           >
             {updateBlog.isPending ? 'Saving...' : 'Save'}
           </button>
+
           <div>
             <button
               type="button"
