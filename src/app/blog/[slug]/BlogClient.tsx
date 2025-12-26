@@ -96,7 +96,6 @@ export default function BlogClient({ slug }: BlogClientProps) {
                     src={b.image}
                     alt={b.title || 'Blog image'}
                     fill
-                    className="object-cover"
                     priority
                   />
                 </div>
