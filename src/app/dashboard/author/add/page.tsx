@@ -8,6 +8,8 @@ import { author } from 'lib/author';
 import { useRouter } from 'next/navigation';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AuthorSchema = z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
@@ -21,21 +23,18 @@ export default function AddAuthorPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const createAuthorMutation = useMutation({
+  const createAuthor = useMutation({
     mutationFn: async (data: AuthorForm) => {
       return await author.create(data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['authors'] });
-      alert('✅ Author Added successfully!');
-      router.push('/dashboard/author');
+      router.push('/dashboard/author?created=true');
     },
-    onError: (err) => {
-      console.error('Error creating author:', err);
-      alert('❌ Author with this email already exist.');
+    onError: () => {
+      toast.error('Failed to create author', { autoClose: 3000 });
     },
   });
-
   const {
     register,
     handleSubmit,
@@ -46,7 +45,7 @@ export default function AddAuthorPage() {
   });
 
   const onSubmit = (data: AuthorForm) => {
-    createAuthorMutation.mutate(data);
+    createAuthor.mutate(data);
   };
 
   const breadCrumbItems: BreadcrumbItem[] = [
@@ -68,10 +67,10 @@ export default function AddAuthorPage() {
           <div className="flex justify-end mt-4">
             <button
               type="submit"
-              disabled={createAuthorMutation.isPending}
+              disabled={createAuthor.isPending}
               className="px-6 py-3 rounded-lg border border-gray-300 hover:bg-gray-400 transition"
             >
-              {createAuthorMutation.isPending ? 'Saving...' : 'Add Author'}
+              {createAuthor.isPending ? 'Saving...' : 'Add Author'}
             </button>
           </div>
           <div>

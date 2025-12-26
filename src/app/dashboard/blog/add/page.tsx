@@ -13,7 +13,8 @@ import Image from 'next/image';
 import { MdDashboard } from 'react-icons/md';
 import { useUser } from 'providers/UserProvider';
 import { FaGlobeAsia, FaImage, FaUser } from 'react-icons/fa';
-import toast from 'react-hot-toast';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const JsonEditorWrapper = dynamic(
   () =>
@@ -60,6 +61,7 @@ type BlogForm = z.infer<typeof BlogSchema>;
 export default function AddBlogPage() {
   const router = useRouter();
   const { user, isLoading: userLoading } = useUser();
+  const queryClient = useQueryClient();
   const [errorMsg, setErrorMsg] = useState<string>('');
 
   const { data: authors = [], isLoading: authorsLoading } = useQuery({
@@ -82,13 +84,12 @@ export default function AddBlogPage() {
       return res.data;
     },
     onSuccess: () => {
-      toast.success('Successfully Created blog');
-      setTimeout(() => router.push('/dashboard/blog'), 500);
-      router.push('/dashboard/blog');
+      queryClient.invalidateQueries({ queryKey: ['blogs'] });
+      router.push('/dashboard/blog?created=true');
     },
     onError: (error) => {
       console.error('Error creating blog:', error);
-      alert('Failed to create blog');
+      toast.error('Failed to create blog');
     },
   });
 
@@ -163,6 +164,26 @@ export default function AddBlogPage() {
     }
 
     createBlog.mutate(formData);
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+
+      if (file.type === 'image/webp' || file.type === 'image/gif') {
+        setImageFile(null);
+        setImagePreview(null);
+        const input = document.getElementById('imageInput') as HTMLInputElement;
+        if (input) input.value = '';
+        toast.error(
+          'WebP and GIF images are not allowed. Please upload JPG, PNG or JPEG.',
+        );
+        return;
+      }
+
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
   };
 
   if (userLoading || authorsLoading) {
@@ -262,26 +283,19 @@ export default function AddBlogPage() {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label
-                className=" text-black font-medium mb-4 flex items-center gap-1 cursor-pointer"
+                className="text-black font-medium mb-4 flex items-center gap-1 cursor-pointer"
                 htmlFor="imageInput"
-                onClick={() => document.getElementById('imageInput')}
               >
                 Cover <FaImage />
               </label>
               <input
                 type="file"
                 accept="image/*"
-                {...register('image')}
                 id="imageInput"
                 className="hidden"
-                onChange={(e) => {
-                  if (e.target.files && e.target.files.length > 0) {
-                    const file = e.target.files[0];
-                    setImageFile(file);
-                    setImagePreview(URL.createObjectURL(file));
-                  }
-                }}
+                onChange={handleImageChange}
               />
+
               {imagePreview && (
                 <div className="relative inline-block">
                   <button
@@ -294,7 +308,7 @@ export default function AddBlogPage() {
                       ) as HTMLInputElement;
                       if (input) input.value = '';
                     }}
-                    className="absolute top-2 right-2 bg-white text-red-600 border border-red-500 rounded-full px-2 py-1 text-xs shadow cursor-pointer"
+                    className="absolute top-2 right-2 bg-white text-red-600 border border-red-500 rounded-full w-8 h-8 flex items-center justify-center shadow-lg cursor-pointer z-10 hover:bg-red-50 transition"
                   >
                     ✕
                   </button>
@@ -303,7 +317,7 @@ export default function AddBlogPage() {
                     width={240}
                     src={imagePreview}
                     alt="Preview"
-                    className="rounded-lg border items-center object-cover"
+                    className="w-full h-auto max-h-64 object-cover rounded-lg border border-gray-300 shadow-md"
                   />
                 </div>
               )}

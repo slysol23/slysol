@@ -8,6 +8,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { author } from 'lib/author';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AuthorSchema = z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
@@ -43,12 +45,10 @@ export default function EditAuthorPage() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['authors'] });
-      alert('✅ Author updated successfully!');
-      router.push('/dashboard/author');
+      router.push('/dashboard/author?updated=true');
     },
-    onError: (err) => {
-      console.error('Error updating author:', err);
-      alert('❌ Failed to update author.');
+    onError: () => {
+      toast.error('Failed to update author', { autoClose: 3000 });
     },
   });
 

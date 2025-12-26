@@ -11,14 +11,61 @@ import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import Image from 'next/image';
+import { toast } from 'react-toastify';
+import { useSearchParams, useRouter } from 'next/navigation';
 
 export default function BlogDashboardPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  useEffect(() => {
+    const updated = searchParams.get('updated');
+    const published = searchParams.get('published');
+    const deleted = searchParams.get('deleted');
+    const created = searchParams.get('created');
+
+    if (created === 'true') {
+      toast.success('Blog created successfully!', {
+        autoClose: 3000,
+        position: 'bottom-right',
+      });
+      router.replace('/dashboard/blog', { scroll: false });
+    }
+    if (updated === 'true') {
+      toast.success('Blog updated successfully!', {
+        autoClose: 3000,
+        position: 'bottom-right',
+      });
+      router.replace('/dashboard/blog', { scroll: false });
+    }
+    if (published === 'true') {
+      toast.success('Blog published successfully!', {
+        autoClose: 3000,
+        position: 'bottom-right',
+      });
+      router.replace('/dashboard/blog', { scroll: false });
+    }
+    if (published === 'false') {
+      toast.success('Blog unpublished successfully!', {
+        autoClose: 3000,
+        position: 'bottom-right',
+      });
+      router.replace('/dashboard/blog', { scroll: false });
+    }
+    if (deleted === 'true') {
+      toast.success('Blog deleted successfully!', {
+        autoClose: 3000,
+        position: 'bottom-right',
+      });
+      router.replace('/dashboard/blog', { scroll: false });
+    }
+  }, [searchParams, router]);
+
   const queryClient = useQueryClient();
   const { user, isLoading: userLoading } = useUser();
   const [page, setPage] = useState(1);
   const limit = 10;
 
-  // In BlogDashboardPage
   const { data, isLoading, error } = useQuery<BlogApiResponse, Error>({
     queryKey: ['blogs', page],
     queryFn: () => blog.getAll(page, limit, false),
@@ -30,7 +77,6 @@ export default function BlogDashboardPage() {
   const totalPages: number = data?.totalPages ?? 1;
 
   const blogIds = blogs.map((b) => b.id);
-
   const {
     data: commentsData,
     isLoading: commentsLoading,
@@ -42,11 +88,6 @@ export default function BlogDashboardPage() {
     enabled: blogs.length > 0,
   });
 
-  useEffect(() => {
-    if (commentsError)
-      console.error('Error fetching comments count:', commentsError);
-  }, [commentsData, commentsError]);
-
   const commentsCountMap: Record<number, number> = {};
   (commentsData || []).forEach((item) => {
     commentsCountMap[item.blogId] = item.count;
@@ -57,8 +98,14 @@ export default function BlogDashboardPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['blogs'] });
       queryClient.invalidateQueries({ queryKey: ['commentsCount'] });
+      router.push('/dashboard/blog?deleted=true');
     },
-    onError: (err) => alert(err.message),
+    onError: (err) => {
+      toast.error(`Failed to delete blog: ${err.message}`, {
+        autoClose: 3000,
+        position: 'bottom-right',
+      });
+    },
   });
 
   const handleDelete = (id: number) => {
@@ -85,12 +132,12 @@ export default function BlogDashboardPage() {
     { label: 'Blogs', href: '/dashboard/blog' },
   ];
 
-  if (userLoading || isLoading) {
+  if (userLoading) {
     return (
       <div className="min-h-screen text-black flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
-          <p className="text-xl">Loading...</p>
+          <p className="text-xl">Loading user...</p>
         </div>
       </div>
     );
@@ -122,11 +169,17 @@ export default function BlogDashboardPage() {
         </div>
       )}
 
-      {blogs.length === 0 ? (
+      {blogs.length === 0 && !isLoading ? (
         <p className="text-gray-400">No blogs found.</p>
       ) : (
-        <>
-          <div className="overflow-x-auto">
+        <div className="overflow-x-auto">
+          {isLoading ? (
+            <div className="animate-pulse space-y-2 p-3">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="h-12 bg-gray-200 rounded w-full"></div>
+              ))}
+            </div>
+          ) : (
             <table className="w-full text-left border border-gray-700 rounded-lg">
               <thead className="bg-blue text-white">
                 <tr>
@@ -148,7 +201,6 @@ export default function BlogDashboardPage() {
                       key={b.id}
                       className="border-t border-gray-700 hover:bg-gray-400 transition text-black"
                     >
-                      {/* Cover Image */}
                       <td className="p-3">
                         {b.image ? (
                           <Image
@@ -169,16 +221,12 @@ export default function BlogDashboardPage() {
                           </span>
                         )}
                       </td>
-
-                      {/* Title */}
                       <td
                         className="p-3 font-semibold max-w-xs truncate"
                         title={b.title}
                       >
                         {b.title}
                       </td>
-
-                      {/* Status */}
                       <td className="p-3">
                         <span
                           className={`px-2 py-1 rounded text-xs font-medium ${
@@ -190,11 +238,7 @@ export default function BlogDashboardPage() {
                           {b.is_published ? 'Published' : 'Draft'}
                         </span>
                       </td>
-
-                      {/* Author */}
                       <td className="p-3 text-sm">{getAuthorDisplay(b)}</td>
-
-                      {/* Updated At */}
                       <td className="p-3 text-sm">
                         {new Date(b.updatedAt).toLocaleDateString('en-GB', {
                           day: '2-digit',
@@ -202,11 +246,7 @@ export default function BlogDashboardPage() {
                           year: 'numeric',
                         })}
                       </td>
-
-                      {/* Updated By */}
                       <td className="p-3 text-sm">{getUpdatedByDisplay(b)}</td>
-
-                      {/* Actions */}
                       <td className="p-3">
                         <div className="flex items-center gap-1.5">
                           <Link
@@ -255,33 +295,30 @@ export default function BlogDashboardPage() {
                 })}
               </tbody>
             </table>
-          </div>
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex justify-center items-center gap-4 mt-6">
-              <button
-                onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-                disabled={page === 1}
-                className="px-4 py-2 rounded-lg bg-gray-200 text-black hover:bg-gray-500 transition disabled:opacity-40"
-              >
-                ←
-              </button>
-              <span className="text-gray-700 font-medium">
-                Page {page} of {totalPages}
-              </span>
-              <button
-                onClick={() =>
-                  setPage((prev) => Math.min(prev + 1, totalPages))
-                }
-                disabled={page === totalPages}
-                className="px-4 py-2 rounded-lg bg-gray-200 text-black disabled:opacity-40 hover:bg-gray-500 transition"
-              >
-                →
-              </button>
-            </div>
           )}
-        </>
+        </div>
+      )}
+
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-4 mt-6">
+          <button
+            onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+            disabled={page === 1}
+            className="px-4 py-2 rounded-lg bg-gray-200 text-black hover:bg-gray-500 transition disabled:opacity-40"
+          >
+            ←
+          </button>
+          <span className="text-gray-700 font-medium">
+            Page {page} of {totalPages}
+          </span>
+          <button
+            onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+            disabled={page === totalPages}
+            className="px-4 py-2 rounded-lg bg-gray-200 text-black disabled:opacity-40 hover:bg-gray-500 transition"
+          >
+            →
+          </button>
+        </div>
       )}
     </>
   );

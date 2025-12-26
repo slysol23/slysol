@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { user } from 'lib/user';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
+import { toast } from 'react-toastify';
 
 async function createUser(data: {
   name: string;
@@ -47,12 +48,12 @@ export default function AddUserPage() {
     mutationFn: createUser,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
-      alert('✅ User created successfully!');
-      router.push('/dashboard/user');
+      router.push('/dashboard/user?created=true');
     },
-    onError: (err: any) => {
-      console.error('Error creating user:', err);
-      alert(`❌ Failed to create user: ${err.message}`);
+    onError: (error: any) => {
+      toast.error('Failed to create user: ' + error.message, {
+        autoClose: 3000,
+      });
     },
   });
 
