@@ -4,19 +4,11 @@ import { eq } from 'drizzle-orm';
 import { db } from '../../../../db';
 import { productCategorySchema, productSchema } from '../../../../db/schema';
 import { productPostSchema } from '../../../../db/zod';
-
-const normalizeCategoryName = (value: string) =>
-  value.trim().replace(/\s+/g, ' ');
-
-const normalizeCategoryId = (value: string) =>
-  value
-    .trim()
-    .replace(/[0-9]/g, '')
-    .replace(/[^a-zA-Z\s]/g, '')
-    .replace(/\s+/g, '_')
-    .replace(/_+/g, '_')
-    .replace(/^_+|_+$/g, '')
-    .toUpperCase();
+import { auth } from 'auth';
+import {
+  normalizeCategoryId,
+  normalizeCategoryName,
+} from '../../../../utils/product-category';
 
 interface Props {
   params: Promise<{
@@ -70,9 +62,18 @@ export async function GET(_: Request, { params }: Props) {
   }
 }
 
-export async function PATCH(req: Request, { params }: Props) {
+export async function PUT(req: Request, { params }: Props) {
   try {
     const { id } = await params;
+    const session = await auth();
+
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: 'Unauthorized - Please log in' },
+        { status: 401 },
+      );
+    }
+
     const productId = Number(id);
 
     if (Number.isNaN(productId)) {
@@ -112,12 +113,12 @@ export async function PATCH(req: Request, { params }: Props) {
 
     const normalizedCategoryName = normalizeCategoryName(data.category_id);
     const normalizedCategoryId = normalizeCategoryId(normalizedCategoryName);
-    const normalizedCategory = normalizedCategoryName.toLowerCase();
 
     if (!normalizedCategoryId) {
       return NextResponse.json(
         {
-          message: 'Invalid category name. Please use letters or spaces only.',
+          message:
+            'Invalid category name. Please use at least one letter.',
         },
         { status: 400 },
       );
@@ -132,15 +133,17 @@ export async function PATCH(req: Request, { params }: Props) {
     if (!existingCategory) {
       await db.insert(productCategorySchema).values({
         id: normalizedCategoryId,
-        name: normalizedCategory,
+        name: normalizedCategoryName,
       });
     }
+
+    const categoryName = existingCategory?.name ?? normalizedCategoryName;
 
     const [updatedProduct] = await db
       .update(productSchema)
       .set({
         categoryId: normalizedCategoryId,
-        category: normalizedCategory,
+        category: categoryName,
         title: data.title,
         images: data.images,
         subtitle: data.subtitle,
@@ -152,7 +155,7 @@ export async function PATCH(req: Request, { params }: Props) {
         techstack: data.techstack,
         date: data.date,
         description: data.description,
-        updatedAt: new Date(),
+        updatedBy: session.user.name,
       })
       .where(eq(productSchema.id, productId))
       .returning();
@@ -227,6 +230,70 @@ export async function DELETE(_: Request, { params }: Props) {
     return NextResponse.json(
       {
         message: 'Failed to delete product',
+        error: error instanceof Error ? error.message : String(error),
+      },
+      { status: 500 },
+    );
+  }
+}
+
+export async function PATCH(req: Request, { params }: Props) {
+  try {
+    const { id } = await params;
+    const productId = Number(id);
+
+    if (Number.isNaN(productId)) {
+      return NextResponse.json(
+        { message: 'Invalid product id' },
+        { status: 400 },
+      );
+    }
+
+    const body = await req.json();
+
+    if (typeof body.is_published !== 'boolean') {
+      return NextResponse.json(
+        { message: 'is_published must be boolean' },
+        { status: 400 },
+      );
+    }
+
+    const [existingProduct] = await db
+      .select()
+      .from(productSchema)
+      .where(eq(productSchema.id, productId))
+      .limit(1);
+
+    if (!existingProduct) {
+      return NextResponse.json(
+        { message: 'Product not found' },
+        { status: 404 },
+      );
+    }
+
+    const [updatedProduct] = await db
+      .update(productSchema)
+      .set({
+        is_published: body.is_published,
+      })
+      .where(eq(productSchema.id, productId))
+      .returning();
+
+    return NextResponse.json(
+      {
+        message: `Product ${
+          body.is_published ? 'published' : 'drafted'
+        } successfully`,
+        data: updatedProduct,
+      },
+      { status: 200 },
+    );
+  } catch (error) {
+    console.error('Error updating publish status:', error);
+
+    return NextResponse.json(
+      {
+        message: 'Failed to update publish status',
         error: error instanceof Error ? error.message : String(error),
       },
       { status: 500 },

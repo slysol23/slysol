@@ -4,19 +4,10 @@ import { desc, eq } from 'drizzle-orm';
 import { db } from '../../../db';
 import { productCategorySchema } from '../../../db/schema';
 import { productCategoryPostSchema } from '../../../db/zod';
-
-const normalizeCategoryName = (value: string) =>
-  value.trim().replace(/\s+/g, ' ');
-
-const normalizeCategoryId = (value: string) =>
-  value
-    .trim()
-    .replace(/[0-9]/g, '') // remove numbers
-    .replace(/[^a-zA-Z\s]/g, '') // remove special symbols
-    .replace(/\s+/g, '_') // spaces to underscore
-    .replace(/_+/g, '_') // multiple underscores to single
-    .replace(/^_+|_+$/g, '') // remove leading/trailing underscores
-    .toUpperCase();
+import {
+  normalizeCategoryId,
+  normalizeCategoryName,
+} from '../../../utils/product-category';
 
 export async function GET() {
   try {
@@ -67,7 +58,8 @@ export async function POST(req: Request) {
     if (!normalizedId) {
       return NextResponse.json(
         {
-          message: 'Invalid category name. Please use letters or spaces only.',
+          message:
+            'Invalid category name. Please use at least one letter.',
         },
         { status: 400 },
       );

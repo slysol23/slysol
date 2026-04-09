@@ -70,6 +70,7 @@ export const blogAuthorsSchema = pgTable('blog_authors', {
 export const productCategorySchema = pgTable('product_category', {
   id: varchar('id', { length: 255 }).primaryKey().unique().notNull(),
   name: varchar('name', { length: 255 }).notNull(),
+  is_published: boolean('is_published').default(false).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
@@ -95,9 +96,11 @@ export const productSchema = pgTable('products', {
   feedback: text('feedback').notNull(),
   techstack: jsonb('techstack').notNull(),
   date: timestamp('date').notNull(),
+  is_published: boolean('is_published').default(false).notNull(),
   description: text('description').notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  updatedBy: text('updated_by'),
 });
 
 export const productCategoryRelations = relations(

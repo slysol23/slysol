@@ -1,6 +1,7 @@
 CREATE TABLE "product_category" (
 	"id" varchar(255) PRIMARY KEY NOT NULL,
 	"name" varchar(255) NOT NULL,
+	"is_published" boolean DEFAULT false NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	CONSTRAINT "product_category_id_unique" UNIQUE("id")
@@ -20,9 +21,11 @@ CREATE TABLE "products" (
 	"feedback" text NOT NULL,
 	"techstack" jsonb NOT NULL,
 	"date" timestamp NOT NULL,
+	"is_published" boolean DEFAULT false NOT NULL,
 	"description" text NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
+	"updated_by" text,
 	CONSTRAINT "products_id_unique" UNIQUE("id")
 );
 --> statement-breakpoint

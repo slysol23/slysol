@@ -48,6 +48,8 @@ export const productPostSchema = z.object({
   techstack: jsonStringArraySchema,
   date: z.coerce.date(),
   description: z.string().trim().min(1, 'description is required'),
+  updated_by: z.string().trim().min(1, 'updated_by is required'),
+  is_published: z.coerce.boolean(),
 });
 
 export const productPatchSchema = productPostSchema
@@ -61,6 +63,7 @@ const productCategoryIdSchema = z
   .trim()
   .min(1, 'id is required')
   .max(255);
+
 const productCategoryNameSchema = z
   .string()
   .trim()
@@ -83,7 +86,9 @@ export const productCategoryPatchSchema = z
 export type ProductGetQueryInput = z.infer<typeof productGetQuerySchema>;
 export type ProductPostInput = z.infer<typeof productPostSchema>;
 export type ProductPatchInput = z.infer<typeof productPatchSchema>;
-export type ProductCategoryPostInput = z.infer<typeof productCategoryPostSchema>;
+export type ProductCategoryPostInput = z.infer<
+  typeof productCategoryPostSchema
+>;
 export type ProductCategoryPatchInput = z.infer<
   typeof productCategoryPatchSchema
 >;

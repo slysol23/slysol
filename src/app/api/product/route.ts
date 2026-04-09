@@ -3,6 +3,11 @@ import { desc, eq, sql } from 'drizzle-orm';
 import { db } from '../../../db';
 import { productCategorySchema, productSchema } from '../../../db/schema';
 import { productGetQuerySchema, productPostSchema } from '../../../db/zod';
+import { auth } from 'auth';
+import {
+  normalizeCategoryId,
+  normalizeCategoryName,
+} from '../../../utils/product-category';
 
 export async function GET(req: Request) {
   try {
@@ -101,9 +106,16 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
+    const session = await auth().catch(() => null);
+
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: 'Unauthorized - Please log in' },
+        { status: 401 },
+      );
+    }
 
     const parsedBody = productPostSchema.safeParse(body);
-
     if (!parsedBody.success) {
       return NextResponse.json(
         {
@@ -116,10 +128,18 @@ export async function POST(req: Request) {
 
     const data = parsedBody.data;
 
-    const normalizedCategoryId = data.category_id
-      .trim()
-      .replace(/\s+/g, '_')
-      .toUpperCase();
+    const normalizedCategoryName = normalizeCategoryName(data.category_id);
+    const normalizedCategoryId = normalizeCategoryId(normalizedCategoryName);
+
+    if (!normalizedCategoryId) {
+      return NextResponse.json(
+        {
+          message:
+            'Invalid category name. Please use at least one letter.',
+        },
+        { status: 400 },
+      );
+    }
 
     const [existingCategory] = await db
       .select()
@@ -152,6 +172,8 @@ export async function POST(req: Request) {
         techstack: data.techstack,
         date: data.date,
         description: data.description,
+        updatedBy: session.user.name,
+        is_published: data.is_published,
       })
       .returning();
 

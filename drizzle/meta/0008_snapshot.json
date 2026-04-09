@@ -1,5 +1,5 @@
 {
-  "id": "74abf211-4a7f-4010-816d-1304c88f25bd",
+  "id": "8497b249-bcc5-469a-a5cd-781e9590c1da",
   "prevId": "71801877-c075-4d26-832b-fae26e4e5189",
   "version": "7",
   "dialect": "postgresql",
@@ -378,6 +378,13 @@
           "primaryKey": false,
           "notNull": true
         },
+        "is_published": {
+          "name": "is_published",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -502,6 +509,13 @@
           "primaryKey": false,
           "notNull": true
         },
+        "is_published": {
+          "name": "is_published",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
         "description": {
           "name": "description",
           "type": "text",
@@ -521,6 +535,12 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
+        },
+        "updated_by": {
+          "name": "updated_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},

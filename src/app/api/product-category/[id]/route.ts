@@ -3,17 +3,19 @@ import { eq } from 'drizzle-orm';
 
 import { db } from '../../../../db';
 import { productCategorySchema, productSchema } from '../../../../db/schema';
-import { productCategoryPatchSchema } from '../../../../db/zod';
-
-const normalizeCategoryId = (value: string) => value.trim().toUpperCase();
-const normalizeCategoryName = (value: string) => value.trim();
+import { productCategoryPostSchema } from '../../../../db/zod';
+import {
+  normalizeCategoryId,
+  normalizeCategoryLookupId,
+  normalizeCategoryName,
+} from '../../../../utils/product-category';
 
 export async function GET(
   req: Request,
   { params }: { params: { id: string } },
 ) {
   try {
-    const categoryId = normalizeCategoryId(params.id);
+    const categoryId = normalizeCategoryLookupId(params.id);
 
     if (!categoryId) {
       return NextResponse.json(
@@ -56,12 +58,12 @@ export async function GET(
   }
 }
 
-export async function PATCH(
+export async function PUT(
   req: Request,
   { params }: { params: { id: string } },
 ) {
   try {
-    const currentCategoryId = normalizeCategoryId(params.id);
+    const currentCategoryId = normalizeCategoryLookupId(params.id);
 
     if (!currentCategoryId) {
       return NextResponse.json(
@@ -71,7 +73,7 @@ export async function PATCH(
     }
 
     const body = await req.json();
-    const parsedBody = productCategoryPatchSchema.safeParse(body);
+    const parsedBody = productCategoryPostSchema.safeParse(body);
 
     if (!parsedBody.success) {
       return NextResponse.json(
@@ -96,13 +98,18 @@ export async function PATCH(
       );
     }
 
-    const nextCategoryId = parsedBody.data.id
-      ? normalizeCategoryId(parsedBody.data.id)
-      : currentCategoryId;
-    const nextCategoryName =
-      parsedBody.data.name !== undefined
-        ? normalizeCategoryName(parsedBody.data.name)
-        : existingCategory.name;
+    const nextCategoryName = normalizeCategoryName(parsedBody.data.name);
+    const nextCategoryId = normalizeCategoryId(nextCategoryName);
+
+    if (!nextCategoryId) {
+      return NextResponse.json(
+        {
+          message:
+            'Invalid category name. Please use at least one letter.',
+        },
+        { status: 400 },
+      );
+    }
 
     if (nextCategoryId !== currentCategoryId) {
       const [conflictingCategory] = await db
@@ -120,16 +127,6 @@ export async function PATCH(
     }
 
     const updatedCategory = await db.transaction(async (tx) => {
-      if (nextCategoryId !== currentCategoryId) {
-        await tx
-          .update(productSchema)
-          .set({
-            category: nextCategoryId.toLowerCase(),
-            updatedAt: new Date(),
-          })
-          .where(eq(productSchema.categoryId, currentCategoryId));
-      }
-
       const [category] = await tx
         .update(productCategorySchema)
         .set({
@@ -139,6 +136,14 @@ export async function PATCH(
         })
         .where(eq(productCategorySchema.id, currentCategoryId))
         .returning();
+
+      await tx
+        .update(productSchema)
+        .set({
+          category: nextCategoryName,
+          updatedAt: new Date(),
+        })
+        .where(eq(productSchema.categoryId, nextCategoryId));
 
       return category;
     });
@@ -163,12 +168,14 @@ export async function PATCH(
   }
 }
 
+export const PATCH = PUT;
+
 export async function DELETE(
   req: Request,
   { params }: { params: { id: string } },
 ) {
   try {
-    const categoryId = normalizeCategoryId(params.id);
+    const categoryId = normalizeCategoryLookupId(params.id);
 
     if (!categoryId) {
       return NextResponse.json(
