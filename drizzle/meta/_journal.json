@@ -57,6 +57,13 @@
       "when": 1766580288356,
       "tag": "0007_parched_stellaris",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1775717930860,
+      "tag": "0008_lazy_infant_terrible",
+      "breakpoints": true
     }
   ]
 }
