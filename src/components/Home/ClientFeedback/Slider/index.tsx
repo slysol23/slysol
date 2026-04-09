@@ -1,28 +1,14 @@
 'use client';
 
-import dynamic from 'next/dynamic';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 import SliderCard from './sliderCard';
 import Container from '@/components/Container';
-import Title from '@/components/Title';
 import Section from '@/components/Section';
-
-const OwlCarousel = dynamic(() => import('react-owl-carousel'), {
-  ssr: false,
-});
+import Carousal from '@/components/Slider';
+import Title from '@/components/Title';
 
 export default function Slider() {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    if (typeof window !== 'undefined') {
-      const $ = require('jquery');
-      window.$ = window.jQuery = $;
-    }
-  }, []);
-
   const images = [
     {
       src: '/images/home/client1.webp',
@@ -50,20 +36,6 @@ export default function Slider() {
     },
   ];
 
-  if (!mounted) {
-    return (
-      <Section>
-        <Container hScreen={false}>
-          <Title
-            text={`Client's Feedback`}
-            className="text-center md:mb-10 mb-5 font-normal"
-          />
-          <div className="min-h-[400px]" />
-        </Container>
-      </Section>
-    );
-  }
-
   return (
     <Section>
       <Container hScreen={false}>
@@ -71,8 +43,7 @@ export default function Slider() {
           text={`Client's Feedback`}
           className="text-center md:mb-10 mb-5 font-normal"
         />
-        <OwlCarousel
-          className="owl-theme"
+        <Carousal
           items={3}
           responsive={{
             0: {
@@ -86,9 +57,9 @@ export default function Slider() {
             },
           }}
           margin={20}
-          loop={true}
-          center={true}
-          autoplay={true}
+          loop
+          center
+          autoplay
           autoplayTimeout={10000}
           autoplaySpeed={5000}
           smartSpeed={2500}
@@ -97,16 +68,15 @@ export default function Slider() {
           autoplayHoverPause
         >
           {images.map((image, index) => (
-            <div className="item" key={`slider-card-${index}`}>
-              <SliderCard
-                src={image.src}
-                alt={image.alt}
-                text={image.text}
-                companyName={image.name}
-              />
-            </div>
+            <SliderCard
+              key={`slider-card-${index}`}
+              src={image.src}
+              alt={image.alt}
+              text={image.text}
+              companyName={image.name}
+            />
           ))}
-        </OwlCarousel>
+        </Carousal>
       </Container>
     </Section>
   );

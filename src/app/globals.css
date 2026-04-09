@@ -1,6 +1,3 @@
-@import 'owl.carousel/dist/assets/owl.carousel.css';
-@import 'owl.carousel/dist/assets/owl.theme.default.css';
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -19,7 +16,55 @@ iframe.skiptranslate {
   display: none !important;
 }
 
-.owl-nav {
+.swiper {
+  position: relative;
+  overflow: hidden;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0;
+  list-style: none;
+}
+
+.swiper-wrapper {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  box-sizing: content-box;
+  transition-property: transform;
+}
+
+.swiper-wrapper,
+.swiper-android .swiper-slide,
+.swiper-ios .swiper-slide {
+  transform: translate3d(0, 0, 0);
+}
+
+.swiper-horizontal {
+  touch-action: pan-y;
+}
+
+.swiper-vertical {
+  touch-action: pan-x;
+}
+
+.swiper-slide {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  flex-shrink: 0;
+  transition-property: transform;
+}
+
+.swiper-button-lock,
+.swiper-pagination-lock {
+  display: none;
+}
+
+.carousel-nav {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -27,6 +72,22 @@ iframe.skiptranslate {
   width: 100%;
   display: flex;
   justify-content: space-between;
+}
+
+.carousel-nav button {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.carousel-nav button:disabled {
+  cursor: default;
+  opacity: 0.5;
+}
+
+.carousel-nav img {
+  display: block;
 }
 
 .btn-outline {
@@ -45,7 +106,7 @@ iframe.skiptranslate {
 }
 
 @media screen and (max-width: 768px) {
-  .owl-nav {
+  .carousel-nav {
     position: relative;
     justify-content: center;
     transform: none;

@@ -206,20 +206,6 @@ export default function BlogClient({ slug }: BlogClientProps) {
         </div>
       </Container>
       <Footer />
-
-      {/* CKEditor 5 content styles for proper rendering */}
-      <style jsx global>{`
-        .ck-content ul,
-        .ck-content ol {
-          padding-left: 1.5em;
-          margin-bottom: 1em;
-        }
-
-        .ck-content p {
-          margin-bottom: 1em;
-        }
-        }
-      `}</style>
     </>
   );
 }
