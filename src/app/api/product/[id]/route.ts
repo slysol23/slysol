@@ -117,8 +117,7 @@ export async function PUT(req: Request, { params }: Props) {
     if (!normalizedCategoryId) {
       return NextResponse.json(
         {
-          message:
-            'Invalid category name. Please use at least one letter.',
+          message: 'Invalid category name. Please use at least one letter.',
         },
         { status: 400 },
       );
@@ -146,14 +145,12 @@ export async function PUT(req: Request, { params }: Props) {
         category: categoryName,
         title: data.title,
         images: data.images,
-        subtitle: data.subtitle,
         overview: data.overview,
         challenges: data.challenges,
         approach: data.approach,
         outcomes: data.outcomes,
         feedback: data.feedback,
         techstack: data.techstack,
-        date: data.date,
         description: data.description,
         updatedBy: session.user.name,
       })

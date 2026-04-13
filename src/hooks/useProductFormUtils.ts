@@ -12,33 +12,15 @@ export const parseTechStackList = (value: string) =>
     .map((item) => item.trim())
     .filter(Boolean);
 
-export const formatDateInputValue = (value?: string | null) => {
-  if (!value) return '';
-
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) {
-    return '';
-  }
-
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-
-  return `${year}-${month}-${day}`;
-};
-
 export const productBaseFormShape = {
   category_id: z.string().trim().min(1, 'Category is required'),
   title: z.string().trim().min(1, 'Title is required'),
-  subtitle: z.string().trim().min(1, 'Subtitle is required'),
   description: z.string().trim().min(1, 'Description is required'),
   overview: z.string().trim().min(1, 'Overview is required'),
   challenges: z.string().trim().min(1, 'Challenges are required'),
   approach: z.string().trim().min(1, 'Approach is required'),
   outcomes: z.string().trim().min(1, 'Outcomes are required'),
   feedback: z.string().trim().min(1, 'Feedback is required'),
-  date: z.string().min(1, 'Project date is required'),
   imagesText: z
     .string()
     .trim()

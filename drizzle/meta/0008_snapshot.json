@@ -1,5 +1,5 @@
 {
-  "id": "8497b249-bcc5-469a-a5cd-781e9590c1da",
+  "id": "3910ba7d-96cb-4164-ade3-49eac7abc1b0",
   "prevId": "71801877-c075-4d26-832b-fae26e4e5189",
   "version": "7",
   "dialect": "postgresql",
@@ -461,12 +461,6 @@
           "primaryKey": false,
           "notNull": true
         },
-        "subtitle": {
-          "name": "subtitle",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
         "overview": {
           "name": "overview",
           "type": "text",
@@ -500,12 +494,6 @@
         "techstack": {
           "name": "techstack",
           "type": "jsonb",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "date": {
-          "name": "date",
-          "type": "timestamp",
           "primaryKey": false,
           "notNull": true
         },

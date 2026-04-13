@@ -82,7 +82,7 @@ const ProductPage = () => {
       className: 'whitespace-nowrap',
       skeletonType: 'text',
       cell: (product) =>
-        product.productCategory?.id || product.category || product.categoryId,
+        product.productCategory?.name || product.category || product.categoryId,
     },
     {
       key: 'updated',

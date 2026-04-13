@@ -11,12 +11,10 @@ export interface ProductCategory {
 export interface ProductItem {
   id: number;
   title: string;
-  subtitle: string;
   category: string;
   categoryId: string;
   images: unknown;
   techstack: unknown;
-  date: string;
   description: string;
   overview: string;
   challenges: string;

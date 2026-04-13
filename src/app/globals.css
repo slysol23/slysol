@@ -15,6 +15,9 @@ body {
 iframe.skiptranslate {
   display: none !important;
 }
+@theme {
+  --breakpoint-xs: 475px;
+}
 
 .swiper {
   position: relative;

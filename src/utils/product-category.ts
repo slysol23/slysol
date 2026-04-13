@@ -1,13 +1,10 @@
-export const normalizeCategoryName = (value: string) =>
-  value.trim().replace(/\s+/g, ' ');
+// utils/product-category.ts
 
-export const normalizeCategoryLookupId = (value: string) =>
-  value.trim().replace(/\s+/g, '_').toUpperCase();
+export function normalizeCategoryName(name: string): string {
+  const cleaned = name.trim().replace(/\s+/g, ' ');
+  return cleaned.charAt(0).toUpperCase() + cleaned.slice(1).toLowerCase();
+}
 
-export const normalizeCategoryId = (value: string) =>
-  normalizeCategoryName(value)
-    .replace(/[0-9]+/g, ' ')
-    .replace(/[^a-zA-Z]+/g, '_')
-    .replace(/_+/g, '_')
-    .replace(/^_+|_+$/g, '')
-    .toUpperCase();
+export function normalizeCategoryId(name: string): string {
+  return name.toLowerCase().trim().replace(/\s+/g, '-'); // Simply replace spaces with hyphens
+}
