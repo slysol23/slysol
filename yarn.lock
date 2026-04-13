@@ -4477,6 +4477,11 @@ react-json-view-lite@^2.5.0:
   resolved "https://registry.yarnpkg.com/react-json-view-lite/-/react-json-view-lite-2.5.0.tgz#c7ff011c7cc80e9900abc7aa4916c6a5c6d6c1c6"
   integrity sha512-tk7o7QG9oYyELWHL8xiMQ8x4WzjCzbWNyig3uexmkLb54r8jO0yH3WCWx8UZS0c49eSA4QUmG5caiRJ8fAn58g==
 
+react-loading-skeleton@^3.5.0:
+  version "3.5.0"
+  resolved "https://registry.yarnpkg.com/react-loading-skeleton/-/react-loading-skeleton-3.5.0.tgz#da2090355b4dedcad5c53cb3f0ed364e3a76d6ca"
+  integrity sha512-gxxSyLbrEAdXTKgfbpBEFZCO/P153DnqSCQau2+o6lNy1jgMRr2MmRmOzMmyrwSaSYLRB8g7b0waYPmUjz7IhQ==
+
 react-toastify@^11.0.5:
   version "11.0.5"
   resolved "https://registry.yarnpkg.com/react-toastify/-/react-toastify-11.0.5.tgz#ce4c42d10eeb433988ab2264d3e445c4e9d13313"

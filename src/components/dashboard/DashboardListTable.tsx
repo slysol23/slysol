@@ -2,11 +2,32 @@
 
 import React from 'react';
 import Breadcrumb from '@/components/breadCrum';
-import DashboardListSkeleton from '@/components/dashboard/DashboardListSkeleton';
+import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import { DashboardListTableProps } from 'types/dashboard';
 
 const joinClasses = (...classes: Array<string | undefined | false>) =>
   classes.filter(Boolean).join(' ');
+
+const renderSkeletonCell = (
+  type?: DashboardListTableProps<unknown>['columns'][number]['skeletonType'],
+) => {
+  switch (type) {
+    case 'image':
+      return <Skeleton height={48} width={80} borderRadius={8} />;
+    case 'badge':
+      return <Skeleton height={24} width={80} borderRadius={9999} />;
+    case 'actions':
+      return (
+        <div className="flex items-center justify-center gap-3">
+          <Skeleton height={16} width={16} circle />
+          <Skeleton height={16} width={16} circle />
+        </div>
+      );
+    case 'text':
+    default:
+      return <Skeleton height={16} width="100%" className="max-w-[12rem]" />;
+  }
+};
 
 function DashboardListTable<T>({
   title,
@@ -50,7 +71,35 @@ function DashboardListTable<T>({
       {topContent}
 
       {loading ? (
-        <DashboardListSkeleton columns={columns} rows={skeletonRows} />
+        <SkeletonTheme baseColor="#e5e7eb" highlightColor="#f3f4f6">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border border-gray-700 rounded-lg">
+              <thead className="bg-blue text-white">
+                <tr>
+                  {columns.map((column) => (
+                    <th key={column.key} className="p-3">
+                      {column.header}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {Array.from({ length: skeletonRows }).map((_, rowIndex) => (
+                  <tr
+                    key={rowIndex}
+                    className="border-t border-gray-700 text-black"
+                  >
+                    {columns.map((column) => (
+                      <td key={column.key} className="p-3">
+                        {renderSkeletonCell(column.skeletonType)}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </SkeletonTheme>
       ) : hasError ? (
         <p className="text-red-500">{error}</p>
       ) : isEmpty ? (
