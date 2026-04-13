@@ -21,11 +21,16 @@ const CKEditorWrapper: React.FC<CKEditorWrapperProps> = ({
   const editorRef = useRef<any>(null);
   const divRef = useRef<HTMLDivElement>(null);
   const onChangeRef = useRef(onChange);
+  const initialDataRef = useRef(initialData);
 
   // keep latest onChange without re-rendering editor
   useEffect(() => {
     onChangeRef.current = onChange;
   }, [onChange]);
+
+  useEffect(() => {
+    initialDataRef.current = initialData;
+  }, [initialData]);
 
   // normalize relative links
   const normalizeLinks = (html: string) =>
@@ -34,9 +39,10 @@ const CKEditorWrapper: React.FC<CKEditorWrapperProps> = ({
       'href="https://$1"',
     );
 
-  // initialize editor ONCE (no initialData usage here)
+  // initialize editor once and seed it with the latest available data
   useEffect(() => {
     if (!divRef.current) return;
+    let isCancelled = false;
 
     class Base64UploadAdapter {
       loader: any;
@@ -59,6 +65,7 @@ const CKEditorWrapper: React.FC<CKEditorWrapperProps> = ({
     }
 
     ClassicPlusEditor.create(divRef.current, {
+      initialData: initialDataRef.current,
       toolbar: [
         'heading',
         '|',
@@ -102,11 +109,21 @@ const CKEditorWrapper: React.FC<CKEditorWrapperProps> = ({
       },
     } as any)
       .then((editor) => {
+        if (isCancelled) {
+          void editor.destroy();
+          return;
+        }
+
         editorRef.current = editor;
 
         (editor.plugins.get('FileRepository') as any).createUploadAdapter = (
           loader: any,
         ) => new Base64UploadAdapter(loader);
+
+        const latestData = initialDataRef.current ?? '';
+        if (latestData !== editor.getData()) {
+          editor.setData(latestData);
+        }
 
         editor.model.document.on('change:data', () => {
           const data = normalizeLinks(editor.getData());
@@ -114,19 +131,23 @@ const CKEditorWrapper: React.FC<CKEditorWrapperProps> = ({
         });
       })
       .catch((error) => {
-        console.error('CKEditor init error:', error);
+        if (!isCancelled) {
+          console.error('CKEditor init error:', error);
+        }
       });
 
     return () => {
+      isCancelled = true;
       editorRef.current?.destroy();
       editorRef.current = null;
     };
   }, []);
 
-  // sync external initialData changes (THIS removes the warning)
+  // sync external initialData changes after the editor is ready
   useEffect(() => {
-    if (editorRef.current && initialData !== editorRef.current.getData()) {
-      editorRef.current.setData(initialData);
+    const editor = editorRef.current;
+    if (editor && initialData !== editor.getData()) {
+      editor.setData(initialData);
     }
   }, [initialData]);
 

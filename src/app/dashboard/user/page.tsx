@@ -7,9 +7,11 @@ import Link from 'next/link';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useUser } from '../../../providers/UserProvider';
 import RoleProtected from '@/components/Role/RoleProtected';
-import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
+import DashboardListTable from '@/components/dashboard/DashboardListTable';
+import { BreadcrumbItem } from '@/components/breadCrum';
 import { toast } from 'react-toastify';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { DashboardTableColumn } from 'types/dashboard';
 
 const fetchUsers = async (): Promise<IUser[]> => {
   const res = await fetch('/api/user', { cache: 'no-store' });
@@ -29,7 +31,6 @@ const UsersDashboard = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  // Show toast based on query params (for create/update/delete)
   useEffect(() => {
     const created = searchParams.get('created');
     const updated = searchParams.get('updated');
@@ -60,7 +61,7 @@ const UsersDashboard = () => {
     }
   }, [searchParams, router]);
 
-  const { data: users = [], isLoading } = useQuery<IUser[], Error>({
+  const { data: users = [], isLoading, error } = useQuery<IUser[], Error>({
     queryKey: ['users'],
     queryFn: fetchUsers,
   });
@@ -74,9 +75,9 @@ const UsersDashboard = () => {
         position: 'bottom-right',
       });
     },
-    onError: (error: any) =>
+    onError: (mutationError: any) =>
       toast.error(
-        'Failed to delete user: ' + (error.message || 'Unknown error'),
+        'Failed to delete user: ' + (mutationError.message || 'Unknown error'),
         {
           autoClose: 3000,
           position: 'bottom-right',
@@ -89,90 +90,86 @@ const UsersDashboard = () => {
     mutation.mutate(id);
   };
 
-  // Skeleton loader
-  if (isLoading) {
-    return (
-      <div className="overflow-x-auto animate-pulse space-y-2 p-3">
-        {[...Array(5)].map((_, i) => (
-          <div key={i} className="h-12 bg-gray-200 rounded w-full"></div>
-        ))}
-      </div>
-    );
-  }
-
   const breadCrumb: BreadcrumbItem[] = [
     { label: 'Users', href: '/dashboard/user' },
   ];
 
+  const columns: DashboardTableColumn<IUser>[] = [
+    {
+      key: 'index',
+      header: '#',
+      skeletonType: 'text',
+      cell: (_, index) => index + 1,
+    },
+    {
+      key: 'name',
+      header: 'Name',
+      skeletonType: 'text',
+      cell: (userItem) => <span className="font-semibold">{userItem.name}</span>,
+    },
+    {
+      key: 'email',
+      header: 'Email',
+      skeletonType: 'text',
+      cell: (userItem) => userItem.email,
+    },
+    {
+      key: 'admin',
+      header: 'Admin',
+      skeletonType: 'badge',
+      cell: (userItem) => (
+        <span className="font-semibold">{userItem.isAdmin ? 'Yes' : 'No'}</span>
+      ),
+    },
+    {
+      key: 'actions',
+      header: 'Actions',
+      headerClassName: 'text-center',
+      className: 'text-center',
+      skeletonType: 'actions',
+      cell: (userItem) => (
+        <div className="flex items-center justify-center gap-3">
+          <Link
+            href={`/dashboard/user/edit/${userItem.id}`}
+            className="text-yellow-500 hover:text-yellow-300"
+          >
+            <FaPen />
+          </Link>
+
+          {isAdmin && (
+            <button
+              onClick={() => handleDelete(Number(userItem.id))}
+              className="text-red-500 hover:text-red-400"
+            >
+              <FaTrash />
+            </button>
+          )}
+        </div>
+      ),
+    },
+  ];
+
   return (
-    <>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-black">
-          Users
-          <div className="mt-4">
-            <Breadcrumb items={breadCrumb} />
-          </div>
-        </h1>
-        {isAdmin && (
+    <DashboardListTable
+      title="Users"
+      breadcrumbs={breadCrumb}
+      headerActions={
+        isAdmin ? (
           <Link
             href="/dashboard/user/add"
             className="bg-gray-200 px-4 py-2 rounded-lg text-black hover:bg-gray-400 flex items-center gap-2"
           >
             <FaPlus /> Add User
           </Link>
-        )}
-      </div>
-
-      {users.length === 0 ? (
-        <p className="text-gray-400">No users found.</p>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-gray-300 border border-gray-700 rounded-lg">
-            <thead className="bg-blue text-white">
-              <tr>
-                <th className="p-3">#</th>
-                <th className="p-3">Name</th>
-                <th className="p-3">Email</th>
-                <th className="p-3">Admin</th>
-                <th className="p-3 text-center">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((u, index) => (
-                <tr
-                  key={u.id}
-                  className="border-t border-gray-700 text-black hover:bg-gray-400 transition"
-                >
-                  <td className="p-3">{index + 1}</td>
-                  <td className="p-3 font-semibold">{u.name}</td>
-                  <td className="p-3">{u.email}</td>
-                  <td className="p-3 font-semibold">
-                    {u.isAdmin ? 'Yes' : 'No'}
-                  </td>
-                  <td className="p-3 flex gap-3 justify-center">
-                    <Link
-                      href={`/dashboard/user/edit/${u.id}`}
-                      className="text-yellow-500 hover:text-yellow-300"
-                    >
-                      <FaPen />
-                    </Link>
-
-                    {isAdmin && (
-                      <button
-                        onClick={() => handleDelete(Number(u.id))}
-                        className="text-red-500 hover:text-red-400"
-                      >
-                        <FaTrash />
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </>
+        ) : null
+      }
+      data={users}
+      columns={columns}
+      rowKey={(userItem) => userItem.id}
+      loading={isLoading}
+      error={error?.message || null}
+      emptyMessage="No users found."
+    />
   );
 };
 
