@@ -126,7 +126,7 @@ const ProductPage = () => {
         <>
           <Link
             href="/dashboard/product/add"
-            className="bg-gray-200 px-4 py-2 rounded-lg text-black hover:bg-gray-400 flex items-center gap-2"
+            className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-500 flex items-center gap-2 text-gray-800 hover:text-white transition"
           >
             <FaPlus /> Add Product
           </Link>

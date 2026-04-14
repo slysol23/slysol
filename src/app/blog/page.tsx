@@ -1,7 +1,5 @@
 'use client';
 
-/* eslint-disable @next/next/no-img-element */
-
 import React, { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { blog } from 'lib/blog';
@@ -14,6 +12,7 @@ import Title from '@/components/Title';
 import { BlogApiResponse, IBlog, IAuthor } from 'lib/type';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 import { getBlogImageSrc } from 'lib/blog/image';
+import Image from 'next/image';
 
 export default function BlogPage() {
   const [page, setPage] = useState(1);
@@ -38,7 +37,6 @@ export default function BlogPage() {
 
   const allBlogs: IBlog[] = blogQuery.data?.data ?? [];
 
-  // ✅ No need to filter since API already returns only published blogs
   const blogs = allBlogs;
 
   const total = blogQuery.data?.total ?? 0;
@@ -83,12 +81,14 @@ export default function BlogPage() {
                 >
                   <Link href={b.slug ? `/blog/${b.slug}` : `/blog/id/${b.id}`}>
                     {getBlogImageSrc(b.image) && (
-                      <img
+                      <Image
                         src={getBlogImageSrc(b.image) ?? ''}
                         alt={b.title}
                         className="w-full h-56 mb-4 object-cover rounded-2xl"
                         loading="lazy"
                         decoding="async"
+                        height={200}
+                        width={200}
                       />
                     )}
 
@@ -137,7 +137,7 @@ export default function BlogPage() {
             </div>
 
             {/* Pagination */}
-            <div className="flex justify-center items-center gap-4 pb-20">
+            {/* <div className="flex justify-center items-center gap-4 pb-20">
               <button
                 onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
                 disabled={page === 1 || blogQuery.isFetching}
@@ -159,7 +159,7 @@ export default function BlogPage() {
               >
                 →
               </button>
-            </div>
+            </div> */}
           </>
         )}
       </Container>

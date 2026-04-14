@@ -12,6 +12,7 @@ import { toast } from 'react-toastify';
 import DashboardListTable from '@/components/dashboard/DashboardListTable';
 import { BreadcrumbItem } from '@/components/breadCrum';
 import { DashboardTableColumn } from 'types/dashboard';
+import Button from '@/components/Button';
 
 type FlatComment = IComment & { depth: number };
 
@@ -188,7 +189,8 @@ export default function CommentPage() {
       skeletonType: 'actions',
       cell: (comment) => (
         <div className="flex gap-3">
-          <button
+          <Button
+            gray
             onClick={() =>
               handleTogglePublish(comment.id, comment.is_published)
             }
@@ -200,7 +202,7 @@ export default function CommentPage() {
             title={comment.is_published ? 'Unpublish' : 'Publish'}
           >
             {comment.is_published ? <MdPublicOff /> : <MdPublish />}
-          </button>
+          </Button>
           <Link
             href={`/dashboard/comments/edit/${comment.id}`}
             className="text-yellow-500 hover:text-yellow-300 transition"

@@ -3,21 +3,18 @@
 import React from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { author } from 'lib/author';
-import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
+import { BreadcrumbItem } from '@/components/breadCrum';
+import AuthorForm, {
+  AuthorFormValues,
+  authorFormSchema,
+  createAuthorFormDefaults,
+  mapAuthorToFormValues,
+} from '@/components/Form/AuthorForm';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-const AuthorSchema = z.object({
-  firstName: z.string().min(2, 'First name must be at least 2 characters'),
-  lastName: z.string().min(2, 'Last name must be at least 2 characters'),
-  email: z.string().email('Invalid email address'),
-});
-
-type AuthorForm = z.infer<typeof AuthorSchema>;
 
 export default function EditAuthorPage() {
   const router = useRouter();
@@ -40,7 +37,7 @@ export default function EditAuthorPage() {
   });
 
   const updateAuthorMutation = useMutation({
-    mutationFn: async (data: AuthorForm) => {
+    mutationFn: async (data: AuthorFormValues) => {
       return await author.update(id, data);
     },
     onSuccess: () => {
@@ -52,27 +49,20 @@ export default function EditAuthorPage() {
     },
   });
 
-  //Hook form
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<AuthorForm>({
-    resolver: zodResolver(AuthorSchema),
+  const form = useForm<AuthorFormValues>({
+    resolver: zodResolver(authorFormSchema),
+    mode: 'onChange',
+    defaultValues: createAuthorFormDefaults(),
   });
+  const { reset } = form;
 
   React.useEffect(() => {
     if (a) {
-      reset({
-        firstName: a.firstName || '',
-        lastName: a.lastName || '',
-        email: a.email || '',
-      });
+      reset(mapAuthorToFormValues(a));
     }
   }, [a, reset]);
 
-  const onSubmit = (data: AuthorForm) => {
+  const onSubmit = (data: AuthorFormValues) => {
     updateAuthorMutation.mutate(data);
   };
 
@@ -94,68 +84,17 @@ export default function EditAuthorPage() {
     );
   const breadCrumb: BreadcrumbItem[] = [
     { label: 'Authors', href: '/dashboard/author' },
-    { label: 'Edit', href: '/dashboard/author/edit/id' },
+    { label: 'Edit Author', href: `/dashboard/author/edit/${id}` },
   ];
   return (
-    <div>
-      <h1 className="text-2xl font-bold text-black mb-6">Edit Author</h1>
-      <Breadcrumb items={breadCrumb} />
-
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <div className="flex justify-end mt-4">
-          <button
-            type="submit"
-            disabled={updateAuthorMutation.isPending}
-            className="bg-gray-200 text-black py-2 px-4 rounded-md hover:bg-gray-500"
-          >
-            {updateAuthorMutation.isPending ? 'Saving...' : 'Update Author'}
-          </button>
-        </div>
-        <div>
-          <label className="block text-black font-medium mb-2">
-            First Name
-          </label>
-          <input
-            type="text"
-            {...register('firstName')}
-            className="w-full p-3 rounded-lg border border-gray-700 text-black"
-            placeholder="Enter first name"
-          />
-          {errors.firstName && (
-            <p className="text-red-400 text-sm mt-1">
-              {errors.firstName.message}
-            </p>
-          )}
-        </div>
-
-        <div>
-          <label className="block text-black font-medium mb-2">Last Name</label>
-          <input
-            type="text"
-            {...register('lastName')}
-            className="w-full p-3 rounded-lg border border-gray-700 text-black"
-            placeholder="Enter last name"
-          />
-          {errors.lastName && (
-            <p className="text-red-400 text-sm mt-1">
-              {errors.lastName.message}
-            </p>
-          )}
-        </div>
-
-        <div>
-          <label className="block text-black font-medium mb-2">Email</label>
-          <input
-            type="email"
-            {...register('email')}
-            className="w-full p-3 rounded-lg border border-gray-700 text-black"
-            placeholder="Enter author email"
-          />
-          {errors.email && (
-            <p className="text-red-400 text-sm mt-1">{errors.email.message}</p>
-          )}
-        </div>
-      </form>
-    </div>
+    <AuthorForm
+      form={form}
+      breadcrumbItems={breadCrumb}
+      headerTitle="Edit Author"
+      submitButtonText="Update Author"
+      loadingButtonText="Updating..."
+      isSubmitting={updateAuthorMutation.isPending}
+      onSubmit={onSubmit}
+    />
   );
 }
