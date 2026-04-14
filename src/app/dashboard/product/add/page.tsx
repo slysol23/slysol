@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import ProductForm, {
   ProductFormData,
-} from '../../../../components/Product/ProductForm';
+} from '../../../../components/Form/ProductForm';
 import { useAddProduct } from 'hooks/useAddProduct';
 import { BreadcrumbItem } from '@/components/breadCrum';
 

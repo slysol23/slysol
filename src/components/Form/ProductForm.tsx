@@ -21,6 +21,7 @@ import {
   FaCheckCircle,
 } from 'react-icons/fa';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
+import Button from '../Button';
 
 const CKEditorWrapper = dynamic(
   () => import('@/components/CkEditor/CkEditorWrapper'),
@@ -245,14 +246,15 @@ export default function ProductForm({
 
         <div className="flex items-center gap-2 shrink-0">
           {headerActions}
-          <button
+          <Button
             type="submit"
+            gray
             form="product-form"
             disabled={isSubmitting}
-            className="px-4 py-2 rounded-lg bg-gray-200 text-black hover:bg-gray-400 transition disabled:opacity-50 whitespace-nowrap text-sm sm:text-base"
+            className="px-4 py-2 rounded-lg transition disabled:opacity-50 whitespace-nowrap text-sm sm:text-base"
           >
             {isSubmitting ? 'Saving...' : submitButtonText}
-          </button>
+          </Button>
         </div>
       </header>
 

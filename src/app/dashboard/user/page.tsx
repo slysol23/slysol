@@ -61,7 +61,11 @@ const UsersDashboard = () => {
     }
   }, [searchParams, router]);
 
-  const { data: users = [], isLoading, error } = useQuery<IUser[], Error>({
+  const {
+    data: users = [],
+    isLoading,
+    error,
+  } = useQuery<IUser[], Error>({
     queryKey: ['users'],
     queryFn: fetchUsers,
   });
@@ -105,7 +109,9 @@ const UsersDashboard = () => {
       key: 'name',
       header: 'Name',
       skeletonType: 'text',
-      cell: (userItem) => <span className="font-semibold">{userItem.name}</span>,
+      cell: (userItem) => (
+        <span className="font-semibold">{userItem.name}</span>
+      ),
     },
     {
       key: 'email',
@@ -157,7 +163,7 @@ const UsersDashboard = () => {
         isAdmin ? (
           <Link
             href="/dashboard/user/add"
-            className="bg-gray-200 px-4 py-2 rounded-lg text-black hover:bg-gray-400 flex items-center gap-2"
+            className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-500 flex items-center gap-2 text-gray-800 hover:text-white transition"
           >
             <FaPlus /> Add User
           </Link>

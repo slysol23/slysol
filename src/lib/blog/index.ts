@@ -7,21 +7,6 @@ import {
 } from 'lib/type';
 import apiClient from 'lib/client';
 
-async function fileToBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === 'string') {
-        resolve(reader.result);
-      } else {
-        reject(new Error('Failed to read file'));
-      }
-    };
-    reader.onerror = () => reject(reader.error);
-    reader.readAsDataURL(file);
-  });
-}
-
 /** Map backend response to IBlog */
 function mapBlog(b: any): IBlog {
   return {
@@ -168,7 +153,7 @@ export const blog = {
       formData.append('authorId', String(data.authorId));
     }
 
-    if (data.image instanceof File) formData.append('image', data.image);
+    if (data.image !== undefined) formData.append('image', data.image ?? '');
     if (data.tags) formData.append('tags', JSON.stringify(data.tags));
     if (data.meta) formData.append('meta', JSON.stringify(data.meta));
 
@@ -202,15 +187,7 @@ export const blog = {
       formData.append('authorId', String(data.authorId));
     }
 
-    if (data.image instanceof File) formData.append('image', data.image);
-    else if (
-      typeof data.image === 'string' &&
-      data.image.startsWith('data:image/')
-    ) {
-      formData.append('existingImage', data.image);
-    } else if (!data.image) {
-      formData.append('removeImage', 'true');
-    }
+    if (data.image !== undefined) formData.append('image', data.image ?? '');
 
     if (data.tags) formData.append('tags', JSON.stringify(data.tags));
     if (data.meta) formData.append('meta', JSON.stringify(data.meta));
@@ -249,5 +226,3 @@ export const blog = {
     await apiClient.delete(`/blog/id/${id}`);
   },
 };
-
-export { fileToBase64 };

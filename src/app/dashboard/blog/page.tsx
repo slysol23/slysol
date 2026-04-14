@@ -1,6 +1,8 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+/* eslint-disable @next/next/no-img-element */
+
+import React, { useState, useEffect } from 'react';
 import { blog } from 'lib/blog';
 import { comments } from 'lib/comments';
 import { BlogApiResponse, IBlog } from 'lib/type';
@@ -9,11 +11,11 @@ import Link from 'next/link';
 import { useUser } from '../../../providers/UserProvider';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import Image from 'next/image';
 import { toast } from 'react-toastify';
 import { useSearchParams, useRouter } from 'next/navigation';
-import DashboardListTable from '@/components/dashboard/DashboardListTable';
 import { BreadcrumbItem } from '@/components/breadCrum';
+import DashboardListTable from '@/components/dashboard/DashboardListTable';
+import { getBlogImageSrc } from 'lib/blog/image';
 import { DashboardTableColumn } from 'types/dashboard';
 
 export default function BlogDashboardPage() {
@@ -64,7 +66,7 @@ export default function BlogDashboardPage() {
   }, [searchParams, router]);
 
   const queryClient = useQueryClient();
-  const { user, isLoading: userLoading } = useUser();
+  const { user } = useUser();
   const [page, setPage] = useState(1);
   const limit = 10;
 
@@ -79,11 +81,10 @@ export default function BlogDashboardPage() {
   const totalPages: number = data?.totalPages ?? 1;
 
   const blogIds = blogs.map((item) => item.id);
-  const {
-    data: commentsData,
-    isLoading: commentsLoading,
-    error: commentsError,
-  } = useQuery<{ blogId: number; count: number }[], Error>({
+  const { data: commentsData, isLoading: commentsLoading } = useQuery<
+    { blogId: number; count: number }[],
+    Error
+  >({
     queryKey: ['commentsCount', blogIds],
     queryFn: () => comments.getCounts(blogIds),
     staleTime: 1000 * 60,
@@ -121,7 +122,6 @@ export default function BlogDashboardPage() {
         .map((authorItem) => `${authorItem.firstName} ${authorItem.lastName}`)
         .join(', ');
     }
-
     return 'No authors';
   };
 
@@ -131,7 +131,6 @@ export default function BlogDashboardPage() {
     if (typeof blogItem.updatedBy === 'object' && blogItem.updatedBy.name) {
       return blogItem.updatedBy.name;
     }
-
     return '-';
   };
 
@@ -144,31 +143,28 @@ export default function BlogDashboardPage() {
       key: 'cover',
       header: 'Cover',
       skeletonType: 'image',
-      cell: (blogItem) =>
-        blogItem.image ? (
-          <Image
-            width={100}
-            height={100}
-            unoptimized
-            src={
-              blogItem.image.startsWith('data:')
-                ? blogItem.image
-                : `data:image/jpeg;base64,${blogItem.image}`
-            }
+      cell: (blogItem) => {
+        const imageSrc = getBlogImageSrc(blogItem.image);
+        return imageSrc ? (
+          <img
+            src={imageSrc}
             alt={blogItem.title}
             className="w-20 h-12 object-cover rounded-lg"
+            loading="lazy"
+            decoding="async"
           />
         ) : (
           <span className="text-gray-400 text-sm">No image</span>
-        ),
+        );
+      },
     },
     {
       key: 'title',
       header: 'Title',
-      className: 'font-semibold',
+      className: 'min-w-[180px] max-w-[180px] text-xs sm:text-sm font-semibold',
       skeletonType: 'text',
       cell: (blogItem) => (
-        <div className="max-w-xs truncate" title={blogItem.title}>
+        <div className="truncate" title={blogItem.title}>
           {blogItem.title}
         </div>
       ),
@@ -192,14 +188,14 @@ export default function BlogDashboardPage() {
     {
       key: 'author',
       header: 'Author',
-      className: 'text-sm',
+      className: 'text-xs sm:text-sm whitespace-nowrap',
       skeletonType: 'text',
       cell: (blogItem) => getAuthorDisplay(blogItem),
     },
     {
       key: 'updatedAt',
       header: 'Updated At',
-      className: 'text-sm',
+      className: 'text-xs sm:text-sm whitespace-nowrap',
       skeletonType: 'text',
       cell: (blogItem) =>
         new Date(blogItem.updatedAt).toLocaleDateString('en-GB', {
@@ -211,7 +207,7 @@ export default function BlogDashboardPage() {
     {
       key: 'updatedBy',
       header: 'Updated By',
-      className: 'text-sm',
+      className: 'text-xs sm:text-sm whitespace-nowrap',
       skeletonType: 'text',
       cell: (blogItem) => getUpdatedByDisplay(blogItem),
     },
@@ -238,7 +234,7 @@ export default function BlogDashboardPage() {
             >
               <FaCommentDots size={17} />
               {commentCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center leading-none">
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full min-w-4.5 text-center leading-none">
                   {commentCount > 99 ? '99+' : commentCount}
                 </span>
               )}
@@ -276,22 +272,15 @@ export default function BlogDashboardPage() {
       headerActions={
         <Link
           href="/dashboard/blog/add"
-          className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-500 flex items-center gap-2"
+          className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-500 flex items-center gap-2 text-gray-800 hover:text-white transition"
         >
           <FaPlus /> Add Blog
         </Link>
       }
-      topContent={
-        commentsError ? (
-          <div className="mb-4 p-3 bg-yellow-100 border border-yellow-400 text-yellow-800 rounded">
-            Warning: Could not load comment counts. {commentsError.message}
-          </div>
-        ) : null
-      }
       data={blogs}
       columns={columns}
-      rowKey={(blogItem) => blogItem.id}
-      loading={isLoading || userLoading}
+      rowKey={(blog) => blog.id}
+      loading={isLoading}
       error={error?.message || null}
       emptyMessage="No blogs found."
       pagination={{
@@ -299,8 +288,6 @@ export default function BlogDashboardPage() {
         totalPages,
         onPrevious: () => setPage((prev) => Math.max(prev - 1, 1)),
         onNext: () => setPage((prev) => Math.min(prev + 1, totalPages)),
-        previousLabel: '\u2190',
-        nextLabel: '\u2192',
       }}
     />
   );
