@@ -1,7 +1,6 @@
-import type { Config } from 'tailwindcss';
 const plugin = require('tailwindcss/plugin');
 
-const config: Config = {
+module.exports = {
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -93,10 +92,10 @@ const config: Config = {
     },
   },
   plugins: [
-    plugin(({ matchUtilities, theme }: any) => {
+    plugin(({ matchUtilities, theme }) => {
       matchUtilities(
         {
-          'animation-delay': (value: any) => {
+          'animation-delay': (value) => {
             return {
               'animation-delay': value,
             };
@@ -108,5 +107,3 @@ const config: Config = {
     require('@tailwindcss/typography'),
   ],
 };
-
-export default config;

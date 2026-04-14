@@ -118,59 +118,48 @@ export async function POST(req: Request) {
     const parsedBody = productPostSchema.safeParse(body);
     if (!parsedBody.success) {
       return NextResponse.json(
-        {
-          message: 'Validation failed',
-          errors: parsedBody.error.issues,
-        },
+        { message: 'Validation failed', errors: parsedBody.error.issues },
         { status: 400 },
       );
     }
 
     const data = parsedBody.data;
 
-    const normalizedCategoryName = normalizeCategoryName(data.category_id);
-    const normalizedCategoryId = normalizeCategoryId(normalizedCategoryName);
+    // Auto-slugify - no checks, just transform
+    const categoryName = normalizeCategoryName(data.category_id);
+    const categoryId = normalizeCategoryId(data.category_id);
 
-    if (!normalizedCategoryId) {
-      return NextResponse.json(
-        {
-          message:
-            'Invalid category name. Please use at least one letter.',
-        },
-        { status: 400 },
-      );
+    // Auto-create or get category
+    let category = await db.query.productCategorySchema.findFirst({
+      where: eq(productCategorySchema.id, categoryId),
+    });
+
+    if (!category) {
+      const [newCategory] = await db
+        .insert(productCategorySchema)
+        .values({
+          id: categoryId, // "web-dev"
+          name: categoryName, // "Web dev"
+        })
+        .returning();
+
+      category = newCategory;
     }
 
-    const [existingCategory] = await db
-      .select()
-      .from(productCategorySchema)
-      .where(eq(productCategorySchema.id, normalizedCategoryId))
-      .limit(1);
-
-    if (!existingCategory) {
-      return NextResponse.json(
-        {
-          message: 'Product category not found',
-        },
-        { status: 404 },
-      );
-    }
-
+    // Create product
     const [product] = await db
       .insert(productSchema)
       .values({
-        categoryId: existingCategory.id,
-        category: existingCategory.name,
+        categoryId: category.id,
+        category: category.name,
         title: data.title,
         images: data.images,
-        subtitle: data.subtitle,
         overview: data.overview,
         challenges: data.challenges,
         approach: data.approach,
         outcomes: data.outcomes,
         feedback: data.feedback,
         techstack: data.techstack,
-        date: data.date,
         description: data.description,
         updatedBy: session.user.name,
         is_published: data.is_published,
@@ -179,26 +168,17 @@ export async function POST(req: Request) {
 
     const createdProduct = await db.query.productSchema.findFirst({
       where: eq(productSchema.id, product.id),
-      with: {
-        productCategory: true,
-      },
+      with: { productCategory: true },
     });
 
     return NextResponse.json(
-      {
-        message: 'Product created successfully',
-        data: createdProduct,
-      },
+      { message: 'Product created successfully', data: createdProduct },
       { status: 201 },
     );
   } catch (error) {
     console.error('Error creating product:', error);
-
     return NextResponse.json(
-      {
-        message: 'Failed to create product',
-        error: error instanceof Error ? error.message : String(error),
-      },
+      { message: 'Failed to create product', error: String(error) },
       { status: 500 },
     );
   }

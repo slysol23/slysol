@@ -1,21 +1,25 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
 import { FaTrash, FaPen } from 'react-icons/fa';
 import { MdPublicOff, MdPublish } from 'react-icons/md';
 import { useUser } from '../../../providers/UserProvider';
-import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 import { IComment } from '../../../lib/comments/type';
 import Link from 'next/link';
 import { toast } from 'react-toastify';
+import DashboardListTable from '@/components/dashboard/DashboardListTable';
+import { BreadcrumbItem } from '@/components/breadCrum';
+import { DashboardTableColumn } from 'types/dashboard';
+
+type FlatComment = IComment & { depth: number };
 
 export default function CommentPage() {
   const queryClient = useQueryClient();
   const { user, isLoading: userLoading } = useUser();
-  const [page, setPage] = useState(1);
-  const limit = 1000; // Get all comments
+  const page = 1;
+  const limit = 1000;
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['comments', page],
@@ -29,11 +33,11 @@ export default function CommentPage() {
   const comments: IComment[] = Array.isArray(data?.data)
     ? data.data
     : data?.data
-    ? [data.data]
-    : [];
+      ? [data.data]
+      : [];
 
   const flattenComments = (commentsList: IComment[], depth: number = 0) => {
-    const result: Array<IComment & { depth: number }> = [];
+    const result: FlatComment[] = [];
     commentsList.forEach((comment) => {
       result.push({ ...comment, depth });
       if (comment.replies && comment.replies.length > 0) {
@@ -49,7 +53,6 @@ export default function CommentPage() {
 
   const flatComments = flattenComments(sortedComments);
 
-  // Delete comment mutation with toast
   const deleteComment = useMutation<void, Error, number>({
     mutationFn: (id) => axios.delete(`/api/comments/${id}`).then(() => {}),
     onSuccess: () => {
@@ -59,15 +62,14 @@ export default function CommentPage() {
         position: 'bottom-right',
       });
     },
-    onError: (err: any) => {
-      toast.error('Failed to delete comment: ' + err.message, {
+    onError: (mutationError: any) => {
+      toast.error('Failed to delete comment: ' + mutationError.message, {
         autoClose: 3000,
         position: 'bottom-right',
       });
     },
   });
 
-  // Publish/unpublish mutation with toast
   const togglePublish = useMutation<
     void,
     Error,
@@ -84,8 +86,8 @@ export default function CommentPage() {
         { autoClose: 3000, position: 'bottom-right' },
       );
     },
-    onError: (err: any) => {
-      toast.error('Failed to update comment: ' + err.message, {
+    onError: (mutationError: any) => {
+      toast.error('Failed to update comment: ' + mutationError.message, {
         autoClose: 3000,
         position: 'bottom-right',
       });
@@ -115,129 +117,121 @@ export default function CommentPage() {
   };
 
   const breadCrumb: BreadcrumbItem[] = [
-    { label: 'Comments', href: '/dashboard/feedBack' },
+    { label: 'Comments', href: '/dashboard/comments' },
   ];
 
-  // Skeleton loader
-  if (isLoading || userLoading) {
-    return (
-      <div className="overflow-x-auto animate-pulse space-y-2 p-3">
-        {[...Array(6)].map((_, i) => (
-          <div key={i} className="h-12 bg-gray-200 rounded w-full"></div>
-        ))}
-      </div>
-    );
-  }
-
-  if (error) {
-    return <p className="text-red-500">Error: {(error as Error).message}</p>;
-  }
+  const columns: DashboardTableColumn<FlatComment>[] = [
+    {
+      key: 'id',
+      header: 'ID',
+      skeletonType: 'text',
+      cell: (comment) => comment.id,
+    },
+    {
+      key: 'name',
+      header: 'Name',
+      skeletonType: 'text',
+      cell: (comment) => comment.name,
+    },
+    {
+      key: 'blog',
+      header: 'Blog',
+      skeletonType: 'text',
+      cell: (comment) => (
+        <Link href={`/blog/${comment.blogSlug}`} className="hover:text-sky-700">
+          {comment.blogId}
+        </Link>
+      ),
+    },
+    {
+      key: 'comment',
+      header: 'Comment',
+      skeletonType: 'text',
+      cell: (comment) => (
+        <div className="max-w-xs truncate" title={comment.comment}>
+          {comment.comment}
+        </div>
+      ),
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      skeletonType: 'badge',
+      cell: (comment) =>
+        comment.is_published ? (
+          <span className="bg-green-100 text-black px-2 py-1 rounded text-xs">
+            Published
+          </span>
+        ) : (
+          <span className="bg-yellow-100 text-black px-2 py-1 rounded text-xs">
+            Draft
+          </span>
+        ),
+    },
+    {
+      key: 'parent',
+      header: 'Parent',
+      skeletonType: 'text',
+      cell: (comment) =>
+        comment.parentId || <span className="text-gray-400">-</span>,
+    },
+    {
+      key: 'createdAt',
+      header: 'Created At',
+      className: 'whitespace-nowrap',
+      skeletonType: 'text',
+      cell: (comment) => commentDate(comment.createdAt),
+    },
+    {
+      key: 'actions',
+      header: 'Actions',
+      skeletonType: 'actions',
+      cell: (comment) => (
+        <div className="flex gap-3">
+          <button
+            onClick={() =>
+              handleTogglePublish(comment.id, comment.is_published)
+            }
+            className={`transition-colors ${
+              comment.is_published
+                ? 'text-orange-500 hover:text-orange-700'
+                : 'text-green-500 hover:text-green-700'
+            }`}
+            title={comment.is_published ? 'Unpublish' : 'Publish'}
+          >
+            {comment.is_published ? <MdPublicOff /> : <MdPublish />}
+          </button>
+          <Link
+            href={`/dashboard/comments/edit/${comment.id}`}
+            className="text-yellow-500 hover:text-yellow-300 transition"
+            title="Edit"
+          >
+            <FaPen />
+          </Link>
+          <button
+            onClick={() => handleDelete(comment.id)}
+            className="text-red-500 hover:text-red-700 transition-colors"
+            title="Delete comment"
+          >
+            <FaTrash />
+          </button>
+        </div>
+      ),
+    },
+  ];
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-black">
-          Comments
-          <div className="mt-4">
-            <Breadcrumb items={breadCrumb} />
-          </div>
-        </h1>
-      </div>
-
-      {flatComments.length === 0 ? (
-        <p className="text-black">No comments found.</p>
-      ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border border-gray-700 rounded-lg">
-            <thead className="bg-blue text-white">
-              <tr>
-                <th className="p-3">ID</th>
-                <th className="p-3">Name</th>
-                <th className="p-3">Blog</th>
-                <th className="p-3">Comment</th>
-                <th className="p-3">Status</th>
-                <th className="p-3">Parent</th>
-                <th className="p-3">Created At</th>
-                <th className="p-3">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {flatComments.map((c, idx) => (
-                <tr
-                  key={c.id}
-                  className={`hover:bg-gray-400 border-t border-gray-700 ${
-                    c.depth > 0 ? 'bg-gray-50' : ''
-                  }`}
-                >
-                  <td className="p-3">{c.id}</td>
-                  <td className="p-3">{c.name}</td>
-                  <td className="p-3">
-                    <Link
-                      href={`/blog/${c.blogSlug}`}
-                      className="hover:text-sky-700"
-                    >
-                      {c.blogId}
-                    </Link>
-                  </td>
-                  <td className="p-3">
-                    <div className="max-w-xs truncate" title={c.comment}>
-                      {c.comment}
-                    </div>
-                  </td>
-                  <td className="p-3">
-                    {c.is_published ? (
-                      <span className="bg-green-100 text-black px-2 py-1 rounded text-xs">
-                        Published
-                      </span>
-                    ) : (
-                      <span className="bg-yellow-100 text-black px-2 py-1 rounded text-xs">
-                        Draft
-                      </span>
-                    )}
-                  </td>
-                  <td className="p-3">
-                    {c.parentId || <span className="text-gray-400">—</span>}
-                  </td>
-                  <td className="p-3 whitespace-nowrap">
-                    {commentDate(c.createdAt)}
-                  </td>
-                  <td className="p-3">
-                    <div className="flex gap-3">
-                      <button
-                        onClick={() =>
-                          handleTogglePublish(c.id, c.is_published)
-                        }
-                        className={`transition-colors ${
-                          c.is_published
-                            ? 'text-orange-500 hover:text-orange-700'
-                            : 'text-green-500 hover:text-green-700'
-                        }`}
-                        title={c.is_published ? 'Unpublish' : 'Publish'}
-                      >
-                        {c.is_published ? <MdPublicOff /> : <MdPublish />}
-                      </button>
-                      <Link
-                        href={`/dashboard/comments/edit/${c.id}`}
-                        className="text-yellow-500 hover:text-yellow-300 transition"
-                        title="Edit"
-                      >
-                        <FaPen />
-                      </Link>
-                      <button
-                        onClick={() => handleDelete(c.id)}
-                        className="text-red-500 hover:text-red-700 transition-colors"
-                        title="Delete comment"
-                      >
-                        <FaTrash />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
+    <DashboardListTable
+      title="Comments"
+      breadcrumbs={breadCrumb}
+      data={flatComments}
+      columns={columns}
+      rowKey={(comment) => comment.id}
+      loading={isLoading || userLoading}
+      error={(error as Error | undefined)?.message || null}
+      emptyMessage="No comments found."
+      skeletonRows={6}
+      rowClassName={(comment) => (comment.depth > 0 ? 'bg-gray-50' : undefined)}
+    />
   );
 }

@@ -1,6 +1,6 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@import "swiper/css/bundle";
+@config "../../tailwind.config.js";
 
 html,
 body {
@@ -14,6 +14,9 @@ body {
 
 iframe.skiptranslate {
   display: none !important;
+}
+@theme {
+  --breakpoint-xs: 475px;
 }
 
 .swiper {
@@ -72,6 +75,7 @@ iframe.skiptranslate {
   width: 100%;
   display: flex;
   justify-content: space-between;
+  z-index: 30;
 }
 
 .carousel-nav button {
@@ -215,3 +219,5 @@ ol {
   /* optional to prevent overflow */
   height: auto;
 }
+
+

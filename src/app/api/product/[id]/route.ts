@@ -117,8 +117,7 @@ export async function PUT(req: Request, { params }: Props) {
     if (!normalizedCategoryId) {
       return NextResponse.json(
         {
-          message:
-            'Invalid category name. Please use at least one letter.',
+          message: 'Invalid category name. Please use at least one letter.',
         },
         { status: 400 },
       );
@@ -146,19 +145,27 @@ export async function PUT(req: Request, { params }: Props) {
         category: categoryName,
         title: data.title,
         images: data.images,
-        subtitle: data.subtitle,
         overview: data.overview,
         challenges: data.challenges,
         approach: data.approach,
         outcomes: data.outcomes,
         feedback: data.feedback,
         techstack: data.techstack,
-        date: data.date,
         description: data.description,
         updatedBy: session.user.name,
       })
       .where(eq(productSchema.id, productId))
       .returning();
+
+    if (!updatedProduct) {
+      return NextResponse.json(
+        {
+          message: 'Failed to update product',
+          error: 'Product update did not return a row',
+        },
+        { status: 500 },
+      );
+    }
 
     const product = await db.query.productSchema.findFirst({
       where: eq(productSchema.id, updatedProduct.id),
@@ -166,6 +173,16 @@ export async function PUT(req: Request, { params }: Props) {
         productCategory: true,
       },
     });
+
+    if (!product) {
+      return NextResponse.json(
+        {
+          message: 'Failed to update product',
+          error: 'Updated product could not be reloaded',
+        },
+        { status: 500 },
+      );
+    }
 
     return NextResponse.json(
       {
@@ -216,6 +233,16 @@ export async function DELETE(_: Request, { params }: Props) {
       .delete(productSchema)
       .where(eq(productSchema.id, productId))
       .returning();
+
+    if (!deletedProduct) {
+      return NextResponse.json(
+        {
+          message: 'Failed to delete product',
+          error: 'Product deletion did not return a row',
+        },
+        { status: 500 },
+      );
+    }
 
     return NextResponse.json(
       {
@@ -278,6 +305,16 @@ export async function PATCH(req: Request, { params }: Props) {
       })
       .where(eq(productSchema.id, productId))
       .returning();
+
+    if (!updatedProduct) {
+      return NextResponse.json(
+        {
+          message: 'Failed to update publish status',
+          error: 'Publish update did not return a row',
+        },
+        { status: 500 },
+      );
+    }
 
     return NextResponse.json(
       {

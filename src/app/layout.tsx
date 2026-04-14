@@ -1,5 +1,5 @@
-// @ts-ignore: Allow side-effect import of global CSS without type declarations
 import './globals.css';
+import 'react-loading-skeleton/dist/skeleton.css';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import { Basic } from 'next/font/google';

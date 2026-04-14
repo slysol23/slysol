@@ -6,7 +6,6 @@ import { productCategorySchema, productSchema } from '../../../../db/schema';
 import { productCategoryPostSchema } from '../../../../db/zod';
 import {
   normalizeCategoryId,
-  normalizeCategoryLookupId,
   normalizeCategoryName,
 } from '../../../../utils/product-category';
 
@@ -15,7 +14,7 @@ export async function GET(
   { params }: { params: { id: string } },
 ) {
   try {
-    const categoryId = normalizeCategoryLookupId(params.id);
+    const categoryId = normalizeCategoryId(params.id);
 
     if (!categoryId) {
       return NextResponse.json(
@@ -63,7 +62,7 @@ export async function PUT(
   { params }: { params: { id: string } },
 ) {
   try {
-    const currentCategoryId = normalizeCategoryLookupId(params.id);
+    const currentCategoryId = normalizeCategoryId(params.id);
 
     if (!currentCategoryId) {
       return NextResponse.json(
@@ -175,7 +174,7 @@ export async function DELETE(
   { params }: { params: { id: string } },
 ) {
   try {
-    const categoryId = normalizeCategoryLookupId(params.id);
+    const categoryId = normalizeCategoryId(params.id);
 
     if (!categoryId) {
       return NextResponse.json(

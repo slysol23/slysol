@@ -53,7 +53,7 @@ const Breadcrumb: React.FC<BreadcrumbProps> = ({ items, showHome = true }) => {
   return (
     <nav
       aria-label="Breadcrumb"
-      className="flex items-center space-x-2 text-sm mb-6"
+      className="flex items-center space-x-2 text-xs sm:text-sm"
     >
       {showHome && (
         <>
