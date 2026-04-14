@@ -4,16 +4,13 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { useUser } from 'hooks/useUser';
-import {
-  ProductCategoryResponse,
-  readResponse,
-} from 'hooks/useProducts';
+import { ProductCategoryResponse, readResponse } from 'hooks/useProducts';
 import {
   ProductCreateForm,
   ProductCreateFormSchema,
   parseMultilineList,
   parseTechStackList,
-} from 'hooks/useProductFormUtils';
+} from '@/utils/productForm';
 import {
   normalizeCategoryId,
   normalizeCategoryName,
@@ -44,7 +41,9 @@ export const useAddProduct = () => {
       const normalizedCategoryId = normalizeCategoryId(normalizedCategoryName);
 
       if (!normalizedCategoryId) {
-        throw new Error('Invalid category name. Please use at least one letter.');
+        throw new Error(
+          'Invalid category name. Please use at least one letter.',
+        );
       }
 
       const categoryExists = categories.some(
