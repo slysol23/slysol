@@ -148,7 +148,7 @@ export default function CommentPage() {
       header: 'Comment',
       skeletonType: 'text',
       cell: (comment) => (
-        <div className="max-w-xs truncate" title={comment.comment}>
+        <div className="max-w-3xs truncate" title={comment.comment}>
           {comment.comment}
         </div>
       ),

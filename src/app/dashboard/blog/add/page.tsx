@@ -9,12 +9,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import dynamic from 'next/dynamic';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 import axios from 'axios';
-import Image from 'next/image';
 import { MdDashboard } from 'react-icons/md';
 import { useUser } from 'providers/UserProvider';
 import { FaGlobeAsia, FaImage, FaUser } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { getBlogImageSrc } from 'lib/blog/image';
 
 const JsonEditorWrapper = dynamic(
   () =>
@@ -53,7 +53,7 @@ const BlogSchema = z.object({
   description: z.string().min(1, 'Description is required'),
   tags: z.any().optional(),
   meta: z.any().optional(),
-  image: z.any().optional(),
+  image: z.string().optional(),
 });
 
 type BlogForm = z.infer<typeof BlogSchema>;
@@ -98,6 +98,7 @@ export default function AddBlogPage() {
     handleSubmit,
     control,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<BlogForm>({
     resolver: zodResolver(BlogSchema),
@@ -106,14 +107,13 @@ export default function AddBlogPage() {
       authorId: [],
       tags: DEFAULT_TAGS,
       meta: DEFAULT_META,
+      image: '',
     },
     mode: 'onChange',
   });
 
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedAuthors, setSelectedAuthors] = useState<any[]>([]);
-  const [imageFile, setImageFile] = useState<File | null>(null);
 
   const toggleAuthor = (author: any) => {
     const exists = selectedAuthors.find((a) => a.id === author.id);
@@ -153,7 +153,7 @@ export default function AddBlogPage() {
     formData.append('description', data.description);
     data.authorId.forEach((id) => formData.append('authorId', id));
     formData.append('content', data.content);
-    if (imageFile) formData.append('image', imageFile);
+    formData.append('image', data.image?.trim() ?? '');
 
     if (data.tags) {
       formData.append('tags', JSON.stringify(data.tags));
@@ -164,26 +164,6 @@ export default function AddBlogPage() {
     }
 
     createBlog.mutate(formData);
-  };
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-
-      if (file.type === 'image/webp' || file.type === 'image/gif') {
-        setImageFile(null);
-        setImagePreview(null);
-        const input = document.getElementById('imageInput') as HTMLInputElement;
-        if (input) input.value = '';
-        toast.error(
-          'WebP and GIF images are not allowed. Please upload JPG, PNG or JPEG.',
-        );
-        return;
-      }
-
-      setImageFile(file);
-      setImagePreview(URL.createObjectURL(file));
-    }
   };
 
   if (userLoading || authorsLoading) {
@@ -216,24 +196,25 @@ export default function AddBlogPage() {
   }
 
   return (
-    <div className="min-h-screen text-black">
-      <header className="border-b border-gray-200">
-        <h1 className="text-2xl font-bold">Add New Blog</h1>
-        <div className="mt-4">
-          <Breadcrumb items={breadCrumb} />
+    <div className=" text-black">
+      <header className="border-b border-gray-200 flex items-center justify-between">
+        <div>
+          <h1 className="text-xl xs:text-2xl font-bold">Add New Blog</h1>
+          <div className="my-2 sm:my-4">
+            <Breadcrumb items={breadCrumb} />
+          </div>
         </div>
-      </header>
-      <div className="flex justify-end mt-4">
         <button
           type="submit"
           form="blog-form"
           disabled={createBlog.isPending}
-          className="px-6 py-3 rounded-lg bg-gray-200 text-black hover:bg-gray-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          className="px-3 sm:px-6 py-1.5 sm:py-3 rounded-lg bg-gray-200 text-black hover:bg-gray-400 transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {createBlog.isPending ? 'Saving...' : 'Save Blog'}
         </button>
-      </div>
-      <main className="flex-grow py-4">
+      </header>
+      <div className="flex justify-end mt-4"></div>
+      <main className="grow py-4">
         {errorMsg && (
           <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
             Error: {errorMsg}
@@ -245,7 +226,7 @@ export default function AddBlogPage() {
           className="space-y-6"
         >
           {/* Title & Description */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <label className="flex gap-1 items-center text-black font-medium mb-4">
                 Title <MdDashboard />
@@ -268,8 +249,9 @@ export default function AddBlogPage() {
               </label>
               <textarea
                 {...register('description')}
-                className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-3 rounded-lg border resize-none border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Enter blog description"
+                rows={1}
               />
               {errors.description && (
                 <p className="text-red-500 text-sm mt-1">
@@ -280,47 +262,21 @@ export default function AddBlogPage() {
           </div>
 
           {/* Image & Author */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <label
                 className="text-black font-medium mb-4 flex items-center gap-1 cursor-pointer"
                 htmlFor="imageInput"
               >
-                Cover <FaImage />
+                Cover Image URL <FaImage />
               </label>
               <input
-                type="file"
-                accept="image/*"
+                type="text"
                 id="imageInput"
-                className="hidden"
-                onChange={handleImageChange}
+                placeholder="https://example.com/cover.jpg"
+                {...register('image')}
+                className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
-
-              {imagePreview && (
-                <div className="relative inline-block">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setImagePreview(null);
-                      setImageFile(null);
-                      const input = document.getElementById(
-                        'imageInput',
-                      ) as HTMLInputElement;
-                      if (input) input.value = '';
-                    }}
-                    className="absolute top-2 right-2 bg-white text-red-600 border border-red-500 rounded-full w-8 h-8 flex items-center justify-center shadow-lg cursor-pointer z-10 hover:bg-red-50 transition"
-                  >
-                    ✕
-                  </button>
-                  <Image
-                    height={192}
-                    width={240}
-                    src={imagePreview}
-                    alt="Preview"
-                    className="w-full h-auto max-h-64 object-cover rounded-lg border border-gray-300 shadow-md"
-                  />
-                </div>
-              )}
             </div>
 
             {/* Author Selection */}

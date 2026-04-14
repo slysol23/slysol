@@ -25,7 +25,7 @@ const renderSkeletonCell = (
       );
     case 'text':
     default:
-      return <Skeleton height={16} width="100%" className="max-w-[12rem]" />;
+      return <Skeleton height={16} width="100%" className="max-w-48" />;
   }
 };
 
@@ -51,7 +51,7 @@ function DashboardListTable<T>({
   return (
     <>
       <div className="flex justify-between items-center mb-6 gap-4">
-        <h1 className="text-2xl font-bold text-black">
+        <h1 className=" text-xl sm:text-2xl font-bold text-black">
           {title}
           {typeof count === 'number' && (
             <span className="ml-2 text-base font-medium text-gray-500">
@@ -106,7 +106,7 @@ function DashboardListTable<T>({
         <p className="text-gray-400">{emptyMessage}</p>
       ) : (
         <>
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto min-w-full whitespace-nowrap">
             <table className="w-full text-left border border-gray-700 rounded-lg">
               <thead className="bg-blue text-white">
                 <tr>
@@ -152,7 +152,7 @@ function DashboardListTable<T>({
                 disabled={pagination.page === 1}
                 className="px-4 py-2 rounded-lg bg-gray-200 text-black hover:bg-gray-500 transition disabled:opacity-40"
               >
-                {pagination.previousLabel || 'Previous'}
+                {pagination.previousLabel || '\u2190'}
               </button>
               <span className="text-gray-700 font-medium">
                 Page {pagination.page} of {pagination.totalPages}
@@ -162,7 +162,7 @@ function DashboardListTable<T>({
                 disabled={pagination.page === pagination.totalPages}
                 className="px-4 py-2 rounded-lg bg-gray-200 text-black hover:bg-gray-500 transition disabled:opacity-40"
               >
-                {pagination.nextLabel || 'Next'}
+                {pagination.nextLabel || '\u2192'}
               </button>
             </div>
           )}

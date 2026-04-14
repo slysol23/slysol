@@ -13,12 +13,10 @@ const ProductPage = () => {
   const {
     page,
     setPage,
-    data,
     products,
     totalPages,
     isLoading,
     error,
-    isFetching,
     deleteMutation,
     handleDelete,
   } = useProductsPage();
@@ -52,10 +50,10 @@ const ProductPage = () => {
     {
       key: 'title',
       header: 'Title',
-      className: 'min-w-[240px]',
+      className: 'min-w-[180px] text-xs sm:text-sm font-semibold',
       skeletonType: 'text',
       cell: (product) => (
-        <div className="max-w-xs truncate font-semibold" title={product.title}>
+        <div className="truncate font-semibold" title={product.title}>
           {product.title}
         </div>
       ),
@@ -79,7 +77,7 @@ const ProductPage = () => {
     {
       key: 'category',
       header: 'Category',
-      className: 'whitespace-nowrap',
+      className: 'text-xs sm:text-sm whitespace-nowrap font-semibold',
       skeletonType: 'text',
       cell: (product) =>
         product.productCategory?.name || product.category || product.categoryId,
@@ -87,7 +85,7 @@ const ProductPage = () => {
     {
       key: 'updated',
       header: 'Updated By',
-      className: 'whitespace-nowrap',
+      className: 'text-xs sm:text-sm whitespace-nowrap font-semibold',
       skeletonType: 'text',
       cell: (product) => <div>{product.updatedBy || '-'}</div>,
     },
@@ -126,9 +124,6 @@ const ProductPage = () => {
       breadcrumbs={breadCrumb}
       headerActions={
         <>
-          {isFetching && (
-            <span className="text-sm text-gray-500">Refreshing...</span>
-          )}
           <Link
             href="/dashboard/product/add"
             className="bg-gray-200 px-4 py-2 rounded-lg text-black hover:bg-gray-400 flex items-center gap-2"

@@ -17,16 +17,6 @@ function slugify(title: string) {
 }
 
 /**
- * Convert File to Base64 string
- */
-async function fileToBase64(file: File): Promise<string> {
-  const arrayBuffer = await file.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
-  const base64 = buffer.toString('base64');
-  return `data:${file.type};base64,${base64}`;
-}
-
-/**
  * 🟢 GET — Get all blogs with pagination and multiple authors, or single blog by slug
  */
 export async function GET(req: Request) {
@@ -183,7 +173,7 @@ export async function GET(req: Request) {
 }
 
 /**
- * 🟡 POST — Create a new blog with Base64 image
+ * 🟡 POST — Create a new blog with an image URL
  */
 export async function POST(req: NextRequest) {
   try {
@@ -220,28 +210,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Image upload
-    let imageBase64 = '';
-    const imageFile = formData.get('image') as File | null;
-    if (imageFile && imageFile.size > 0) {
-      const maxSize = 5 * 1024 * 1024; // 5MB
-      if (imageFile.size > maxSize) {
-        return NextResponse.json(
-          { error: 'Image size must be less than 5MB' },
-          { status: 400 },
-        );
-      }
-
-      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-      if (!allowedTypes.includes(imageFile.type)) {
-        return NextResponse.json(
-          { error: 'Invalid image type. Allowed: JPEG, PNG, WebP, GIF' },
-          { status: 400 },
-        );
-      }
-
-      imageBase64 = await fileToBase64(imageFile);
+    const imageField = formData.get('image');
+    if (imageField instanceof File && imageField.size > 0) {
+      return NextResponse.json(
+        { error: 'Please provide an image URL instead of uploading a file' },
+        { status: 400 },
+      );
     }
+
+    const imageUrl = typeof imageField === 'string' ? imageField.trim() : '';
 
     //tags
     let tags: any[] = [];
@@ -295,7 +272,7 @@ export async function POST(req: NextRequest) {
         description,
         content,
         authorId: authorIds[0],
-        image: imageBase64,
+        image: imageUrl || null,
         tags,
         meta,
         createdBy: session.user.name,
