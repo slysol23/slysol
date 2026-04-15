@@ -4,14 +4,15 @@ import React, { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { author } from 'lib/author';
 import { IAuthor } from 'lib/blog/type';
-import { FaPen, FaTrash, FaPlus } from 'react-icons/fa';
-import Link from 'next/link';
+import { FaPen, FaTrash } from 'react-icons/fa';
 import DashboardListTable from '@/components/dashboard/DashboardListTable';
 import { BreadcrumbItem } from '@/components/breadCrum';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { DashboardTableColumn } from 'types/dashboard';
+import DashboardButton from '@/components/Button/DashboardButton';
+import Link from 'next/link';
 
 export default function AuthorDashboardPage() {
   const queryClient = useQueryClient();
@@ -161,12 +162,7 @@ export default function AuthorDashboardPage() {
       title="Authors"
       breadcrumbs={breadCrumb}
       headerActions={
-        <Link
-          href="/dashboard/author/add"
-          className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-500 flex items-center gap-2 text-gray-800 hover:text-white transition"
-        >
-          <FaPlus /> Add Author
-        </Link>
+        <DashboardButton href="/dashboard/author/add">Author</DashboardButton>
       }
       data={authors}
       columns={columns}

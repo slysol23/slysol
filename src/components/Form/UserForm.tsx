@@ -3,8 +3,8 @@
 import { z } from 'zod';
 import { UseFormReturn } from 'react-hook-form';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
-import Button from '@/components/Button';
 import { IUser } from 'lib/auth/type';
+import DashboardButton from '../Button/DashboardButton';
 
 const userFormSchemaBase = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
@@ -79,15 +79,14 @@ export default function UserForm({
             <Breadcrumb items={breadcrumbItems} />
           </div>
         </div>
-        <Button
+        <DashboardButton
           type="submit"
-          gray
+          success
           form={formId}
           disabled={isSubmitting}
-          className="px-6 py-3 rounded-lg text-sm sm:text-base whitespace-nowrap"
         >
           {isSubmitting ? loadingButtonText : submitButtonText}
-        </Button>
+        </DashboardButton>
       </header>
 
       <form onSubmit={handleSubmit(onSubmit)} id={formId}>

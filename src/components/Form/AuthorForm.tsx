@@ -3,8 +3,8 @@
 import { UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
-import Button from '@/components/Button';
 import { IAuthor } from 'lib/type';
+import DashboardButton from '../Button/DashboardButton';
 
 export const authorFormSchema = z.object({
   firstName: z.string().min(2, 'First name must be at least 2 characters'),
@@ -64,15 +64,14 @@ export default function AuthorForm({
             <Breadcrumb items={breadcrumbItems} />
           </div>
         </div>
-        <Button
+        <DashboardButton
           type="submit"
-          gray
+          success
           form={formId}
           disabled={isSubmitting}
-          className="px-6 py-3 rounded-lg text-sm sm:text-base whitespace-nowrap"
         >
           {isSubmitting ? loadingButtonText : submitButtonText}
-        </Button>
+        </DashboardButton>
       </header>
 
       <main className="flex-1 py-4 w-full">

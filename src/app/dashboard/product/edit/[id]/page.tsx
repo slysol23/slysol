@@ -7,8 +7,8 @@ import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import ProductForm from '../../../../../components/Form/ProductForm';
 import { useEditProduct } from 'hooks/useEditProduct';
 import { BreadcrumbItem } from '@/components/breadCrum';
+import DashboardButton from '@/components/Button/DashboardButton';
 import { ProductEditFormSchema, ProductEditForm } from '@/utils/productForm';
-import Button from '@/components/Button';
 
 export default function EditProductPage() {
   const {
@@ -156,7 +156,7 @@ export default function EditProductPage() {
       onSubmit={onSubmit}
       breadcrumbItems={breadcrumb}
       headerTitle={`Edit ${product.title}`}
-      submitButtonText="Save Product"
+      submitButtonText="Update Product"
       isSubmitting={updateProductMutation.isPending}
       initialCategoryId={product.categoryId}
       initialImages={Array.isArray(product.images) ? product.images : ['']}
@@ -164,18 +164,16 @@ export default function EditProductPage() {
         Array.isArray(product.techstack) ? product.techstack : []
       }
       headerActions={
-        <Button
-          gray
+        <DashboardButton
           onClick={togglePublish}
           disabled={publishProductMutation.isPending}
-          className="px-4 py-2 rounded-lg  transition disabled:opacity-50 whitespace-nowrap text-sm sm:text-base"
         >
           {publishProductMutation.isPending
             ? 'Updating...'
             : product.is_published
               ? 'Move To Draft'
               : 'Publish'}
-        </Button>
+        </DashboardButton>
       }
       statusBadge={
         product.is_published

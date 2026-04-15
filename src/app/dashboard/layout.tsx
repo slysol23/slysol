@@ -32,10 +32,10 @@ export default function DashboardLayout({
   if (!user) return null;
 
   return (
-    <div className="flex h-[100dvh] bg-gray-50">
+    <div className="flex h-dvh bg-gray-50">
       <Sidebar />
-      <main className="flex-1 bg-gray-50 max-h-[100dvh] overflow-y-auto overflow-x-hidden">
-        <div className="lg:hidden h-16 flex-shrink-0 flex-row-reverse" />
+      <main className="flex-1 bg-gray-50 max-h-dvh overflow-y-auto overflow-x-hidden">
+        <div className="lg:hidden h-16 shrink-0 flex-row-reverse" />
         <div className="flex-1 overflow-y-auto p-4 lg:p-8">{children}</div>
       </main>
     </div>

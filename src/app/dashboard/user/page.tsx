@@ -12,6 +12,7 @@ import { BreadcrumbItem } from '@/components/breadCrum';
 import { toast } from 'react-toastify';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { DashboardTableColumn } from 'types/dashboard';
+import DashboardButton from '@/components/Button/DashboardButton';
 
 const fetchUsers = async (): Promise<IUser[]> => {
   const res = await fetch('/api/user', { cache: 'no-store' });
@@ -161,12 +162,7 @@ const UsersDashboard = () => {
       breadcrumbs={breadCrumb}
       headerActions={
         isAdmin ? (
-          <Link
-            href="/dashboard/user/add"
-            className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-500 flex items-center gap-2 text-gray-800 hover:text-white transition"
-          >
-            <FaPlus /> Add User
-          </Link>
+          <DashboardButton href="/dashboard/user/add">User</DashboardButton>
         ) : null
       }
       data={users}

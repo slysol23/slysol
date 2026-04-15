@@ -1,12 +1,10 @@
 'use client';
 
-/* eslint-disable @next/next/no-img-element */
-
 import React, { useState, useEffect } from 'react';
 import { blog } from 'lib/blog';
 import { comments } from 'lib/comments';
 import { BlogApiResponse, IBlog } from 'lib/type';
-import { FaPen, FaTrash, FaPlus, FaEye, FaCommentDots } from 'react-icons/fa';
+import { FaPen, FaTrash, FaEye, FaCommentDots } from 'react-icons/fa';
 import Link from 'next/link';
 import { useUser } from '../../../providers/UserProvider';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -17,6 +15,8 @@ import { BreadcrumbItem } from '@/components/breadCrum';
 import DashboardListTable from '@/components/dashboard/DashboardListTable';
 import { getBlogImageSrc } from 'lib/blog/image';
 import { DashboardTableColumn } from 'types/dashboard';
+import DashboardButton from '@/components/Button/DashboardButton';
+import Image from 'next/image';
 
 export default function BlogDashboardPage() {
   const searchParams = useSearchParams();
@@ -146,7 +146,10 @@ export default function BlogDashboardPage() {
       cell: (blogItem) => {
         const imageSrc = getBlogImageSrc(blogItem.image);
         return imageSrc ? (
-          <img
+          <Image
+            height={200}
+            width={200}
+            unoptimized
             src={imageSrc}
             alt={blogItem.title}
             className="w-20 h-12 object-cover rounded-lg"
@@ -270,12 +273,7 @@ export default function BlogDashboardPage() {
       title="Blogs"
       breadcrumbs={breadCrumb}
       headerActions={
-        <Link
-          href="/dashboard/blog/add"
-          className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-500 flex items-center gap-2 text-gray-800 hover:text-white transition"
-        >
-          <FaPlus /> Add Blog
-        </Link>
+        <DashboardButton href="/dashboard/blog/add">Blog</DashboardButton>
       }
       data={blogs}
       columns={columns}
