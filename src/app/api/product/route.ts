@@ -140,6 +140,7 @@ export async function POST(req: Request) {
         .values({
           id: categoryId, // "web-dev"
           name: categoryName, // "Web dev"
+          updatedBy: session.user.name?.trim() || 'Dashboard User',
         })
         .returning();
 

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { eq } from 'drizzle-orm';
+import { auth } from 'auth';
 
 import { db } from '../../../../db';
 import { productCategorySchema, productSchema } from '../../../../db/schema';
@@ -63,11 +64,19 @@ export async function PUT(
 ) {
   try {
     const currentCategoryId = normalizeCategoryId(params.id);
+    const session = await auth().catch(() => null);
 
     if (!currentCategoryId) {
       return NextResponse.json(
         { message: 'Invalid product category id' },
         { status: 400 },
+      );
+    }
+
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: 'Unauthorized - Please log in' },
+        { status: 401 },
       );
     }
 
@@ -132,6 +141,7 @@ export async function PUT(
           id: nextCategoryId,
           name: nextCategoryName,
           updatedAt: new Date(),
+          updatedBy: session.user.name?.trim() || 'Dashboard User',
         })
         .where(eq(productCategorySchema.id, currentCategoryId))
         .returning();

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { desc, eq } from 'drizzle-orm';
+import { auth } from 'auth';
 
 import { db } from '../../../db';
 import { productCategorySchema } from '../../../db/schema';
@@ -40,6 +41,15 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
+    const session = await auth().catch(() => null);
+
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: 'Unauthorized - Please log in' },
+        { status: 401 },
+      );
+    }
+
     const parsedBody = productCategoryPostSchema.safeParse(body);
 
     if (!parsedBody.success) {
@@ -83,6 +93,7 @@ export async function POST(req: Request) {
       .values({
         id: normalizedId,
         name: normalizedName,
+        updatedBy: session.user.name?.trim() || 'Dashboard User',
       })
       .returning();
 

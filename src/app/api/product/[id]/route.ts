@@ -133,6 +133,7 @@ export async function PUT(req: Request, { params }: Props) {
       await db.insert(productCategorySchema).values({
         id: normalizedCategoryId,
         name: normalizedCategoryName,
+        updatedBy: session.user.name?.trim() || 'Dashboard User',
       });
     }
 

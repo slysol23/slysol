@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 export interface ProductCategory {
   id: string;
   name: string;
+  updatedBy: string | null;
 }
 
 export interface ProductItem {
