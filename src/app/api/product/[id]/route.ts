@@ -268,6 +268,15 @@ export async function DELETE(_: Request, { params }: Props) {
 export async function PATCH(req: Request, { params }: Props) {
   try {
     const { id } = await params;
+    const session = await auth().catch(() => null);
+
+    if (!session?.user) {
+      return NextResponse.json(
+        { error: 'Unauthorized - Please log in' },
+        { status: 401 },
+      );
+    }
+
     const productId = Number(id);
 
     if (Number.isNaN(productId)) {
@@ -303,6 +312,8 @@ export async function PATCH(req: Request, { params }: Props) {
       .update(productSchema)
       .set({
         is_published: body.is_published,
+        updatedBy: session.user.name?.trim() || 'Dashboard User',
+        updatedAt: new Date(),
       })
       .where(eq(productSchema.id, productId))
       .returning();

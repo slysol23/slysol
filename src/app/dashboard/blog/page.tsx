@@ -5,6 +5,7 @@ import { blog } from 'lib/blog';
 import { comments } from 'lib/comments';
 import { BlogApiResponse, IBlog } from 'lib/type';
 import { FaPen, FaTrash, FaEye, FaCommentDots } from 'react-icons/fa';
+import { MdPublicOff, MdPublish } from 'react-icons/md';
 import Link from 'next/link';
 import { useUser } from '../../../providers/UserProvider';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -111,9 +112,38 @@ export default function BlogDashboardPage() {
     },
   });
 
+  const publishMutation = useMutation<
+    void,
+    Error,
+    { id: number; nextPublished: boolean }
+  >({
+    mutationFn: ({ id, nextPublished }) =>
+      blog.publish(id, nextPublished).then(() => {}),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] });
+      router.push(`/dashboard/blog?published=${variables.nextPublished}`);
+    },
+    onError: (mutationError) => {
+      toast.error(`Failed to update publish status: ${mutationError.message}`, {
+        autoClose: 3000,
+        position: 'bottom-right',
+      });
+    },
+  });
+
   const handleDelete = (id: number) => {
     if (!confirm('Are you sure you want to delete this blog?')) return;
     deleteMutation.mutate(id);
+  };
+
+  const handleTogglePublish = (id: number, currentStatus: boolean) => {
+    const action = currentStatus ? 'unpublish' : 'publish';
+    if (!confirm(`Are you sure you want to ${action} this blog?`)) return;
+
+    publishMutation.mutate({
+      id,
+      nextPublished: !currentStatus,
+    });
   };
 
   const getAuthorDisplay = (blogItem: IBlog) => {
@@ -247,6 +277,24 @@ export default function BlogDashboardPage() {
                 </span>
               )}
             </Link>
+            <button
+              onClick={() =>
+                handleTogglePublish(blogItem.id, blogItem.is_published)
+              }
+              disabled={publishMutation.isPending}
+              className={`transition-colors disabled:opacity-40 ${
+                blogItem.is_published
+                  ? 'text-orange-500 hover:text-orange-700'
+                  : 'text-green-500 hover:text-green-700'
+              }`}
+              title={blogItem.is_published ? 'Unpublish' : 'Publish'}
+            >
+              {blogItem.is_published ? (
+                <MdPublicOff size={16} />
+              ) : (
+                <MdPublish size={16} />
+              )}
+            </button>
             <Link
               href={`/dashboard/blog/edit/${blogItem.id}`}
               className="text-yellow-500 hover:text-yellow-300 transition"
