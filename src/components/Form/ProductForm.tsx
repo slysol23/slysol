@@ -2,7 +2,7 @@
 
 import React from 'react';
 import dynamic from 'next/dynamic';
-import { Controller, UseFormReturn, FieldErrors } from 'react-hook-form';
+import { Controller, UseFormReturn } from 'react-hook-form';
 import {
   FaCheck,
   FaChevronDown,
@@ -21,7 +21,7 @@ import {
   FaCheckCircle,
 } from 'react-icons/fa';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
-import Button from '../Button';
+import DashboardButton from '../Button/DashboardButton';
 
 const CKEditorWrapper = dynamic(
   () => import('@/components/CkEditor/CkEditorWrapper'),
@@ -225,10 +225,10 @@ export default function ProductForm({
 
   return (
     <div className="text-black min-h-screen flex flex-col w-full max-w-[100vw] overflow-x-hidden">
-      <header className="border-b border-gray-200 pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 w-full">
+      <header className="border-b border-gray-200 pb-4 flex flex-col xs:flex-row xs:items-center xs:justify-between gap-2 sm:gap-4 w-full">
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-xl sm:text-2xl font-bold truncate">
+            <h1 className="text-xl sm:text-2xl font-bold max-w-3/5 xs:max-w-2/3 truncate">
               {headerTitle}
             </h1>
             {statusBadge && (
@@ -246,15 +246,14 @@ export default function ProductForm({
 
         <div className="flex items-center gap-2 shrink-0">
           {headerActions}
-          <Button
+          <DashboardButton
+            success
             type="submit"
-            gray
             form="product-form"
             disabled={isSubmitting}
-            className="px-4 py-2 rounded-lg transition disabled:opacity-50 whitespace-nowrap text-sm sm:text-base"
           >
             {isSubmitting ? 'Saving...' : submitButtonText}
-          </Button>
+          </DashboardButton>
         </div>
       </header>
 

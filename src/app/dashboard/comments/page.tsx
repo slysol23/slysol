@@ -189,8 +189,7 @@ export default function CommentPage() {
       skeletonType: 'actions',
       cell: (comment) => (
         <div className="flex gap-3">
-          <Button
-            gray
+          <button
             onClick={() =>
               handleTogglePublish(comment.id, comment.is_published)
             }
@@ -202,7 +201,7 @@ export default function CommentPage() {
             title={comment.is_published ? 'Unpublish' : 'Publish'}
           >
             {comment.is_published ? <MdPublicOff /> : <MdPublish />}
-          </Button>
+          </button>
           <Link
             href={`/dashboard/comments/edit/${comment.id}`}
             className="text-yellow-500 hover:text-yellow-300 transition"

@@ -5,7 +5,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'next/navigation';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import Button from '@/components/Button';
 import BlogForm, {
   BlogAuthorOption,
   BlogFormValues,
@@ -15,6 +14,7 @@ import BlogForm, {
 import { BreadcrumbItem } from '@/components/breadCrum';
 import { useUser } from 'providers/UserProvider';
 import { toast } from 'react-toastify';
+import DashboardButton from '@/components/Button/DashboardButton';
 
 export default function AddBlogPage() {
   const router = useRouter();
@@ -108,12 +108,9 @@ export default function AddBlogPage() {
           <p className="text-xl mb-4">
             You must be logged in to create a blog.
           </p>
-          <Button
-            onClick={() => router.push('/login')}
-            className="px-6 py-3 rounded-lg"
-          >
+          <DashboardButton onClick={() => router.push('/login')}>
             Sign In
-          </Button>
+          </DashboardButton>
         </div>
       </div>
     );

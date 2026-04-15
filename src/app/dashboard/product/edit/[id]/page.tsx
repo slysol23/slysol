@@ -11,7 +11,7 @@ import {
   ProductEditFormSchema,
   ProductEditForm,
 } from 'hooks/useProductFormUtils';
-import Button from '@/components/Button';
+import DashboardButton from '@/components/Button/DashboardButton';
 
 export default function EditProductPage() {
   const {
@@ -159,7 +159,7 @@ export default function EditProductPage() {
       onSubmit={onSubmit}
       breadcrumbItems={breadcrumb}
       headerTitle={`Edit ${product.title}`}
-      submitButtonText="Save Product"
+      submitButtonText="Update Product"
       isSubmitting={updateProductMutation.isPending}
       initialCategoryId={product.categoryId}
       initialImages={Array.isArray(product.images) ? product.images : ['']}
@@ -167,18 +167,16 @@ export default function EditProductPage() {
         Array.isArray(product.techstack) ? product.techstack : []
       }
       headerActions={
-        <Button
-          gray
+        <DashboardButton
           onClick={togglePublish}
           disabled={publishProductMutation.isPending}
-          className="px-4 py-2 rounded-lg  transition disabled:opacity-50 whitespace-nowrap text-sm sm:text-base"
         >
           {publishProductMutation.isPending
             ? 'Updating...'
             : product.is_published
               ? 'Move To Draft'
               : 'Publish'}
-        </Button>
+        </DashboardButton>
       }
       statusBadge={
         product.is_published

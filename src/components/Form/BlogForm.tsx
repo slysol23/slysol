@@ -7,8 +7,8 @@ import { z } from 'zod';
 import { FaGlobeAsia, FaImage, FaUser } from 'react-icons/fa';
 import { MdCancel, MdDashboard } from 'react-icons/md';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
-import Button from '@/components/Button';
 import { IAuthor } from 'lib/blog/type';
+import DashboardButton from '../Button/DashboardButton';
 
 export type BlogAuthorOption = Pick<
   IAuthor,
@@ -168,7 +168,7 @@ export default function BlogForm({
     <div className="text-black min-h-screen flex flex-col w-full max-w-[100vw] overflow-x-hidden">
       <header className="border-b border-gray-200 pb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 w-full">
         <div className="flex-1 min-w-0">
-          <h1 className="text-xl sm:text-2xl font-bold truncate">
+          <h1 className="text-xl sm:text-2xl font-bold max-w-3/5 xs:max-w-2/3 truncate">
             {headerTitle}
           </h1>
           <div className="mt-2 flex items-center gap-2 flex-wrap">
@@ -178,15 +178,14 @@ export default function BlogForm({
 
         <div className="flex items-center gap-2 shrink-0">
           {headerActions}
-          <Button
+          <DashboardButton
             type="submit"
-            gray
+            success
             form={formId}
             disabled={isSubmitting}
-            className="px-2 sm:px-4 py-1.5 sm:py-3 rounded-lg text-sm sm:text-base whitespace-nowrap bg-gray-200 hover:bg-green-300"
           >
             {isSubmitting ? 'Saving...' : submitButtonText}
-          </Button>
+          </DashboardButton>
         </div>
       </header>
 

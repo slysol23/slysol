@@ -1,13 +1,15 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { FaPen, FaPlus, FaTrash } from 'react-icons/fa';
 import Link from 'next/link';
 import Image from 'next/image';
 import DashboardListTable from '@/components/dashboard/DashboardListTable';
+import CategoryModal from '@/components/Category/CategoryMoadal';
 import { BreadcrumbItem } from '@/components/breadCrum';
 import { ProductItem, getFirstImage, useProductsPage } from 'hooks/useProducts';
 import { DashboardTableColumn } from 'types/dashboard';
+import DashboardButton from '@/components/Button/DashboardButton';
 
 const ProductPage = () => {
   const {
@@ -20,6 +22,9 @@ const ProductPage = () => {
     deleteMutation,
     handleDelete,
   } = useProductsPage();
+
+  // State for category modal
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
   const breadCrumb: BreadcrumbItem[] = [
     { label: 'Products', href: '/dashboard/product' },
@@ -38,6 +43,8 @@ const ProductPage = () => {
             width={100}
             height={100}
             unoptimized
+            loading="lazy"
+            decoding="async"
             src={firstImage}
             alt={product.title}
             className="w-20 h-12 object-cover rounded-lg"
@@ -50,7 +57,7 @@ const ProductPage = () => {
     {
       key: 'title',
       header: 'Title',
-      className: 'min-w-[180px] text-xs sm:text-sm font-semibold',
+      className: 'min-w-[180px] max-w-[180px] text-xs sm:text-sm font-semibold',
       skeletonType: 'text',
       cell: (product) => (
         <div className="truncate font-semibold" title={product.title}>
@@ -119,34 +126,43 @@ const ProductPage = () => {
   ];
 
   return (
-    <DashboardListTable
-      title="Products"
-      breadcrumbs={breadCrumb}
-      headerActions={
-        <>
-          <Link
-            href="/dashboard/product/add"
-            className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-500 flex items-center gap-2 text-gray-800 hover:text-white transition"
-          >
-            <FaPlus /> Add Product
-          </Link>
-        </>
-      }
-      data={products}
-      columns={columns}
-      rowKey={(product) => product.id}
-      loading={isLoading}
-      error={error?.message || null}
-      emptyMessage="No products found."
-      pagination={{
-        page,
-        totalPages,
-        onPrevious: () =>
-          setPage((currentPage) => Math.max(currentPage - 1, 1)),
-        onNext: () =>
-          setPage((currentPage) => Math.min(currentPage + 1, totalPages)),
-      }}
-    />
+    <>
+      <DashboardListTable
+        title="Products"
+        breadcrumbs={breadCrumb}
+        headerActions={
+          <div className="flex items-center gap-3">
+            <DashboardButton onClick={() => setIsCategoryModalOpen(true)}>
+              <FaPlus />
+              Add Categories
+            </DashboardButton>
+            <DashboardButton href="/dashboard/product/add">
+              Product
+            </DashboardButton>
+          </div>
+        }
+        data={products}
+        columns={columns}
+        rowKey={(product) => product.id}
+        loading={isLoading}
+        error={error?.message || null}
+        emptyMessage="No products found."
+        pagination={{
+          page,
+          totalPages,
+          onPrevious: () =>
+            setPage((currentPage) => Math.max(currentPage - 1, 1)),
+          onNext: () =>
+            setPage((currentPage) => Math.min(currentPage + 1, totalPages)),
+        }}
+      />
+
+      {/* Category Modal */}
+      <CategoryModal
+        isOpen={isCategoryModalOpen}
+        onClose={() => setIsCategoryModalOpen(false)}
+      />
+    </>
   );
 };
 

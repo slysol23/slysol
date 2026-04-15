@@ -31,7 +31,6 @@ const renderSkeletonCell = (
 
 function DashboardListTable<T>({
   title,
-  count,
   breadcrumbs,
   headerActions,
   topContent,
@@ -50,15 +49,10 @@ function DashboardListTable<T>({
 
   return (
     <>
-      <div className="flex justify-between items-center mb-6 gap-4">
+      <div className="xs:flex xs:justify-between xs:items-center mb-6 gap-4">
         <h1 className=" text-xl sm:text-2xl font-bold text-black">
           {title}
-          {typeof count === 'number' && (
-            <span className="ml-2 text-base font-medium text-gray-500">
-              ({count})
-            </span>
-          )}
-          <div className="mt-4">
+          <div className="my-4">
             <Breadcrumb items={breadcrumbs} />
           </div>
         </h1>

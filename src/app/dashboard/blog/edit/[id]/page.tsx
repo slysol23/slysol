@@ -21,6 +21,7 @@ import BlogForm, {
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 import { toast } from 'react-toastify';
 import { isEditableBlogImage } from 'lib/blog/image';
+import DashboardButton from '@/components/Button/DashboardButton';
 
 const EMPTY_AUTHORS: BlogAuthorOption[] = [];
 
@@ -188,15 +189,13 @@ export default function EditBlogPage() {
       authors={authors}
       breadcrumbItems={breadCrumb}
       headerTitle={blogData.title}
-      submitButtonText="Save"
+      submitButtonText="Update Blog"
       isSubmitting={updateBlog.isPending}
       onSubmit={onSubmit}
       initialSelectedAuthors={blogData.authors || EMPTY_AUTHORS}
       headerActions={
-        <Button
+        <DashboardButton
           type="submit"
-          gray
-          className="px-2 sm:px-4 py-1 sm:py-3 bg-gray-200 text-black hover:bg-green-300 rounded-lg"
           onClick={togglePublish}
           disabled={publishBlog.isPending}
         >
@@ -207,7 +206,7 @@ export default function EditBlogPage() {
             : publishBlog.isPending
               ? 'Updating...'
               : 'Publish'}
-        </Button>
+        </DashboardButton>
       }
     />
   );
