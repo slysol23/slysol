@@ -73,6 +73,7 @@ export const productCategorySchema = pgTable('product_category', {
   is_published: boolean('is_published').default(false).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  updatedBy: text('updated_by'),
 });
 
 export const productSchema = pgTable('products', {

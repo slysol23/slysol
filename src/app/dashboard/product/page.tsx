@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { FaPen, FaPlus, FaTrash } from 'react-icons/fa';
+import { FaEye, FaPen, FaPlus, FaTrash } from 'react-icons/fa';
+import { MdPublicOff, MdPublish } from 'react-icons/md';
 import Link from 'next/link';
 import Image from 'next/image';
 import DashboardListTable from '@/components/dashboard/DashboardListTable';
@@ -20,7 +21,9 @@ const ProductPage = () => {
     isLoading,
     error,
     deleteMutation,
+    publishMutation,
     handleDelete,
+    handleTogglePublish,
   } = useProductsPage();
 
   // State for category modal
@@ -105,6 +108,29 @@ const ProductPage = () => {
       skeletonType: 'actions',
       cell: (product) => (
         <div className="flex items-center justify-center gap-3">
+          {product.is_published && (
+            <Link
+              href={`/dashboard/product/edit/${product.id}`}
+              className="text-black hover:text-gray-600 transition"
+              title="View Published"
+            >
+              <FaEye />
+            </Link>
+          )}
+          <button
+            onClick={() =>
+              handleTogglePublish(product.id, product.is_published)
+            }
+            disabled={publishMutation.isPending}
+            className={`transition-colors disabled:opacity-40 ${
+              product.is_published
+                ? 'text-orange-500 hover:text-orange-700'
+                : 'text-green-500 hover:text-green-700'
+            }`}
+            title={product.is_published ? 'Unpublish' : 'Publish'}
+          >
+            {product.is_published ? <MdPublicOff /> : <MdPublish />}
+          </button>
           <Link
             href={`/dashboard/product/edit/${product.id}`}
             className="text-yellow-500 hover:text-yellow-300 transition"

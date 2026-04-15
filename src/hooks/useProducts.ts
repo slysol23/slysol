@@ -6,6 +6,7 @@ import { toast } from 'react-toastify';
 export interface ProductCategory {
   id: string;
   name: string;
+  updatedBy: string | null;
 }
 
 export interface ProductItem {
@@ -179,9 +180,53 @@ export const useProductsPage = () => {
     },
   });
 
+  const publishMutation = useMutation({
+    mutationFn: async ({
+      id,
+      nextPublished,
+    }: {
+      id: number;
+      nextPublished: boolean;
+    }) => {
+      const response = await fetch(`/api/product/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          is_published: nextPublished,
+        }),
+      });
+
+      return readResponse<{ message: string }>(response);
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      router.push(`/dashboard/product?published=${variables.nextPublished}`);
+    },
+    onError: (mutationError: Error) => {
+      toast.error(`Failed to update publish status: ${mutationError.message}`, {
+        autoClose: 3000,
+        position: 'bottom-right',
+      });
+    },
+  });
+
   const handleDelete = (id: number) => {
     if (!confirm('Are you sure you want to delete this product?')) return;
     deleteMutation.mutate(id);
+  };
+
+  const handleTogglePublish = (id: number, currentStatus: boolean) => {
+    const action = currentStatus
+      ? 'unpublish this product'
+      : 'publish this product';
+    if (!confirm(`Are you sure you want to ${action}?`)) return;
+
+    publishMutation.mutate({
+      id,
+      nextPublished: !currentStatus,
+    });
   };
 
   return {
@@ -194,6 +239,8 @@ export const useProductsPage = () => {
     error,
     isFetching,
     deleteMutation,
+    publishMutation,
     handleDelete,
+    handleTogglePublish,
   };
 };
