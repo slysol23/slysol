@@ -7,11 +7,8 @@ import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
 import ProductForm from '../../../../../components/Form/ProductForm';
 import { useEditProduct } from 'hooks/useEditProduct';
 import { BreadcrumbItem } from '@/components/breadCrum';
-import {
-  ProductEditFormSchema,
-  ProductEditForm,
-} from 'hooks/useProductFormUtils';
 import DashboardButton from '@/components/Button/DashboardButton';
+import { ProductEditFormSchema, ProductEditForm } from '@/utils/productForm';
 
 export default function EditProductPage() {
   const {

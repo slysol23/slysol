@@ -17,7 +17,7 @@ import {
   ProductEditFormSchema,
   parseMultilineList,
   parseTechStackList,
-} from 'hooks/useProductFormUtils';
+} from '@/utils/productForm';
 import { normalizeCategoryName } from '@/utils/product-category';
 
 const fetchCategories = async () => {
