@@ -113,9 +113,9 @@ export const useProductsPage = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const created = searchParams.get('created');
-    const updated = searchParams.get('updated');
-    const published = searchParams.get('published');
+    const created = searchParams?.get('created');
+    const updated = searchParams?.get('updated');
+    const published = searchParams?.get('published');
     let shouldReplace = false;
 
     if (created === 'true') {

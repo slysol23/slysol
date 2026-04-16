@@ -29,7 +29,7 @@ export default function EditBlogPage() {
   const router = useRouter();
   const params = useParams();
   const queryClient = useQueryClient();
-  const blogId = Number(params.id);
+  const blogId = Number(params?.id);
   const [storedImage, setStoredImage] = useState<string | null>(null);
 
   const { data: authors = [], isLoading: authorsLoading } = useQuery({

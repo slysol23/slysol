@@ -21,7 +21,7 @@ type CommentForm = z.infer<typeof CommentSchema>;
 export default function EditCommentPage() {
   const params = useParams();
   const router = useRouter();
-  const id = Number(params.id);
+  const id = Number(params?.id);
 
   const queryClient = useQueryClient();
 

@@ -43,7 +43,7 @@ export const useEditProduct = () => {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { user, isLoading: userLoading } = useUser();
-  const productId = Number(params.id);
+  const productId = Number(params?.id);
 
   const { data: categories = [], isLoading: categoriesLoading } = useQuery({
     queryKey: ['product-categories'],
