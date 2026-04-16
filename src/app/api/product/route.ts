@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { desc, eq, sql } from 'drizzle-orm';
+import { and, desc, eq, sql, type SQL } from 'drizzle-orm';
 import { db } from '../../../db';
 import { productCategorySchema, productSchema } from '../../../db/schema';
 import { productGetQuerySchema, productPostSchema } from '../../../db/zod';
@@ -16,6 +16,7 @@ export async function GET(req: Request) {
     const parsedQuery = productGetQuerySchema.safeParse({
       id: searchParams.get('id') ?? undefined,
       categoryId: searchParams.get('categoryId') ?? undefined,
+      published: searchParams.get('published') ?? undefined,
       page: searchParams.get('page') ?? undefined,
       limit: searchParams.get('limit') ?? undefined,
     });
@@ -30,12 +31,20 @@ export async function GET(req: Request) {
       );
     }
 
-    const { id, categoryId, page, limit } = parsedQuery.data;
+    const { id, categoryId, published, page, limit } = parsedQuery.data;
     const offset = (page - 1) * limit;
 
     if (id) {
+      const productWhere =
+        published === true
+          ? and(
+              eq(productSchema.id, id),
+              eq(productSchema.is_published, true),
+            )
+          : eq(productSchema.id, id);
+
       const product = await db.query.productSchema.findFirst({
-        where: eq(productSchema.id, id),
+        where: productWhere,
         with: {
           productCategory: true,
         },
@@ -57,11 +66,23 @@ export async function GET(req: Request) {
       );
     }
 
-    const countQuery = categoryId
+    const conditions: SQL[] = [];
+
+    if (categoryId) {
+      conditions.push(eq(productSchema.categoryId, categoryId));
+    }
+
+    if (published === true) {
+      conditions.push(eq(productSchema.is_published, true));
+    }
+
+    const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+    const countQuery = whereClause
       ? db
           .select({ count: sql<number>`count(*)::int` })
           .from(productSchema)
-          .where(eq(productSchema.categoryId, categoryId))
+          .where(whereClause)
       : db.select({ count: sql<number>`count(*)::int` }).from(productSchema);
 
     const [{ count }] = await countQuery;
@@ -69,7 +90,7 @@ export async function GET(req: Request) {
     const totalPages = Math.ceil(total / limit);
 
     const products = await db.query.productSchema.findMany({
-      where: categoryId ? eq(productSchema.categoryId, categoryId) : undefined,
+      where: whereClause,
       with: {
         productCategory: true,
       },

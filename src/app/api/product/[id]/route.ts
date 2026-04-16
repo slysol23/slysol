@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 
 import { db } from '../../../../db';
 import { productCategorySchema, productSchema } from '../../../../db/schema';
@@ -18,8 +18,10 @@ interface Props {
 
 export async function GET(_: Request, { params }: Props) {
   try {
+    const { searchParams } = new URL(_.url);
     const { id } = await params;
     const productId = Number(id);
+    const publishedOnly = searchParams.get('published') === 'true';
 
     if (Number.isNaN(productId)) {
       return NextResponse.json(
@@ -28,8 +30,15 @@ export async function GET(_: Request, { params }: Props) {
       );
     }
 
+    const whereClause = publishedOnly
+      ? and(
+          eq(productSchema.id, productId),
+          eq(productSchema.is_published, true),
+        )
+      : eq(productSchema.id, productId);
+
     const product = await db.query.productSchema.findFirst({
-      where: eq(productSchema.id, productId),
+      where: whereClause,
       with: {
         productCategory: true,
       },
