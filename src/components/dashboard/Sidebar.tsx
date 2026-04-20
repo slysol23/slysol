@@ -224,7 +224,7 @@ const Sidebar = () => {
                   {/* Icon */}
                   <span
                     className={`
-                    flex-shrink-0 transition-transform duration-200
+                    shrink-0 transition-transform duration-200
                     ${isActive ? 'scale-110 drop-shadow-md' : 'group-hover:scale-110'}
                   `}
                   >
@@ -255,13 +255,13 @@ const Sidebar = () => {
         </nav>
 
         {/* Bottom Section - Logout */}
-        <div className="border-t border-white/10 p-4 flex-shrink-0">
+        <div className="border-t border-white/10 p-4 shrink-0">
           <button
             onClick={handleLogout}
             disabled={isLoggingOut}
             className={`
               flex items-center justify-center gap-2 
-              bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 
+              bg-linear-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 
               text-white rounded-xl transition-all duration-200 
               active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed 
               shadow-lg hover:shadow-xl w-full
@@ -271,10 +271,10 @@ const Sidebar = () => {
             title={isCollapsed ? 'Logout' : undefined}
           >
             {isLoggingOut ? (
-              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin flex-shrink-0" />
+              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin shrink-0" />
             ) : (
               <>
-                <FaSignOutAlt size={18} className="flex-shrink-0" />
+                <FaSignOutAlt size={18} className="shrink-0" />
                 <span
                   className={`
                   font-medium transition-all duration-300

@@ -33,9 +33,9 @@ const UsersDashboard = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const created = searchParams.get('created');
-    const updated = searchParams.get('updated');
-    const deleted = searchParams.get('deleted');
+    const created = searchParams?.get('created');
+    const updated = searchParams?.get('updated');
+    const deleted = searchParams?.get('deleted');
 
     if (created === 'true') {
       toast.success('User created successfully!', {

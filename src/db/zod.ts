@@ -31,6 +31,7 @@ const jsonStringArraySchema = z.union([
 export const productGetQuerySchema = z.object({
   id: z.coerce.number().int().positive().optional(),
   categoryId: z.string().trim().toUpperCase().optional(),
+  published: z.coerce.boolean(),
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(10),
 });

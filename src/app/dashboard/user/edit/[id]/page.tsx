@@ -20,7 +20,7 @@ export default function EditUserPage() {
   const router = useRouter();
   const params = useParams();
   const queryClient = useQueryClient();
-  const id = Number(params.id);
+  const id = Number(params?.id);
 
   const {
     data: u,

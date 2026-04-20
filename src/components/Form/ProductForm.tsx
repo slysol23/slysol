@@ -22,34 +22,17 @@ import {
 } from 'react-icons/fa';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 import DashboardButton from '../Button/DashboardButton';
+import {
+  TECH_STACK_OPTIONS,
+  getTechStackLabel,
+  normalizeTechStackList,
+  normalizeTechStackValue,
+} from '@/utils/techstack';
 
 const CKEditorWrapper = dynamic(
   () => import('@/components/CkEditor/CkEditorWrapper'),
   { ssr: false },
 );
-
-const TECH_STACK_OPTIONS = [
-  { label: 'React JS', value: 'react-js' },
-  { label: 'Next JS', value: 'next-js' },
-  { label: 'TypeScript', value: 'typescript' },
-  { label: 'JavaScript', value: 'javascript' },
-  { label: 'Node JS', value: 'node-js' },
-  { label: 'Express JS', value: 'express-js' },
-  { label: 'Nest JS', value: 'nest-js' },
-  { label: 'MongoDB', value: 'mongodb' },
-  { label: 'PostgreSQL', value: 'postgresql' },
-  { label: 'MySQL', value: 'mysql' },
-  { label: 'Tailwind CSS', value: 'tailwind-css' },
-  { label: 'Bootstrap', value: 'bootstrap' },
-  { label: 'Redux', value: 'redux' },
-  { label: 'GraphQL', value: 'graphql' },
-  { label: 'Firebase', value: 'firebase' },
-  { label: 'AWS', value: 'aws' },
-  { label: 'Docker', value: 'docker' },
-  { label: 'Laravel', value: 'laravel' },
-  { label: 'PHP', value: 'php' },
-  { label: 'Python', value: 'python' },
-];
 
 export interface ProductFormData {
   category_id: string;
@@ -111,12 +94,17 @@ export default function ProductForm({
   const [imageFields, setImageFields] = React.useState<string[]>(initialImages);
   const [techStackDropdownOpen, setTechStackDropdownOpen] =
     React.useState(false);
-  const [selectedTechStacks, setSelectedTechStacks] =
-    React.useState<string[]>(initialTechStack);
+  const normalizedInitialTechStacks = React.useMemo(
+    () => normalizeTechStackList(initialTechStack),
+    [initialTechStack],
+  );
+  const [selectedTechStacks, setSelectedTechStacks] = React.useState<string[]>(
+    normalizedInitialTechStacks,
+  );
   const [categorySearch, setCategorySearch] = React.useState(initialCategoryId);
   const [categoryDropdownOpen, setCategoryDropdownOpen] = React.useState(false);
   const initialImagesRef = React.useRef(initialImages);
-  const initialTechStackRef = React.useRef(initialTechStack);
+  const initialTechStackRef = React.useRef(normalizedInitialTechStacks);
   const initialCategoryIdRef = React.useRef(initialCategoryId);
 
   const techStackDropdownRef = React.useRef<HTMLDivElement>(null);
@@ -168,25 +156,47 @@ export default function ProductForm({
   };
 
   const updateSelectedTechStacks = (nextValues: string[]) => {
-    setSelectedTechStacks(nextValues);
-    setValue('techstackText', nextValues.join('\n'), {
+    const normalized = normalizeTechStackList(nextValues);
+    setSelectedTechStacks(normalized);
+    setValue('techstackText', normalized.join('\n'), {
       shouldDirty: true,
       shouldValidate: true,
     });
   };
 
   const handleToggleTechStack = (value: string) => {
-    const nextValues = selectedTechStacks.includes(value)
-      ? selectedTechStacks.filter((item) => item !== value)
-      : [...selectedTechStacks, value];
+    const normalizedValue = normalizeTechStackValue(value);
+    const nextValues = selectedTechStacks.some(
+      (item) => normalizeTechStackValue(item) === normalizedValue,
+    )
+      ? selectedTechStacks.filter(
+          (item) => normalizeTechStackValue(item) !== normalizedValue,
+        )
+      : [...selectedTechStacks, normalizedValue];
     updateSelectedTechStacks(nextValues);
   };
 
   const handleRemoveTechStack = (value: string) => {
+    const normalizedValue = normalizeTechStackValue(value);
     updateSelectedTechStacks(
-      selectedTechStacks.filter((item) => item !== value),
+      selectedTechStacks.filter(
+        (item) => normalizeTechStackValue(item) !== normalizedValue,
+      ),
     );
   };
+
+  const techStackSummary = React.useMemo(() => {
+    if (selectedTechStacks.length === 0) {
+      return 'Select tech stacks';
+    }
+
+    const labels = selectedTechStacks.map((value) => getTechStackLabel(value));
+    if (labels.length <= 2) {
+      return labels.join(', ');
+    }
+
+    return `${labels.slice(0, 2).join(', ')} +${labels.length - 2} more`;
+  }, [selectedTechStacks]);
 
   const handleCategorySelect = (categoryName: string) => {
     setCategorySearch(categoryName);
@@ -396,9 +406,7 @@ export default function ProductForm({
                   className="flex w-full items-center justify-between rounded-lg border border-gray-300 bg-white p-3 text-left focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <span className="truncate text-gray-700">
-                    {selectedTechStacks.length > 0
-                      ? `${selectedTechStacks.length} selected`
-                      : 'Select tech stacks'}
+                    {techStackSummary}
                   </span>
                   <FaChevronDown
                     size={14}
@@ -409,8 +417,8 @@ export default function ProductForm({
                 {techStackDropdownOpen && (
                   <div className="absolute z-50 mt-2 max-h-64 w-full overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg left-0 right-0">
                     {TECH_STACK_OPTIONS.map((option) => {
-                      const isSelected = selectedTechStacks.includes(
-                        option.value,
+                      const isSelected = selectedTechStacks.some(
+                        (item) => normalizeTechStackValue(item) === option.value,
                       );
                       return (
                         <button
@@ -435,16 +443,13 @@ export default function ProductForm({
               {selectedTechStacks.length > 0 && (
                 <div className="mt-3 flex flex-wrap gap-2 w-full">
                   {selectedTechStacks.map((value) => {
-                    const selectedOption = TECH_STACK_OPTIONS.find(
-                      (o) => o.value === value,
-                    );
                     return (
                       <div
                         key={value}
                         className="flex items-center gap-2 rounded-full bg-gray-200 px-3 py-1 text-sm max-w-full"
                       >
                         <span className="truncate">
-                          {selectedOption?.label ?? value}
+                          {getTechStackLabel(value)}
                         </span>
                         <button
                           type="button"

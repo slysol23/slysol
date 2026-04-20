@@ -3,7 +3,7 @@ import Footer from '@/components/Footer';
 import GradientText from '@/components/GradientText';
 import Header from '@/components/Header';
 import HeaderInfo from '@/components/Header/HeaderInfo';
-import PortfolioCard from '@/components/Portfolio/Card';
+import PortfolioCards from '@/components/Portfolio/PortfolioCards';
 import SubTitle from '@/components/SubTitle';
 import Title from '@/components/Title';
 import React from 'react';
@@ -14,18 +14,18 @@ import PerfectCenter from '@/components/PerfectCenter';
 const Portfolio = () => {
   return (
     <>
-      <div className="relative md:h-[600px] h-[400px]">
+      <div className="relative md:h-150 h-100">
         <Image
-          src="/images/portfolio/portfolio-bg.webp"
+          src="/images/portfolio/portfolio-bg.png"
           alt="Slysol team meeting on project"
           fill
-          className="w-full h-auto object-cover object-left-top"
+          className="w-full h-auto object-cover object-top-left"
         />
-        <div className="absolute w-full h-full bg-black top-0 opacity-30 z-[1]" />
-        <div className="relative z-[2]">
+        <div className="absolute w-full h-full bg-black top-0 opacity-30 z-1" />
+        <div className="relative z-2">
           <HeaderInfo classes={{ root: 'text-white' }} />
         </div>
-        <Container className="h-full z-[2]" hScreen={false}>
+        <Container className="h-full z-2" hScreen={false}>
           <Header
             classes={{
               root: 'md:text-white',
@@ -33,9 +33,9 @@ const Portfolio = () => {
               whiteLogo: true,
             }}
           />
-          <PerfectCenter>
-            <Title text="PORTFOLIO" className="text-center text-white" />
-          </PerfectCenter>
+          <div className="absolute left-[10%] top-1/2 ">
+            <Title text="PORTFOLIO" className=" text-white" />
+          </div>
         </Container>
       </div>
       <Section>
@@ -44,17 +44,12 @@ const Portfolio = () => {
             <SubTitle text="OUR PORTFOLIO" />
             <GradientText>
               <Title
-                text="Slysol Create Top Notch Products"
-                className="text-center"
+                text="Slysol Creates Top Notch Products"
+                className="text-center md:mb-20 mb-10"
               />
             </GradientText>
-            <p className="text-mute md:w-2/3 text-center mt-5 md:mb-20 mb-10">
-              Browse our portfolio to see how we have delivered innovative
-              software solutions, turning challenges into opportunities for
-              businesses in various industries.
-            </p>
           </div>
-          <PortfolioCard />
+          <PortfolioCards />
         </Container>
       </Section>
       <Footer />

@@ -24,10 +24,10 @@ export default function BlogDashboardPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const updated = searchParams.get('updated');
-    const published = searchParams.get('published');
-    const deleted = searchParams.get('deleted');
-    const created = searchParams.get('created');
+    const updated = searchParams?.get('updated');
+    const published = searchParams?.get('published');
+    const deleted = searchParams?.get('deleted');
+    const created = searchParams?.get('created');
 
     if (created === 'true') {
       toast.success('Blog created successfully!', {
