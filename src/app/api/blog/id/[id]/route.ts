@@ -19,12 +19,6 @@ function slugify(title: string) {
 /**
  * Convert File to Base64 string
  */
-async function fileToBase64(file: File): Promise<string> {
-  const arrayBuffer = await file.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
-  const base64 = buffer.toString('base64');
-  return `data:${file.type};base64,${base64}`;
-}
 
 // 🔹 GET blog by ID
 export async function GET(
@@ -141,44 +135,35 @@ export async function PUT(
     if (tags) updateData.tags = tags;
     if (meta) updateData.meta = meta;
 
-    const imageFile = formData.get('image') as File | null;
-    const existingImage = formData.get('existingImage')?.toString();
+    const imageField = formData.get('image');
+    const existingImage = formData.get('existingImage');
     const removeImage = formData.get('removeImage')?.toString();
 
     // If user wants to remove the image
     if (removeImage === 'true') {
       updateData.image = null;
     }
-    // If new image file uploaded, convert to base64
-    else if (imageFile && imageFile.size > 0) {
-      const maxSize = 5 * 1024 * 1024; // 5MB
-      if (imageFile.size > maxSize) {
-        return NextResponse.json(
-          { error: 'Image size must be less than 5MB' },
-          { status: 400 },
-        );
+    // If a new image URL was submitted, store it directly
+    else if (typeof imageField === 'string') {
+      const imageUrl = imageField.trim();
+      if (imageUrl) {
+        updateData.image = imageUrl;
+      } else if (typeof existingImage === 'string' && existingImage.trim()) {
+        updateData.image = existingImage.trim();
+      } else {
+        updateData.image = null;
       }
-
-      const allowedTypes = [
-        'image/jpeg',
-        'image/jpg',
-        'image/png',
-        'image/webp',
-        'image/gif',
-      ];
-      if (!allowedTypes.includes(imageFile.type)) {
-        return NextResponse.json(
-          { error: 'Invalid image type. Allowed: JPEG, PNG, WebP, GIF' },
-          { status: 400 },
-        );
-      }
-
-      const imageBase64 = await fileToBase64(imageFile);
-      updateData.image = imageBase64;
+    }
+    // If a file was uploaded, reject it
+    else if (imageField instanceof File && imageField.size > 0) {
+      return NextResponse.json(
+        { error: 'Please provide an image URL instead of uploading a file' },
+        { status: 400 },
+      );
     }
     // If no new image but existing image provided, keep it
-    else if (existingImage) {
-      updateData.image = existingImage;
+    else if (typeof existingImage === 'string' && existingImage.trim()) {
+      updateData.image = existingImage.trim();
     }
 
     updateData.updatedBy = session.user.name;

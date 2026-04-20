@@ -36,7 +36,7 @@ export interface ICreateBlog {
   content: string;
   authorId: number; // Primary author
   authorIds: number[]; // multiple authors
-  image?: File | string;
+  image?: string | null;
   tags?: string[];
   meta?: any;
   createdBy?: { name: string };
@@ -49,7 +49,7 @@ export interface IUpdateBlog {
   content?: string;
   authorId?: number;
   authorIds?: number[];
-  image?: File | string;
+  image?: string | null;
   tags?: string[];
   meta?: any;
   updatedBy?: { name: string };

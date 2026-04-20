@@ -1,5 +1,7 @@
 'use client';
 
+/* eslint-disable @next/next/no-img-element */
+
 import { useQuery } from '@tanstack/react-query';
 import { blog } from 'lib/blog';
 import { IBlog } from 'lib/type';
@@ -10,9 +12,9 @@ import MainHeading from '@/components/MainHeading';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 import CommentForms from '@/components/Comments/commentSection';
 import { Toaster } from 'react-hot-toast';
-import Image from 'next/image';
 import Link from 'next/link';
 import { useMemo } from 'react';
+import { getBlogImageSrc } from 'lib/blog/image';
 interface BlogClientProps {
   slug: string;
 }
@@ -92,12 +94,12 @@ export default function BlogClient({ slug }: BlogClientProps) {
             <div className="flex-1">
               {b?.image && (
                 <div className="md:w-[775px] h-64 md:h-[400px] relative rounded-3xl overflow-hidden my-4 bg-gray-100">
-                  <Image
-                    src={b.image}
+                  <img
+                    src={getBlogImageSrc(b.image) ?? ''}
                     alt={b.title || 'Blog image'}
-                    fill
-                    className="object-cover"
-                    priority
+                    className="h-full w-full object-cover"
+                    loading="eager"
+                    decoding="async"
                   />
                 </div>
               )}
@@ -147,12 +149,12 @@ export default function BlogClient({ slug }: BlogClientProps) {
                           <div className="flex gap-3 hover:opacity-80 transition-opacity">
                             {r.image && (
                               <div className="rounded-lg overflow-hidden flex-shrink-0">
-                                <Image
-                                  src={r.image}
+                                <img
+                                  src={getBlogImageSrc(r.image) ?? ''}
                                   alt={r.title}
-                                  width={100}
-                                  height={50}
                                   className="w-20 h-12 object-cover"
+                                  loading="lazy"
+                                  decoding="async"
                                 />
                               </div>
                             )}
@@ -207,20 +209,6 @@ export default function BlogClient({ slug }: BlogClientProps) {
         </div>
       </Container>
       <Footer />
-
-      {/* CKEditor 5 content styles for proper rendering */}
-      <style jsx global>{`
-        .ck-content ul,
-        .ck-content ol {
-          padding-left: 1.5em;
-          margin-bottom: 1em;
-        }
-
-        .ck-content p {
-          margin-bottom: 1em;
-        }
-        }
-      `}</style>
     </>
   );
 }

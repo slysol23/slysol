@@ -88,7 +88,7 @@ const siteLinks = [
     links: [
       {
         icon: <BsTelephoneFill />,
-        name: `03104150111`,
+        name: `+92-3104150111`,
         link: 'tel:+92-3104150111',
       },
       {
