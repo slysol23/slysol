@@ -19,7 +19,7 @@ export default function Header({ classes }: HeaderProps) {
   const { user } = useUser();
 
   const pathname = usePathname();
-  const pageTitle = pathname.split('/')[1];
+  const pageTitle = pathname?.split('/')[1] ?? '';
   const navRef = useRef<HTMLDivElement>(null);
   const Bar3Ref = useRef<HTMLDivElement>(null);
 
@@ -84,7 +84,7 @@ export default function Header({ classes }: HeaderProps) {
                 flex flex-wrap
                 items-center
                 justify-between
-                w-full md:h-[100px] h-[70px]
+                w-full md:h-25 h-17.5
                 text-lg text-black ${classes?.root}
               `}
     >
@@ -107,10 +107,10 @@ export default function Header({ classes }: HeaderProps) {
                 md:flex md:items-center md:w-auto md:animate-none
                 w-3/4 md:relative absolute top-0 left-0 
                 ${isOpen === null && 'hidden'} ${
-          isOpen
-            ? 'animate-left-to-right'
-            : 'animate-right-to-left md:translate-x-0 -translate-x-[100%]'
-        }
+                  isOpen
+                    ? 'animate-left-to-right'
+                    : 'animate-right-to-left md:translate-x-0 -translate-x-full'
+                }
               `}
       >
         <div className="relative">

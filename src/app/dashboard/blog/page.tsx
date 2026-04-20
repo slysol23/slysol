@@ -4,21 +4,73 @@ import React, { useState, useEffect } from 'react';
 import { blog } from 'lib/blog';
 import { comments } from 'lib/comments';
 import { BlogApiResponse, IBlog } from 'lib/type';
-import { FaPen, FaTrash, FaPlus, FaEye, FaCommentDots } from 'react-icons/fa';
+import { FaPen, FaTrash, FaEye, FaCommentDots } from 'react-icons/fa';
+import { MdPublicOff, MdPublish } from 'react-icons/md';
 import Link from 'next/link';
 import { useUser } from '../../../providers/UserProvider';
-import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
+import { toast } from 'react-toastify';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { BreadcrumbItem } from '@/components/breadCrum';
+import DashboardListTable from '@/components/dashboard/DashboardListTable';
+import { getBlogImageSrc } from 'lib/blog/image';
+import { DashboardTableColumn } from 'types/dashboard';
+import DashboardButton from '@/components/Button/DashboardButton';
 import Image from 'next/image';
 
 export default function BlogDashboardPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+
+  useEffect(() => {
+    const updated = searchParams?.get('updated');
+    const published = searchParams?.get('published');
+    const deleted = searchParams?.get('deleted');
+    const created = searchParams?.get('created');
+
+    if (created === 'true') {
+      toast.success('Blog created successfully!', {
+        autoClose: 3000,
+        position: 'bottom-right',
+      });
+      router.replace('/dashboard/blog', { scroll: false });
+    }
+    if (updated === 'true') {
+      toast.success('Blog updated successfully!', {
+        autoClose: 3000,
+        position: 'bottom-right',
+      });
+      router.replace('/dashboard/blog', { scroll: false });
+    }
+    if (published === 'true') {
+      toast.success('Blog published successfully!', {
+        autoClose: 3000,
+        position: 'bottom-right',
+      });
+      router.replace('/dashboard/blog', { scroll: false });
+    }
+    if (published === 'false') {
+      toast.success('Blog unpublished successfully!', {
+        autoClose: 3000,
+        position: 'bottom-right',
+      });
+      router.replace('/dashboard/blog', { scroll: false });
+    }
+    if (deleted === 'true') {
+      toast.success('Blog deleted successfully!', {
+        autoClose: 3000,
+        position: 'bottom-right',
+      });
+      router.replace('/dashboard/blog', { scroll: false });
+    }
+  }, [searchParams, router]);
+
   const queryClient = useQueryClient();
-  const { user, isLoading: userLoading } = useUser();
+  const { user } = useUser();
   const [page, setPage] = useState(1);
   const limit = 10;
 
-  // In BlogDashboardPage
   const { data, isLoading, error } = useQuery<BlogApiResponse, Error>({
     queryKey: ['blogs', page],
     queryFn: () => blog.getAll(page, limit, false),
@@ -29,23 +81,16 @@ export default function BlogDashboardPage() {
   const blogs: IBlog[] = data?.data ?? [];
   const totalPages: number = data?.totalPages ?? 1;
 
-  const blogIds = blogs.map((b) => b.id);
-
-  const {
-    data: commentsData,
-    isLoading: commentsLoading,
-    error: commentsError,
-  } = useQuery<{ blogId: number; count: number }[], Error>({
+  const blogIds = blogs.map((item) => item.id);
+  const { data: commentsData, isLoading: commentsLoading } = useQuery<
+    { blogId: number; count: number }[],
+    Error
+  >({
     queryKey: ['commentsCount', blogIds],
     queryFn: () => comments.getCounts(blogIds),
     staleTime: 1000 * 60,
     enabled: blogs.length > 0,
   });
-
-  useEffect(() => {
-    if (commentsError)
-      console.error('Error fetching comments count:', commentsError);
-  }, [commentsData, commentsError]);
 
   const commentsCountMap: Record<number, number> = {};
   (commentsData || []).forEach((item) => {
@@ -57,8 +102,33 @@ export default function BlogDashboardPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['blogs'] });
       queryClient.invalidateQueries({ queryKey: ['commentsCount'] });
+      router.push('/dashboard/blog?deleted=true');
     },
-    onError: (err) => alert(err.message),
+    onError: (mutationError) => {
+      toast.error(`Failed to delete blog: ${mutationError.message}`, {
+        autoClose: 3000,
+        position: 'bottom-right',
+      });
+    },
+  });
+
+  const publishMutation = useMutation<
+    void,
+    Error,
+    { id: number; nextPublished: boolean }
+  >({
+    mutationFn: ({ id, nextPublished }) =>
+      blog.publish(id, nextPublished).then(() => {}),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['blogs'] });
+      router.push(`/dashboard/blog?published=${variables.nextPublished}`);
+    },
+    onError: (mutationError) => {
+      toast.error(`Failed to update publish status: ${mutationError.message}`, {
+        autoClose: 3000,
+        position: 'bottom-right',
+      });
+    },
   });
 
   const handleDelete = (id: number) => {
@@ -66,223 +136,205 @@ export default function BlogDashboardPage() {
     deleteMutation.mutate(id);
   };
 
-  const getAuthorDisplay = (b: IBlog) => {
-    if (Array.isArray(b.authors) && b.authors.length > 0) {
-      return b.authors.map((a) => `${a.firstName} ${a.lastName}`).join(', ');
+  const handleTogglePublish = (id: number, currentStatus: boolean) => {
+    const action = currentStatus ? 'unpublish' : 'publish';
+    if (!confirm(`Are you sure you want to ${action} this blog?`)) return;
+
+    publishMutation.mutate({
+      id,
+      nextPublished: !currentStatus,
+    });
+  };
+
+  const getAuthorDisplay = (blogItem: IBlog) => {
+    if (Array.isArray(blogItem.authors) && blogItem.authors.length > 0) {
+      return blogItem.authors
+        .map((authorItem) => `${authorItem.firstName} ${authorItem.lastName}`)
+        .join(', ');
     }
     return 'No authors';
   };
 
-  const getUpdatedByDisplay = (b: IBlog) => {
-    if (!b.updatedBy) return '—';
-    if (typeof b.updatedBy === 'string') return b.updatedBy;
-    if (typeof b.updatedBy === 'object' && b.updatedBy.name)
-      return b.updatedBy.name;
-    return '—';
+  const getUpdatedByDisplay = (blogItem: IBlog) => {
+    if (!blogItem.updatedBy) return '-';
+    if (typeof blogItem.updatedBy === 'string') return blogItem.updatedBy;
+    if (typeof blogItem.updatedBy === 'object' && blogItem.updatedBy.name) {
+      return blogItem.updatedBy.name;
+    }
+    return '-';
   };
 
   const breadCrumb: BreadcrumbItem[] = [
     { label: 'Blogs', href: '/dashboard/blog' },
   ];
 
-  if (userLoading || isLoading) {
-    return (
-      <div className="min-h-screen text-black flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
-          <p className="text-xl">Loading...</p>
+  const columns: DashboardTableColumn<IBlog>[] = [
+    {
+      key: 'cover',
+      header: 'Cover',
+      skeletonType: 'image',
+      cell: (blogItem) => {
+        const imageSrc = getBlogImageSrc(blogItem.image);
+        return imageSrc ? (
+          <Image
+            height={200}
+            width={200}
+            unoptimized
+            src={imageSrc}
+            alt={blogItem.title}
+            className="w-20 h-12 object-cover rounded-lg"
+            loading="lazy"
+            decoding="async"
+          />
+        ) : (
+          <span className="text-gray-400 text-sm">No image</span>
+        );
+      },
+    },
+    {
+      key: 'title',
+      header: 'Title',
+      className: 'min-w-[180px] max-w-[180px] text-xs sm:text-sm font-semibold',
+      skeletonType: 'text',
+      cell: (blogItem) => (
+        <div className="truncate" title={blogItem.title}>
+          {blogItem.title}
         </div>
-      </div>
-    );
-  }
+      ),
+    },
+    {
+      key: 'status',
+      header: 'Status',
+      skeletonType: 'badge',
+      cell: (blogItem) => (
+        <span
+          className={`px-2 py-1 rounded text-xs font-medium ${
+            blogItem.is_published
+              ? 'bg-green-100 text-green-800'
+              : 'bg-yellow-100 text-yellow-800'
+          }`}
+        >
+          {blogItem.is_published ? 'Published' : 'Draft'}
+        </span>
+      ),
+    },
+    {
+      key: 'author',
+      header: 'Author',
+      className: 'text-xs sm:text-sm whitespace-nowrap',
+      skeletonType: 'text',
+      cell: (blogItem) => getAuthorDisplay(blogItem),
+    },
+    {
+      key: 'updatedAt',
+      header: 'Updated At',
+      className: 'text-xs sm:text-sm whitespace-nowrap',
+      skeletonType: 'text',
+      cell: (blogItem) =>
+        new Date(blogItem.updatedAt).toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: 'numeric',
+          year: 'numeric',
+        }),
+    },
+    {
+      key: 'updatedBy',
+      header: 'Updated By',
+      className: 'text-xs sm:text-sm whitespace-nowrap',
+      skeletonType: 'text',
+      cell: (blogItem) => getUpdatedByDisplay(blogItem),
+    },
+    {
+      key: 'actions',
+      header: 'Actions',
+      skeletonType: 'actions',
+      cell: (blogItem) => {
+        const commentCount = commentsCountMap[blogItem.id] || 0;
 
-  if (error)
-    return <p className="text-red-500">Error loading blogs: {error.message}</p>;
+        return (
+          <div className="flex items-center gap-1.5">
+            <Link
+              href={`/blog/${blogItem.slug}`}
+              className="text-black hover:text-gray-600 transition"
+              title="View"
+            >
+              <FaEye size={15} />
+            </Link>
+            <Link
+              href={`/dashboard/blog/${blogItem.id}/comments`}
+              className="relative text-blue-500 hover:text-blue-400 transition inline-block"
+              title={`View Comments (${commentCount})`}
+            >
+              <FaCommentDots size={17} />
+              {commentCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full min-w-4.5 text-center leading-none">
+                  {commentCount > 99 ? '99+' : commentCount}
+                </span>
+              )}
+              {commentsLoading && (
+                <span className="absolute -top-2 -right-2 bg-gray-400 text-white text-xs px-1.5 py-0.5 rounded-full">
+                  ...
+                </span>
+              )}
+            </Link>
+            <button
+              onClick={() =>
+                handleTogglePublish(blogItem.id, blogItem.is_published)
+              }
+              disabled={publishMutation.isPending}
+              className={`transition-colors disabled:opacity-40 ${
+                blogItem.is_published
+                  ? 'text-orange-500 hover:text-orange-700'
+                  : 'text-green-500 hover:text-green-700'
+              }`}
+              title={blogItem.is_published ? 'Unpublish' : 'Publish'}
+            >
+              {blogItem.is_published ? (
+                <MdPublicOff size={16} />
+              ) : (
+                <MdPublish size={16} />
+              )}
+            </button>
+            <Link
+              href={`/dashboard/blog/edit/${blogItem.id}`}
+              className="text-yellow-500 hover:text-yellow-300 transition"
+              title="Edit"
+            >
+              <FaPen size={15} />
+            </Link>
+            <button
+              onClick={() => handleDelete(blogItem.id)}
+              disabled={deleteMutation.isPending}
+              className="text-red-500 hover:text-red-400 transition disabled:opacity-40"
+              title="Delete"
+            >
+              <FaTrash size={15} />
+            </button>
+          </div>
+        );
+      },
+    },
+  ];
 
   return (
-    <>
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-black">
-          Blogs
-          <div className="mt-4">
-            <Breadcrumb items={breadCrumb} />
-          </div>
-        </h1>
-        <Link
-          href="/dashboard/blog/add"
-          className="bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-500 flex items-center gap-2"
-        >
-          <FaPlus /> Add Blog
-        </Link>
-      </div>
-
-      {commentsError && (
-        <div className="mb-4 p-3 bg-yellow-100 border border-yellow-400 text-yellow-800 rounded">
-          Warning: Could not load comment counts. {commentsError.message}
-        </div>
-      )}
-
-      {blogs.length === 0 ? (
-        <p className="text-gray-400">No blogs found.</p>
-      ) : (
-        <>
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border border-gray-700 rounded-lg">
-              <thead className="bg-blue text-white">
-                <tr>
-                  <th className="p-3">Cover</th>
-                  <th className="p-3">Title</th>
-                  <th className="p-3">Status</th>
-                  <th className="p-3">Author</th>
-                  <th className="p-3">Updated At</th>
-                  <th className="p-3">Updated By</th>
-                  <th className="p-3">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {blogs.map((b) => {
-                  const commentCount = commentsCountMap[b.id] || 0;
-
-                  return (
-                    <tr
-                      key={b.id}
-                      className="border-t border-gray-700 hover:bg-gray-400 transition text-black"
-                    >
-                      {/* Cover Image */}
-                      <td className="p-3">
-                        {b.image ? (
-                          <Image
-                            width={100}
-                            height={100}
-                            unoptimized
-                            src={
-                              b.image.startsWith('data:')
-                                ? b.image
-                                : `data:image/jpeg;base64,${b.image}`
-                            }
-                            alt={b.title}
-                            className="w-20 h-12 object-cover rounded-lg"
-                          />
-                        ) : (
-                          <span className="text-gray-400 text-sm">
-                            No image
-                          </span>
-                        )}
-                      </td>
-
-                      {/* Title */}
-                      <td
-                        className="p-3 font-semibold max-w-xs truncate"
-                        title={b.title}
-                      >
-                        {b.title}
-                      </td>
-
-                      {/* Status */}
-                      <td className="p-3">
-                        <span
-                          className={`px-2 py-1 rounded text-xs font-medium ${
-                            b.is_published
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-yellow-100 text-yellow-800'
-                          }`}
-                        >
-                          {b.is_published ? 'Published' : 'Draft'}
-                        </span>
-                      </td>
-
-                      {/* Author */}
-                      <td className="p-3 text-sm">{getAuthorDisplay(b)}</td>
-
-                      {/* Updated At */}
-                      <td className="p-3 text-sm">
-                        {new Date(b.updatedAt).toLocaleDateString('en-GB', {
-                          day: '2-digit',
-                          month: 'numeric',
-                          year: 'numeric',
-                        })}
-                      </td>
-
-                      {/* Updated By */}
-                      <td className="p-3 text-sm">{getUpdatedByDisplay(b)}</td>
-
-                      {/* Actions */}
-                      <td className="p-3">
-                        <div className="flex items-center gap-1.5">
-                          <Link
-                            href={`/blog/${b.slug}`}
-                            className="text-black hover:text-gray-600 transition"
-                            title="View"
-                          >
-                            <FaEye size={15} />
-                          </Link>
-                          <Link
-                            href={`/dashboard/blog/${b.id}/comments`}
-                            className="relative text-blue-500 hover:text-blue-400 transition inline-block"
-                            title={`View Comments (${commentCount})`}
-                          >
-                            <FaCommentDots size={17} />
-                            {commentCount > 0 && (
-                              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center leading-none">
-                                {commentCount > 99 ? '99+' : commentCount}
-                              </span>
-                            )}
-                            {commentsLoading && (
-                              <span className="absolute -top-2 -right-2 bg-gray-400 text-white text-xs px-1.5 py-0.5 rounded-full">
-                                ...
-                              </span>
-                            )}
-                          </Link>
-                          <Link
-                            href={`/dashboard/blog/edit/${b.id}`}
-                            className="text-yellow-500 hover:text-yellow-300 transition"
-                            title="Edit"
-                          >
-                            <FaPen size={15} />
-                          </Link>
-                          <button
-                            onClick={() => handleDelete(b.id)}
-                            disabled={deleteMutation.isPending}
-                            className="text-red-500 hover:text-red-400 transition disabled:opacity-40"
-                            title="Delete"
-                          >
-                            <FaTrash size={15} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <div className="flex justify-center items-center gap-4 mt-6">
-              <button
-                onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-                disabled={page === 1}
-                className="px-4 py-2 rounded-lg bg-gray-200 text-black hover:bg-gray-500 transition disabled:opacity-40"
-              >
-                ←
-              </button>
-              <span className="text-gray-700 font-medium">
-                Page {page} of {totalPages}
-              </span>
-              <button
-                onClick={() =>
-                  setPage((prev) => Math.min(prev + 1, totalPages))
-                }
-                disabled={page === totalPages}
-                className="px-4 py-2 rounded-lg bg-gray-200 text-black disabled:opacity-40 hover:bg-gray-500 transition"
-              >
-                →
-              </button>
-            </div>
-          )}
-        </>
-      )}
-    </>
+    <DashboardListTable
+      title="Blogs"
+      breadcrumbs={breadCrumb}
+      headerActions={
+        <DashboardButton href="/dashboard/blog/add">Blog</DashboardButton>
+      }
+      data={blogs}
+      columns={columns}
+      rowKey={(blog) => blog.id}
+      loading={isLoading}
+      error={error?.message || null}
+      emptyMessage="No blogs found."
+      pagination={{
+        page,
+        totalPages,
+        onPrevious: () => setPage((prev) => Math.max(prev - 1, 1)),
+        onNext: () => setPage((prev) => Math.min(prev + 1, totalPages)),
+      }}
+    />
   );
 }

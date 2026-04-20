@@ -10,8 +10,9 @@ import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import Title from '@/components/Title';
 import { BlogApiResponse, IBlog, IAuthor } from 'lib/type';
-import Image from 'next/image';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
+import { getBlogImageSrc } from 'lib/blog/image';
+import Image from 'next/image';
 
 export default function BlogPage() {
   const [page, setPage] = useState(1);
@@ -36,7 +37,6 @@ export default function BlogPage() {
 
   const allBlogs: IBlog[] = blogQuery.data?.data ?? [];
 
-  // ✅ No need to filter since API already returns only published blogs
   const blogs = allBlogs;
 
   const total = blogQuery.data?.total ?? 0;
@@ -80,17 +80,16 @@ export default function BlogPage() {
                   className="backdrop-blur p-6 rounded-3xl shadow-md hover:scale-[1.02] transition-all duration-300"
                 >
                   <Link href={b.slug ? `/blog/${b.slug}` : `/blog/id/${b.id}`}>
-                    {b.image && (
-                      <div className="relative w-full h-56 mb-4 bg-gray-800 rounded-2xl overflow-hidden">
-                        <Image
-                          src={b.image}
-                          height={800}
-                          width={500}
-                          alt={b.title}
-                          className="object-cover"
-                          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        />
-                      </div>
+                    {getBlogImageSrc(b.image) && (
+                      <Image
+                        src={getBlogImageSrc(b.image) ?? ''}
+                        alt={b.title}
+                        className="w-full h-56 mb-4 object-cover rounded-2xl"
+                        loading="lazy"
+                        decoding="async"
+                        height={200}
+                        width={200}
+                      />
                     )}
 
                     <h2 className="text-2xl font-bold text-blue mb-2 truncate">
@@ -138,7 +137,7 @@ export default function BlogPage() {
             </div>
 
             {/* Pagination */}
-            <div className="flex justify-center items-center gap-4 pb-20">
+            {/* <div className="flex justify-center items-center gap-4 pb-20">
               <button
                 onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
                 disabled={page === 1 || blogQuery.isFetching}
@@ -160,7 +159,7 @@ export default function BlogPage() {
               >
                 →
               </button>
-            </div>
+            </div> */}
           </>
         )}
       </Container>

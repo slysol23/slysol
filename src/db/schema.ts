@@ -1,3 +1,4 @@
+import { relations } from 'drizzle-orm';
 import {
   pgTable,
   text,
@@ -24,7 +25,7 @@ export const blogSchema = pgTable('blog', {
     .references(() => authorSchema.id),
   title: text('title').notNull(),
   content: text('content').notNull(),
-  image: text('image').notNull(),
+  image: text('image'),
   description: text('description').notNull(),
   tags: jsonb('tags'),
   meta: jsonb('meta'),
@@ -56,9 +57,6 @@ export const commentSchema = pgTable('comments', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
-export type User = typeof userSchema.$inferSelect;
-export type NewUser = typeof userSchema.$inferInsert;
-/** Many-to-many table */
 export const blogAuthorsSchema = pgTable('blog_authors', {
   blogId: integer('blog_id')
     .notNull()
@@ -68,3 +66,61 @@ export const blogAuthorsSchema = pgTable('blog_authors', {
     .notNull()
     .references(() => authorSchema.id, { onDelete: 'cascade' }),
 });
+
+export const productCategorySchema = pgTable('product_category', {
+  id: varchar('id', { length: 255 }).primaryKey().unique().notNull(),
+  name: varchar('name', { length: 255 }).notNull(),
+  is_published: boolean('is_published').default(false).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  updatedBy: text('updated_by'),
+});
+
+export const productSchema = pgTable('products', {
+  id: integer('id').primaryKey().unique().notNull().generatedAlwaysAsIdentity(),
+
+  categoryId: varchar('category_id', { length: 255 })
+    .notNull()
+    .references(() => productCategorySchema.id, {
+      onDelete: 'restrict',
+      onUpdate: 'cascade',
+    }),
+
+  title: text('title').notNull(),
+  category: text('category').notNull(),
+  images: jsonb('images').notNull(),
+  overview: text('overview').notNull(),
+  challenges: text('challenges').notNull(),
+  approach: text('approach').notNull(),
+  outcomes: text('outcomes').notNull(),
+  feedback: text('feedback').notNull(),
+  techstack: jsonb('techstack').notNull(),
+  is_published: boolean('is_published').default(false).notNull(),
+  description: text('description').notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+  updatedBy: text('updated_by'),
+});
+
+export const productCategoryRelations = relations(
+  productCategorySchema,
+  ({ many }) => ({
+    products: many(productSchema),
+  }),
+);
+
+export const productRelations = relations(productSchema, ({ one }) => ({
+  productCategory: one(productCategorySchema, {
+    fields: [productSchema.categoryId],
+    references: [productCategorySchema.id],
+  }),
+}));
+
+export type User = typeof userSchema.$inferSelect;
+export type NewUser = typeof userSchema.$inferInsert;
+
+export type ProductCategory = typeof productCategorySchema.$inferSelect;
+export type NewProductCategory = typeof productCategorySchema.$inferInsert;
+
+export type Product = typeof productSchema.$inferSelect;
+export type NewProduct = typeof productSchema.$inferInsert;

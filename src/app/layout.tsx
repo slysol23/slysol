@@ -1,10 +1,12 @@
-// @ts-ignore: Allow side-effect import of global CSS without type declarations
 import './globals.css';
+import 'react-loading-skeleton/dist/skeleton.css';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import { Basic } from 'next/font/google';
 import { AppContextsProvider } from 'providers';
 import { SessionProvider } from 'next-auth/react';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const NeueMachina = localFont({
   src: [
@@ -70,6 +72,14 @@ export default function RootLayout({
         />
       </head>
       <body className={`${NeueMachina.variable} ${basic.variable} text-dark`}>
+        <ToastContainer
+          position="bottom-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          pauseOnHover
+        />
         <SessionProvider>
           <AppContextsProvider>{children}</AppContextsProvider>
         </SessionProvider>

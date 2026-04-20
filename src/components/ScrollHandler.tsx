@@ -6,7 +6,7 @@ const ScrollHandler = () => {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    const section = searchParams.get('section');
+    const section = searchParams?.get('section');
     if (section) {
       const element = document.getElementById(section);
       if (element) {
