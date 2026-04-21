@@ -2,10 +2,14 @@ import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { toast } from 'react-toastify';
+import { PRODUCT_CATEGORY_PAGE_SIZE } from '@/utils/product-category';
 
 export interface ProductCategory {
   id: string;
   name: string;
+  is_published: boolean;
+  createdAt: string;
+  updatedAt: string;
   updatedBy: string | null;
 }
 
@@ -43,7 +47,16 @@ export interface ProductResponse {
   data: ProductItem;
 }
 
+export interface ProductCategoryMeta {
+  records: number;
+  page: number;
+  limit: number;
+  total_pages: number;
+}
+
 export interface ProductCategoryResponse {
+  message: string;
+  meta: ProductCategoryMeta;
   data: ProductCategory[];
 }
 
@@ -75,7 +88,7 @@ export const formatDate = (value?: string | null) => {
   });
 };
 
-export const readResponse = async <T,>(response: Response): Promise<T> => {
+export const readResponse = async <T>(response: Response): Promise<T> => {
   const payload = (await response.json().catch(() => null)) as
     | (T & ApiErrorPayload)
     | null;
@@ -87,13 +100,46 @@ export const readResponse = async <T,>(response: Response): Promise<T> => {
   return payload as T;
 };
 
-const fetchProducts = async (page: number) => {
+export const categoriesPage = async (
+  page = 1,
+  limit = PRODUCT_CATEGORY_PAGE_SIZE,
+) => {
   const response = await fetch(
-    `/api/product?page=${page}&limit=${PAGE_SIZE}`,
+    `/api/product-category?page=${page}&limit=${limit}`,
     {
       cache: 'no-store',
     },
   );
+
+  return readResponse<ProductCategoryResponse>(response);
+};
+
+export const fetchAllProductCategories = async (
+  limit = PRODUCT_CATEGORY_PAGE_SIZE,
+): Promise<ProductCategory[]> => {
+  const firstPage = await categoriesPage(1, limit);
+  const totalPages = firstPage.meta?.total_pages ?? 0;
+
+  if (totalPages <= 1) {
+    return firstPage.data ?? [];
+  }
+
+  const remainingPages = await Promise.all(
+    Array.from({ length: totalPages - 1 }, (_, index) =>
+      categoriesPage(index + 2, limit),
+    ),
+  );
+
+  return [
+    ...(firstPage.data ?? []),
+    ...remainingPages.flatMap((page) => page.data ?? []),
+  ];
+};
+
+const fetchProducts = async (page: number) => {
+  const response = await fetch(`/api/product?page=${page}&limit=${PAGE_SIZE}`, {
+    cache: 'no-store',
+  });
 
   return readResponse<ProductApiResponse>(response);
 };

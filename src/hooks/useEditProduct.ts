@@ -6,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { useUser } from 'hooks/useUser';
 import {
-  ProductCategoryResponse,
+  fetchAllProductCategories,
   ProductItem,
   ProductResponse,
   getStringList,
@@ -21,12 +21,7 @@ import {
 import { normalizeCategoryName } from '@/utils/product-category';
 
 const fetchCategories = async () => {
-  const response = await fetch('/api/product-category', {
-    cache: 'no-store',
-  });
-
-  const data = await readResponse<ProductCategoryResponse>(response);
-  return data.data ?? [];
+  return fetchAllProductCategories();
 };
 
 const fetchProduct = async (productId: number) => {

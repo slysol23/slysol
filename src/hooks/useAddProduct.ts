@@ -4,7 +4,10 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { useUser } from 'hooks/useUser';
-import { ProductCategoryResponse, readResponse } from 'hooks/useProducts';
+import {
+  fetchAllProductCategories,
+  readResponse,
+} from 'hooks/useProducts';
 import {
   ProductCreateForm,
   ProductCreateFormSchema,
@@ -17,12 +20,7 @@ import {
 } from '@/utils/product-category';
 
 const fetchCategories = async () => {
-  const response = await fetch('/api/product-category', {
-    cache: 'no-store',
-  });
-
-  const data = await readResponse<ProductCategoryResponse>(response);
-  return data.data ?? [];
+  return fetchAllProductCategories();
 };
 
 export const useAddProduct = () => {

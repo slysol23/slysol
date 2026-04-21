@@ -283,7 +283,7 @@ export default function ProductForm({
               <input
                 type="text"
                 {...register('title')}
-                className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 box-border"
+                className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-0 focus:border-blue-500 box-border"
                 placeholder="Enter project title"
               />
               {errors.title && (
@@ -306,7 +306,7 @@ export default function ProductForm({
                   onChange={handleCategoryInputChange}
                   onFocus={() => setCategoryDropdownOpen(true)}
                   disabled={categoriesLoading}
-                  className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 box-border"
+                  className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-0 focus:border-blue-500 disabled:bg-gray-100 box-border"
                   placeholder={
                     categoriesLoading
                       ? 'Loading categories...'
@@ -371,7 +371,7 @@ export default function ProductForm({
                       type="text"
                       value={image}
                       onChange={(e) => handleImageChange(index, e.target.value)}
-                      className="w-full rounded-lg border border-gray-300 p-3 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 box-border"
+                      className="w-full rounded-lg border border-gray-300 p-3 pr-10 focus:outline-none focus:ring-0 focus:border-blue-500 box-border"
                       placeholder="Enter image URL or path"
                     />
                     {index > 0 && (
@@ -403,7 +403,7 @@ export default function ProductForm({
                 <button
                   type="button"
                   onClick={() => setTechStackDropdownOpen((p) => !p)}
-                  className="flex w-full items-center justify-between rounded-lg border border-gray-300 bg-white p-3 text-left focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="flex w-full items-center justify-between rounded-lg border border-gray-300 bg-white p-3 text-left focus:outline-none focus:ring-0 focus:border-blue-500"
                 >
                   <span className="truncate text-gray-700">
                     {techStackSummary}
@@ -418,7 +418,8 @@ export default function ProductForm({
                   <div className="absolute z-50 mt-2 max-h-64 w-full overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg left-0 right-0">
                     {TECH_STACK_OPTIONS.map((option) => {
                       const isSelected = selectedTechStacks.some(
-                        (item) => normalizeTechStackValue(item) === option.value,
+                        (item) =>
+                          normalizeTechStackValue(item) === option.value,
                       );
                       return (
                         <button
