@@ -14,7 +14,7 @@ import UserForm, {
   userEditFormSchema,
 } from '@/components/Form/UserForm';
 import { BreadcrumbItem } from '@/components/breadCrum';
-import { toast } from 'react-toastify';
+import { showDashboardError } from '@/utils/dashboard-alert';
 
 export default function EditUserPage() {
   const router = useRouter();
@@ -55,9 +55,7 @@ export default function EditUserPage() {
       router.push('/dashboard/user?updated=true');
     },
     onError: (error: any) => {
-      toast.error('Failed to update user: ' + error.message, {
-        autoClose: 3000,
-      });
+      void showDashboardError('Failed to update user: ' + error.message);
     },
   });
 

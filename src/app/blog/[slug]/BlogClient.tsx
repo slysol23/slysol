@@ -11,7 +11,6 @@ import Footer from '@/components/Footer';
 import MainHeading from '@/components/MainHeading';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 import CommentForms from '@/components/Comments/commentSection';
-import { Toaster } from 'react-hot-toast';
 import Link from 'next/link';
 import { useMemo } from 'react';
 import { getBlogImageSrc } from 'lib/blog/image';
@@ -205,7 +204,6 @@ export default function BlogClient({ slug }: BlogClientProps) {
 
           {/* Comments */}
           <CommentForms blogId={b?.id || 0} />
-          <Toaster position="top-right" />
         </div>
       </Container>
       <Footer />

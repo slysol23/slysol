@@ -2,7 +2,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
-import { toast } from 'react-toastify';
 import { useUser } from 'hooks/useUser';
 import {
   fetchAllProductCategories,
@@ -18,6 +17,7 @@ import {
   normalizeCategoryId,
   normalizeCategoryName,
 } from '@/utils/product-category';
+import { showDashboardError } from '@/utils/dashboard-alert';
 
 const fetchCategories = async () => {
   return fetchAllProductCategories();
@@ -95,10 +95,7 @@ export const useAddProduct = () => {
       router.push('/dashboard/product?created=true');
     },
     onError: (error: Error) => {
-      toast.error(`Failed to create product: ${error.message}`, {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardError(`Failed to create product: ${error.message}`);
     },
   });
 

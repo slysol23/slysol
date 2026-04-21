@@ -127,7 +127,7 @@ const ProductPage = () => {
           )}
           <button
             onClick={() =>
-              handleTogglePublish(product.id, product.is_published)
+              void handleTogglePublish(product.id, product.is_published)
             }
             disabled={publishMutation.isPending}
             className={`transition-colors disabled:opacity-40 ${
@@ -147,7 +147,7 @@ const ProductPage = () => {
             <FaPen />
           </Link>
           <button
-            onClick={() => handleDelete(product.id)}
+            onClick={() => void handleDelete(product.id)}
             disabled={deleteMutation.isPending}
             className="text-red-500 hover:text-red-700 transition-colors disabled:opacity-40"
             title="Delete product"

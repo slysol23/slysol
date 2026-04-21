@@ -3,7 +3,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
-import { toast } from 'react-toastify';
 import { useUser } from 'hooks/useUser';
 import {
   fetchAllProductCategories,
@@ -19,6 +18,10 @@ import {
   parseTechStackList,
 } from '@/utils/productForm';
 import { normalizeCategoryName } from '@/utils/product-category';
+import {
+  confirmDashboardAction,
+  showDashboardError,
+} from '@/utils/dashboard-alert';
 
 const fetchCategories = async () => {
   return fetchAllProductCategories();
@@ -93,10 +96,9 @@ export const useEditProduct = () => {
       router.push('/dashboard/product?updated=true');
     },
     onError: (mutationError: Error) => {
-      toast.error(`Failed to update product: ${mutationError.message}`, {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardError(
+        `Failed to update product: ${mutationError.message}`,
+      );
     },
   });
 
@@ -120,10 +122,9 @@ export const useEditProduct = () => {
       router.push(`/dashboard/product?published=${nextIsPublished}`);
     },
     onError: (mutationError: Error) => {
-      toast.error(`Failed to update publish status: ${mutationError.message}`, {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardError(
+        `Failed to update publish status: ${mutationError.message}`,
+      );
     },
   });
 
@@ -165,7 +166,7 @@ export const useEditProduct = () => {
     updateProductMutation.mutate(data);
   };
 
-  const togglePublish = () => {
+  const togglePublish = async () => {
     if (!product) return;
 
     const nextIsPublished = !product.is_published;
@@ -173,7 +174,13 @@ export const useEditProduct = () => {
       ? 'publish this product'
       : 'move this product to draft';
 
-    if (!confirm(`Are you sure you want to ${action}?`)) return;
+    const confirmed = await confirmDashboardAction({
+      title: `${nextIsPublished ? 'Publish' : 'Unpublish'} product?`,
+      text: `Are you sure you want to ${action}?`,
+      confirmButtonText: nextIsPublished ? 'Publish' : 'Unpublish',
+    });
+
+    if (!confirmed) return;
     publishProductMutation.mutate(nextIsPublished);
   };
 

@@ -13,8 +13,7 @@ import AuthorForm, {
   createAuthorFormDefaults,
   mapAuthorToFormValues,
 } from '@/components/Form/AuthorForm';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { showDashboardError } from '@/utils/dashboard-alert';
 
 export default function EditAuthorPage() {
   const router = useRouter();
@@ -45,7 +44,7 @@ export default function EditAuthorPage() {
       router.push('/dashboard/author?updated=true');
     },
     onError: () => {
-      toast.error('Failed to update author', { autoClose: 3000 });
+      void showDashboardError('Failed to update author');
     },
   });
 

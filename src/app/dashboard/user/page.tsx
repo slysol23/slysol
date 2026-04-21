@@ -9,10 +9,14 @@ import { useUser } from '../../../providers/UserProvider';
 import RoleProtected from '@/components/Role/RoleProtected';
 import DashboardListTable from '@/components/dashboard/DashboardListTable';
 import { BreadcrumbItem } from '@/components/breadCrum';
-import { toast } from 'react-toastify';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { DashboardTableColumn } from 'types/dashboard';
 import DashboardButton from '@/components/Button/DashboardButton';
+import {
+  confirmDashboardAction,
+  showDashboardError,
+  showDashboardSuccess,
+} from '@/utils/dashboard-alert';
 
 const fetchUsers = async (): Promise<IUser[]> => {
   const res = await fetch('/api/user', { cache: 'no-store' });
@@ -38,26 +42,17 @@ const UsersDashboard = () => {
     const deleted = searchParams?.get('deleted');
 
     if (created === 'true') {
-      toast.success('User created successfully!', {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardSuccess('User created successfully!');
       router.replace('/dashboard/user', { scroll: false });
     }
 
     if (updated === 'true') {
-      toast.success('User updated successfully!', {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardSuccess('User updated successfully!');
       router.replace('/dashboard/user', { scroll: false });
     }
 
     if (deleted === 'true') {
-      toast.success('User deleted successfully!', {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardSuccess('User deleted successfully!');
       router.replace('/dashboard/user', { scroll: false });
     }
   }, [searchParams, router]);
@@ -75,23 +70,22 @@ const UsersDashboard = () => {
     mutationFn: deleteUser,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
-      toast.success('User deleted successfully!', {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardSuccess('User deleted successfully!');
     },
     onError: (mutationError: any) =>
-      toast.error(
+      void showDashboardError(
         'Failed to delete user: ' + (mutationError.message || 'Unknown error'),
-        {
-          autoClose: 3000,
-          position: 'bottom-right',
-        },
       ),
   });
 
-  const handleDelete = (id: number) => {
-    if (!confirm('Are you sure you want to delete this user?')) return;
+  const handleDelete = async (id: number) => {
+    const confirmed = await confirmDashboardAction({
+      title: 'Delete user?',
+      text: 'Are you sure you want to delete this user?',
+      confirmButtonText: 'Delete',
+    });
+
+    if (!confirmed) return;
     mutation.mutate(id);
   };
 
@@ -145,7 +139,7 @@ const UsersDashboard = () => {
 
           {isAdmin && (
             <button
-              onClick={() => handleDelete(Number(userItem.id))}
+              onClick={() => void handleDelete(Number(userItem.id))}
               className="text-red-500 hover:text-red-400"
             >
               <FaTrash />

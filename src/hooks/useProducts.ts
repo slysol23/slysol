@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { toast } from 'react-toastify';
 import { PRODUCT_CATEGORY_PAGE_SIZE } from '@/utils/product-category';
+import {
+  confirmDashboardAction,
+  showDashboardError,
+  showDashboardSuccess,
+} from '@/utils/dashboard-alert';
 
 export interface ProductCategory {
   id: string;
@@ -165,34 +169,22 @@ export const useProductsPage = () => {
     let shouldReplace = false;
 
     if (created === 'true') {
-      toast.success('Product created successfully!', {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardSuccess('Product created successfully!');
       shouldReplace = true;
     }
 
     if (updated === 'true') {
-      toast.success('Product updated successfully!', {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardSuccess('Product updated successfully!');
       shouldReplace = true;
     }
 
     if (published === 'true') {
-      toast.success('Product published successfully!', {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardSuccess('Product published successfully!');
       shouldReplace = true;
     }
 
     if (published === 'false') {
-      toast.success('Product moved to draft successfully!', {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardSuccess('Product moved to draft successfully!');
       shouldReplace = true;
     }
 
@@ -213,16 +205,10 @@ export const useProductsPage = () => {
     mutationFn: deleteProduct,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
-      toast.success('Product deleted successfully!', {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardSuccess('Product deleted successfully!');
     },
     onError: (mutationError: Error) => {
-      toast.error(`Failed to delete product: ${mutationError.message}`, {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardError(`Failed to delete product: ${mutationError.message}`);
     },
   });
 
@@ -251,23 +237,34 @@ export const useProductsPage = () => {
       router.push(`/dashboard/product?published=${variables.nextPublished}`);
     },
     onError: (mutationError: Error) => {
-      toast.error(`Failed to update publish status: ${mutationError.message}`, {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardError(
+        `Failed to update publish status: ${mutationError.message}`,
+      );
     },
   });
 
-  const handleDelete = (id: number) => {
-    if (!confirm('Are you sure you want to delete this product?')) return;
+  const handleDelete = async (id: number) => {
+    const confirmed = await confirmDashboardAction({
+      title: 'Delete product?',
+      text: 'Are you sure you want to delete this product?',
+      confirmButtonText: 'Delete',
+    });
+
+    if (!confirmed) return;
     deleteMutation.mutate(id);
   };
 
-  const handleTogglePublish = (id: number, currentStatus: boolean) => {
+  const handleTogglePublish = async (id: number, currentStatus: boolean) => {
     const action = currentStatus
       ? 'unpublish this product'
       : 'publish this product';
-    if (!confirm(`Are you sure you want to ${action}?`)) return;
+    const confirmed = await confirmDashboardAction({
+      title: `${currentStatus ? 'Unpublish' : 'Publish'} product?`,
+      text: `Are you sure you want to ${action}?`,
+      confirmButtonText: currentStatus ? 'Unpublish' : 'Publish',
+    });
+
+    if (!confirmed) return;
 
     publishMutation.mutate({
       id,

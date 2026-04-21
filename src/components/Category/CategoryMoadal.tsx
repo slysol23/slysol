@@ -22,7 +22,11 @@ import {
   FiSearch,
 } from 'react-icons/fi';
 import { categoriesPage, ProductCategory } from 'hooks/useProducts';
-import Swal from 'sweetalert2';
+import {
+  confirmDashboardAction,
+  showDashboardError,
+  showDashboardSuccess,
+} from '@/utils/dashboard-alert';
 
 export default function CategoryModal({
   isOpen,
@@ -195,17 +199,14 @@ export default function CategoryModal({
   };
 
   const handleDelete = async (categoryId: string, categoryName: string) => {
-    const result = await Swal.fire({
-      title: `Do you want to delete "${categoryName}"?`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#ef4444',
-      cancelButtonColor: '#6b7280',
-      confirmButtonText: 'Yes',
-      cancelButtonText: 'No',
+    const confirmed = await confirmDashboardAction({
+      title: 'Delete category?',
+      text: `Are you sure you want to delete "${categoryName}"?`,
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel',
     });
 
-    if (!result.isConfirmed) return;
+    if (!confirmed) return;
 
     try {
       setLoading(true);
@@ -221,20 +222,14 @@ export default function CategoryModal({
         throw new Error(result.error || 'Failed to delete');
       }
 
-      await Swal.fire(
-        'Deleted!',
-        'Category has been deleted successfully',
-        'success',
-      );
+      void showDashboardSuccess('Category has been deleted successfully');
 
       setEditingCategory(null);
       setEditName('');
       await refreshCategories(Math.max(currentPage, 1));
     } catch (err) {
-      Swal.fire(
-        'Error',
+      void showDashboardError(
         err instanceof Error ? err.message : 'Failed to delete',
-        'error',
       );
     } finally {
       setLoading(false);

@@ -10,7 +10,7 @@ import UserForm, {
   userAddFormSchema,
 } from '@/components/Form/UserForm';
 import { BreadcrumbItem } from '@/components/breadCrum';
-import { toast } from 'react-toastify';
+import { showDashboardError } from '@/utils/dashboard-alert';
 
 async function createUser(data: {
   name: string;
@@ -43,9 +43,7 @@ export default function AddUserPage() {
       router.push('/dashboard/user?created=true');
     },
     onError: (error: any) => {
-      toast.error('Failed to create user: ' + error.message, {
-        autoClose: 3000,
-      });
+      void showDashboardError('Failed to create user: ' + error.message);
     },
   });
 
