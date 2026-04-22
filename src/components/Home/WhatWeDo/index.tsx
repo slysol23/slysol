@@ -7,19 +7,22 @@ import Slider from '@/components/Slider';
 const WhatWeDo = () => {
   const cardsData = [
     {
-      imageSrc: '/images/home/card1.webp',
+      imageSrc:
+        'https://res.cloudinary.com/dj6kzchpv/image/upload/v1776837340/card1_11zon_ck35zv.webp',
       heading: 'Mobile App Development',
       description:
         'Experience our user-centric mobile apps, perfect for boosting your brand.',
     },
     {
-      imageSrc: '/images/home/card2.webp',
+      imageSrc:
+        'https://res.cloudinary.com/dj6kzchpv/image/upload/v1776837511/card2_11zon_juxsgc.webp',
       heading: 'Web App Development',
       description:
         'From concept to reality, we create engaging web apps that captivate audiences.',
     },
     {
-      imageSrc: '/images/home/card3.webp',
+      imageSrc:
+        'https://res.cloudinary.com/dj6kzchpv/image/upload/v1776837511/card3_11zon_sy1ml4.webp',
       heading: 'Internal App Development',
       description:
         'Tailored apps that optimize workflows, enhancing business efficiency.',

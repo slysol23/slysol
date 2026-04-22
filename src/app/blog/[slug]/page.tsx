@@ -119,11 +119,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     b.image && b.image.startsWith('http')
       ? b.image
       : b.image && !b.image.startsWith('data:')
-      ? `${siteUrl}${b.image}`
-      : `${siteUrl}/default-blog-image.jpg`;
+        ? `${siteUrl}${b.image}`
+        : `${siteUrl}/default-blog-image.jpg`;
 
   // Always use logo for Twitter
-  const twitterImageUrl = `${siteUrl}/icons/slysol-logo.png`;
+  const twitterImageUrl = `${siteUrl}https://res.cloudinary.com/dj6kzchpv/image/upload/v1776841363/slysol-logo_alxwpv.png`;
 
   const authorNames = b.authors?.length
     ? b.authors.map((a) => `${a.firstName} ${a.lastName}`).join(', ')

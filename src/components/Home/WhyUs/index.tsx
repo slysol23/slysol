@@ -9,19 +9,22 @@ import React from 'react';
 const WhyUs = () => {
   const whyUsContent = [
     {
-      imageSrc: '/images/home/why-us1.png',
+      imageSrc:
+        'https://res.cloudinary.com/dj6kzchpv/image/upload/v1776839800/why-us1_11zon_fiyqtl.png',
       heading: 'Reach New Heights',
       description:
         'With Slysol elevate your journey and reach new heights of success through our expert guidance and unwavering support.',
     },
     {
-      imageSrc: '/images/home/why-us2.png',
+      imageSrc:
+        'https://res.cloudinary.com/dj6kzchpv/image/upload/v1776839799/why-us2_11zon_fc6bql.png',
       heading: 'Always At Your Service',
       description:
         'Our 24-hour support ensures your peace of mind, resolving your queries swiftly and efficiently.',
     },
     {
-      imageSrc: '/images/home/why-us3.png',
+      imageSrc:
+        'https://res.cloudinary.com/dj6kzchpv/image/upload/v1776839800/why-us3_11zon_ho82ci.png',
       heading: 'Better Experince',
       description:
         'Upgrade your journey with us for a better experience, where excellence is our standard and your satisfaction is our goal.',

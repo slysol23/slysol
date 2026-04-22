@@ -25,10 +25,10 @@ interface CarouselProps {
 }
 
 export default function Carousal({
-  autoplay = false,
-  autoplayTimeout = 5000,
-  autoplaySpeed = 5000,
-  autoplayHoverPause = false,
+  autoplay = true,
+  autoplayTimeout = 2000,
+  autoplaySpeed = 2000,
+  autoplayHoverPause = true,
   children,
   className = '',
   center = false,
@@ -78,7 +78,7 @@ export default function Carousal({
                   disableOnInteraction: false,
                   pauseOnMouseEnter: autoplayHoverPause,
                 }
-              : false
+              : true
           }
           speed={smartSpeed ?? autoplaySpeed}
           breakpoints={breakpoints}

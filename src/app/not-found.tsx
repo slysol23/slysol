@@ -16,7 +16,7 @@ export default function NotFound() {
       <Container className="text-3xl font-neue text-center flex flex-col items-center">
         <Link href={'/'}>
           <Image
-            src="/icons/slysol-icon.svg"
+            src="https://res.cloudinary.com/dj6kzchpv/image/upload/v1776841356/slysol-icon_ha7w10.svg"
             alt="Slysol"
             width={100}
             height={100}

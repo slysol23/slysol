@@ -17,7 +17,7 @@ import ScrollHandler from '@/components/ScrollHandler';
 const ServicesPage = () => {
   const headerData = [
     {
-      src: '/images/services/service-bg-1.svg',
+      src: 'https://res.cloudinary.com/dj6kzchpv/image/upload/v1776840805/service-bg-1_wo8wal.svg',
       alt: 'era of ai',
       title: 'A New Era Of Digital Business Platforms',
       subTitle: 'MODERN TECHNOLOGY SOLUTION',
@@ -25,7 +25,7 @@ const ServicesPage = () => {
         'Our solutions streamline operations and enhance efficiency. With customizable and intuitive platforms. Transform your  business and stay ahead of market demands. Join us to achieve sustainable growth with ease.',
     },
     {
-      src: '/images/services/service-bg-2.svg',
+      src: 'https://res.cloudinary.com/dj6kzchpv/image/upload/v1776840808/service-bg-2_rkdk3n.svg',
       alt: 'integrating needs',
       title: 'Seamless Integration for Scalable Growth',
       subTitle: 'INTEGRATING YOUR NEEDS',
@@ -33,7 +33,7 @@ const ServicesPage = () => {
         'Achieve scalable growth with our seamless integration solutions. Connect your systems and processes for a unified workflow. Enhance productivity and drive performance with our tailored solutions. Partner with us for a connected, efficient operation and sustainable growth.',
     },
     {
-      src: '/images/services/service-bg-3.svg',
+      src: 'https://res.cloudinary.com/dj6kzchpv/image/upload/v1776840816/service-bg-3_hdeypg.svg',
       alt: 'developing softwares',
       title: 'Empowering Through Cutting-Edge Solutions',
       subTitle: 'INNOVATIVE APPROACH',
@@ -47,35 +47,35 @@ const ServicesPage = () => {
       title: 'Software Development',
       description:
         'We deliver high-quality, custom software solutions tailored to your business needs. Our team of experts ensures seamless integration, scalability, and performance, enabling you to achieve your goals efficiently and effectively.',
-      src: '/images/services/service-1.webp',
+      src: 'https://res.cloudinary.com/dj6kzchpv/image/upload/v1776840288/service-1_11zon_axbzf4.webp',
       id: 'software-development',
     },
     {
       title: 'Application Development',
       description:
         'We create robust and user-friendly applications for various platforms. From initial concept to final deployment, we ensure your app meets the highest standards of functionality, security, and usability.',
-      src: '/images/services/service-2.webp',
+      src: 'https://res.cloudinary.com/dj6kzchpv/image/upload/v1776840287/service-2_11zon_py4p4c.webp',
       id: 'application-development',
     },
     {
       title: 'AI Integration',
       description:
         'We integrate advanced AI technologies to enhance your business processes. Our AI solutions streamline operations, improve decision-making, and drive innovation, giving you a competitive edge in the market.',
-      src: '/images/services/service-3.webp',
+      src: 'https://res.cloudinary.com/dj6kzchpv/image/upload/v1776840287/service-3_11zon_ae6tvs.webp',
       id: 'ai-integration',
     },
     {
       title: 'UI / UX',
       description:
         'We design intuitive and engaging user interfaces and experiences. Our focus is on creating visually appealing and user-centric designs that enhance user satisfaction and drive business success.',
-      src: '/images/services/service-4.webp',
+      src: 'https://res.cloudinary.com/dj6kzchpv/image/upload/v1776840288/service-4_11zon_lbdrjb.webp',
       id: 'ui-ux',
     },
     {
       title: 'Digital Marketing',
       description:
         'We offer comprehensive digital marketing services to boost your online presence. Our strategies include SEO, social media, and content marketing, designed to attract and engage your target audience effectively.',
-      src: '/images/services/service-5.webp',
+      src: 'https://res.cloudinary.com/dj6kzchpv/image/upload/v1776840288/service-5_11zon_aw0wt8.webp',
       id: 'digital-marketing',
     },
   ];
@@ -97,8 +97,8 @@ const ServicesPage = () => {
         margin={0}
         nav
         navText={[
-          `<img src='/icons/arrow-left.svg' class='md:mr-5 mr-2 ml-5 md:w-12 w-8'>`,
-          `<img src='/icons/arrow-right.svg' class='md:w-12 mr-5 w-8 text-end'>`,
+          `<img src='https://res.cloudinary.com/dj6kzchpv/image/upload/v1776841267/arrow-left_ynxnul.svg' class='md:mr-5 mr-2 ml-5 md:w-12 w-8'>`,
+          `<img src='https://res.cloudinary.com/dj6kzchpv/image/upload/v1776841342/arrow-right_yktglz.svg' class='md:w-12 mr-5 w-8 text-end'>`,
         ]}
         className="md:pb-0 pb-5"
       >

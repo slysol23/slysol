@@ -16,7 +16,7 @@ const Portfolio = () => {
     <>
       <div className="relative md:h-150 h-100">
         <Image
-          src="/images/portfolio/portfolio-bg.png"
+          src="https://res.cloudinary.com/dj6kzchpv/image/upload/v1776839982/portfolio-bg_11zon_gm9zte.png"
           alt="Slysol team meeting on project"
           fill
           className="w-full h-auto object-cover object-top-left"

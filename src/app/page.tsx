@@ -51,7 +51,7 @@ export default function Home() {
                 <div className="border-[2px] animate-fancyBorder absolute w-full h-full border-secondary sm:translate-y-0 -translate-y-9" />
                 <div className="rounded-fancyRadius2 sm:h-[500px] h-[400px] relative overflow-hidden">
                   <Image
-                    src="/images/home/header.webp"
+                    src="https://res.cloudinary.com/dj6kzchpv/image/upload/v1776839474/header_11zon_lcilpo.webp"
                     alt="company header"
                     fill
                     className="object-cover"
@@ -68,7 +68,7 @@ export default function Home() {
         <Section>
           <div className="grid lg:grid-cols-2 md:gap-20 gap-10 items-center mt-5">
             <Image
-              src="/images/home/who-are-we.webp"
+              src="https://res.cloudinary.com/dj6kzchpv/image/upload/v1776839695/who-are-we_11zon_qzanqg.webp"
               alt="team"
               width={1000}
               height={800}
