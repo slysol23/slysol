@@ -11,7 +11,7 @@ const Contact = () => {
     <Layout>
       <div className="relative">
         <Image
-          src="/images/contact/header.png"
+          src="https://res.cloudinary.com/dj6kzchpv/image/upload/v1776781673/header_ctthey.png"
           width={1300}
           height={300}
           alt="contact header"

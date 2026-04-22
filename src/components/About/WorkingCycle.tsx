@@ -62,7 +62,7 @@ const WorkingCycle = () => {
               </div>
               {index <= 2 && (
                 <Image
-                  src="/images/about/working-cycle-arrow.png"
+                  src="https://res.cloudinary.com/dj6kzchpv/image/upload/v1776778319/working-cycle-arrow_ba9yfv.png"
                   width={100}
                   height={100}
                   alt="arrow"

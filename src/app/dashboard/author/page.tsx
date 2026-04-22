@@ -8,11 +8,15 @@ import { FaPen, FaTrash } from 'react-icons/fa';
 import DashboardListTable from '@/components/dashboard/DashboardListTable';
 import { BreadcrumbItem } from '@/components/breadCrum';
 import axios from 'axios';
-import { toast } from 'react-toastify';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { DashboardTableColumn } from 'types/dashboard';
 import DashboardButton from '@/components/Button/DashboardButton';
 import Link from 'next/link';
+import {
+  confirmDashboardAction,
+  showDashboardError,
+  showDashboardSuccess,
+} from '@/utils/dashboard-alert';
 
 export default function AuthorDashboardPage() {
   const queryClient = useQueryClient();
@@ -25,26 +29,17 @@ export default function AuthorDashboardPage() {
     const deleted = searchParams?.get('deleted');
 
     if (created === 'true') {
-      toast.success('Author created successfully!', {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardSuccess('Author created successfully!');
       router.replace('/dashboard/author', { scroll: false });
     }
 
     if (updated === 'true') {
-      toast.success('Author updated successfully!', {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardSuccess('Author updated successfully!');
       router.replace('/dashboard/author', { scroll: false });
     }
 
     if (deleted === 'true') {
-      toast.success('Author deleted successfully!', {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardSuccess('Author deleted successfully!');
       router.replace('/dashboard/author', { scroll: false });
     }
   }, [searchParams, router]);
@@ -73,22 +68,26 @@ export default function AuthorDashboardPage() {
     onError: (mutationError: any) => {
       if (mutationError.response?.status === 409) {
         const data = mutationError.response.data;
-        toast.error(
+        void showDashboardError(
           `Cannot delete author. This author is associated with total ${data.blogsCount} blog. Please remove the author from these blogs first.`,
-          { autoClose: 5000, position: 'bottom-right' },
         );
       } else {
-        toast.error(
+        void showDashboardError(
           'Failed to delete author: ' +
             (mutationError.response?.data?.message || mutationError.message),
-          { autoClose: 3000, position: 'bottom-right' },
         );
       }
     },
   });
 
-  const handleDelete = (id: number) => {
-    if (!confirm('Are you sure you want to delete this author?')) return;
+  const handleDelete = async (id: number) => {
+    const confirmed = await confirmDashboardAction({
+      title: 'Delete author?',
+      text: 'Are you sure you want to delete this author?',
+      confirmButtonText: 'Delete',
+    });
+
+    if (!confirmed) return;
     deleteAuthor.mutate(id);
   };
 
@@ -147,7 +146,7 @@ export default function AuthorDashboardPage() {
             <FaPen />
           </Link>
           <button
-            onClick={() => handleDelete(authorItem.id)}
+            onClick={() => void handleDelete(authorItem.id)}
             className="text-red-500 hover:text-red-400"
           >
             <FaTrash />

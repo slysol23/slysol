@@ -41,7 +41,7 @@ const Banner = ({ text }: BannerProps) => {
             </BannerAnimation>
           </div>
           <Image
-            src="/images/banner/banner-wave-line.svg"
+            src="https://res.cloudinary.com/dj6kzchpv/image/upload/v1776779137/banner-wave-line_mb5yef.svg"
             className="w-full h-full bottom-0 z-[1] text-primary2"
             fill
             alt="banner-wave"

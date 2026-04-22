@@ -11,8 +11,7 @@ import AuthorForm, {
   authorFormSchema,
   createAuthorFormDefaults,
 } from '@/components/Form/AuthorForm';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { showDashboardError } from '@/utils/dashboard-alert';
 
 export default function AddAuthorPage() {
   const router = useRouter();
@@ -27,7 +26,7 @@ export default function AddAuthorPage() {
       router.push('/dashboard/author?created=true');
     },
     onError: () => {
-      toast.error('Failed to create author', { autoClose: 3000 });
+      void showDashboardError('Failed to create author');
     },
   });
 

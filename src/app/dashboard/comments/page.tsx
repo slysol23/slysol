@@ -8,11 +8,15 @@ import { MdPublicOff, MdPublish } from 'react-icons/md';
 import { useUser } from '../../../providers/UserProvider';
 import { IComment } from '../../../lib/comments/type';
 import Link from 'next/link';
-import { toast } from 'react-toastify';
 import DashboardListTable from '@/components/dashboard/DashboardListTable';
 import { BreadcrumbItem } from '@/components/breadCrum';
 import { DashboardTableColumn } from 'types/dashboard';
 import Button from '@/components/Button';
+import {
+  confirmDashboardAction,
+  showDashboardError,
+  showDashboardSuccess,
+} from '@/utils/dashboard-alert';
 
 type FlatComment = IComment & { depth: number };
 
@@ -58,16 +62,12 @@ export default function CommentPage() {
     mutationFn: (id) => axios.delete(`/api/comments/${id}`).then(() => {}),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['comments'] });
-      toast.success('Comment deleted successfully!', {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardSuccess('Comment deleted successfully!');
     },
     onError: (mutationError: any) => {
-      toast.error('Failed to delete comment: ' + mutationError.message, {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardError(
+        'Failed to delete comment: ' + mutationError.message,
+      );
     },
   });
 
@@ -82,27 +82,37 @@ export default function CommentPage() {
         .then(() => {}),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ['comments'] });
-      toast.success(
+      void showDashboardSuccess(
         variables.isPublished ? 'Comment unpublished!' : 'Comment published!',
-        { autoClose: 3000, position: 'bottom-right' },
       );
     },
     onError: (mutationError: any) => {
-      toast.error('Failed to update comment: ' + mutationError.message, {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardError(
+        'Failed to update comment: ' + mutationError.message,
+      );
     },
   });
 
-  const handleDelete = (id: number) => {
-    if (!confirm('Are you sure you want to delete this comment?')) return;
+  const handleDelete = async (id: number) => {
+    const confirmed = await confirmDashboardAction({
+      title: 'Delete comment?',
+      text: 'Are you sure you want to delete this comment?',
+      confirmButtonText: 'Delete',
+    });
+
+    if (!confirmed) return;
     deleteComment.mutate(id);
   };
 
-  const handleTogglePublish = (id: number, currentStatus: boolean) => {
+  const handleTogglePublish = async (id: number, currentStatus: boolean) => {
     const action = currentStatus ? 'unpublish' : 'publish';
-    if (!confirm(`Are you sure you want to ${action} this comment?`)) return;
+    const confirmed = await confirmDashboardAction({
+      title: `${action.charAt(0).toUpperCase() + action.slice(1)} comment?`,
+      text: `Are you sure you want to ${action} this comment?`,
+      confirmButtonText: action === 'publish' ? 'Publish' : 'Unpublish',
+    });
+
+    if (!confirmed) return;
     togglePublish.mutate({ id, isPublished: currentStatus });
   };
 
@@ -191,7 +201,7 @@ export default function CommentPage() {
         <div className="flex gap-3">
           <button
             onClick={() =>
-              handleTogglePublish(comment.id, comment.is_published)
+              void handleTogglePublish(comment.id, comment.is_published)
             }
             className={`transition-colors ${
               comment.is_published
@@ -210,7 +220,7 @@ export default function CommentPage() {
             <FaPen />
           </Link>
           <button
-            onClick={() => handleDelete(comment.id)}
+            onClick={() => void handleDelete(comment.id)}
             className="text-red-500 hover:text-red-700 transition-colors"
             title="Delete comment"
           >

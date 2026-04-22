@@ -16,12 +16,8 @@ const InnovationDesign = () => {
         src={'/lotties/innovation-design-lottie.json'}
         loop={true}
         autoplay={true}
-        style={{
-          height: '100%',
-          width: '100%',
-          opacity: 0.5,
-          objectFit: 'cover',
-        }}
+        layout={{ fit: 'cover', align: [0.5, 0.5] }}
+        className="absolute inset-0 w-full h-full opacity-50"
         dotLottieRefCallback={(dotLottie) => {
           dotLottieRef.current = dotLottie;
         }}

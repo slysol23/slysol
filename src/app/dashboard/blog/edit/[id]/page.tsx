@@ -19,9 +19,12 @@ import BlogForm, {
   parseBlogJsonField,
 } from '@/components/Form/BlogForm';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
-import { toast } from 'react-toastify';
 import { isEditableBlogImage } from 'lib/blog/image';
 import DashboardButton from '@/components/Button/DashboardButton';
+import {
+  confirmDashboardAction,
+  showDashboardError,
+} from '@/utils/dashboard-alert';
 
 const EMPTY_AUTHORS: BlogAuthorOption[] = [];
 
@@ -70,7 +73,7 @@ export default function EditBlogPage() {
       router.push('/dashboard/blog?updated=true');
     },
     onError: () => {
-      toast.error('Failed to update blog', { autoClose: 3000 });
+      void showDashboardError('Failed to update blog');
     },
   });
 
@@ -84,7 +87,7 @@ export default function EditBlogPage() {
       router.push(`/dashboard/blog?published=${blogData.is_published}`);
     },
     onError: () => {
-      toast.error('Failed to update publish status', { autoClose: 3000 });
+      void showDashboardError('Failed to update publish status');
     },
   });
 
@@ -145,10 +148,16 @@ export default function EditBlogPage() {
     updateBlog.mutate(formData);
   };
 
-  const togglePublish = () => {
+  const togglePublish = async () => {
     if (!blogData) return;
     const action = blogData.is_published ? 'unpublish' : 'publish';
-    if (!confirm(`Are you sure you want to ${action} this blog?`)) return;
+    const confirmed = await confirmDashboardAction({
+      title: `${action.charAt(0).toUpperCase() + action.slice(1)} blog?`,
+      text: `Are you sure you want to ${action} this blog?`,
+      confirmButtonText: action === 'publish' ? 'Publish' : 'Unpublish',
+    });
+
+    if (!confirmed) return;
     publishBlog.mutate(!blogData.is_published);
   };
 
@@ -196,7 +205,7 @@ export default function EditBlogPage() {
       headerActions={
         <DashboardButton
           type="submit"
-          onClick={togglePublish}
+          onClick={() => void togglePublish()}
           disabled={publishBlog.isPending}
         >
           {blogData?.is_published

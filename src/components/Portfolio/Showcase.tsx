@@ -14,12 +14,11 @@ import RichTextPreview from './RichTextPreview';
 import SubTitle from '../SubTitle';
 import { getTechStackLabel } from '@/utils/techstack';
 import {
-  formatDate,
   getFirstImage,
   getStringList,
+  fetchAllProductCategories,
   ProductApiResponse,
   ProductCategory,
-  ProductCategoryResponse,
   ProductItem,
   readResponse,
 } from 'hooks/useProducts';
@@ -28,12 +27,7 @@ const EMPTY_CATEGORIES: ProductCategory[] = [];
 const EMPTY_PRODUCTS: ProductItem[] = [];
 
 const fetchCategories = async (): Promise<ProductCategory[]> => {
-  const response = await fetch('/api/product-category', {
-    cache: 'no-store',
-  });
-
-  const data = await readResponse<ProductCategoryResponse>(response);
-  return data.data ?? [];
+  return fetchAllProductCategories();
 };
 
 const fetchProducts = async (categoryId: string): Promise<ProductItem[]> => {

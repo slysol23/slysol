@@ -1,10 +1,9 @@
-// utils/product-category.ts
-
 export function normalizeCategoryName(name: string): string {
-  const cleaned = name.trim().replace(/\s+/g, ' ');
-  return cleaned.charAt(0).toUpperCase() + cleaned.slice(1).toLowerCase();
+  return name.trim().replace(/\s+/g, ' ');
 }
 
 export function normalizeCategoryId(name: string): string {
-  return name.toLowerCase().trim().replace(/\s+/g, '-'); // Simply replace spaces with hyphens
+  return name.toLowerCase().trim().replace(/\s+/g, '-');
 }
+
+export const PRODUCT_CATEGORY_PAGE_SIZE = 20;

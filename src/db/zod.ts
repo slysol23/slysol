@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { PRODUCT_CATEGORY_PAGE_SIZE } from '@/utils/product-category';
 
 const jsonStringArraySchema = z.union([
   z.array(z.string().min(1)),
@@ -34,6 +35,16 @@ export const productGetQuerySchema = z.object({
   published: z.coerce.boolean(),
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(10),
+});
+
+export const productCategoryGetQuerySchema = z.object({
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce
+    .number()
+    .int()
+    .positive()
+    .max(100)
+    .default(PRODUCT_CATEGORY_PAGE_SIZE),
 });
 
 export const productPostSchema = z.object({
@@ -83,6 +94,9 @@ export const productCategoryPatchSchema = z
   });
 
 export type ProductGetQueryInput = z.infer<typeof productGetQuerySchema>;
+export type ProductCategoryGetQueryInput = z.infer<
+  typeof productCategoryGetQuerySchema
+>;
 export type ProductPostInput = z.infer<typeof productPostSchema>;
 export type ProductPatchInput = z.infer<typeof productPatchSchema>;
 export type ProductCategoryPostInput = z.infer<
