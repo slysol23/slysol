@@ -1,6 +1,5 @@
 'use client';
 
-import DOMPurify from 'dompurify';
 import React from 'react';
 
 interface RichTextPreviewProps {
@@ -9,6 +8,36 @@ interface RichTextPreviewProps {
   lines?: 1 | 2 | 3 | 4 | 5 | 6;
   className?: string;
 }
+
+import DOMPurify from 'dompurify';
+
+const normalizeVisibleText = (value: string) =>
+  value
+    .replace(/\u00a0/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+export const sanitizeRichText = (value?: string | null) =>
+  DOMPurify.sanitize(value || '');
+
+export const getVisibleTextFromHtml = (html: string) => {
+  if (typeof document === 'undefined') {
+    return normalizeVisibleText(html.replace(/<[^>]*>/g, ' '));
+  }
+
+  const container = document.createElement('div');
+  container.innerHTML = html;
+
+  return normalizeVisibleText(
+    container.textContent || container.innerText || '',
+  );
+};
+
+export const getVisibleRichText = (value?: string | null) =>
+  getVisibleTextFromHtml(sanitizeRichText(value));
+
+export const hasRichTextContent = (value?: string | null) =>
+  getVisibleRichText(value).length > 0;
 
 const LINE_CLAMP_CLASSES: Record<
   NonNullable<RichTextPreviewProps['lines']>,
@@ -22,31 +51,14 @@ const LINE_CLAMP_CLASSES: Record<
   6: 'line-clamp-6',
 };
 
-const getVisibleText = (html: string) => {
-  if (typeof document === 'undefined') {
-    return html
-      .replace(/<[^>]*>/g, ' ')
-      .replace(/\s+/g, ' ')
-      .trim();
-  }
-
-  const container = document.createElement('div');
-  container.innerHTML = html;
-
-  return (container.textContent || container.innerText || '')
-    .replace(/\u00a0/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-};
-
 const RichTextPreview = ({
   value,
   emptyMessage,
   lines = 4,
   className = '',
 }: RichTextPreviewProps) => {
-  const sanitized = DOMPurify.sanitize(value || '');
-  const visibleText = getVisibleText(sanitized);
+  const sanitized = sanitizeRichText(value);
+  const visibleText = getVisibleTextFromHtml(sanitized);
 
   if (!visibleText) {
     return (

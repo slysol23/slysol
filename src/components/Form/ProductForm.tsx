@@ -40,11 +40,11 @@ export interface ProductFormData {
   imagesText: string;
   techstackText: string;
   description: string;
-  feedback: string;
+  feedback?: string;
   overview: string;
-  challenges: string;
-  approach: string;
-  outcomes: string;
+  challenges?: string;
+  approach?: string;
+  outcomes?: string;
   is_published?: boolean;
 }
 
@@ -87,7 +87,6 @@ export default function ProductForm({
     handleSubmit,
     control,
     setValue,
-    watch,
     formState: { errors },
   } = form;
 
@@ -486,7 +485,7 @@ export default function ProductForm({
                   render={({ field }) => (
                     <CKEditorWrapper
                       id="description-editor"
-                      initialData={field.value}
+                      initialData={field.value ?? ''}
                       onChange={field.onChange}
                       height={220}
                     />
@@ -512,7 +511,7 @@ export default function ProductForm({
                   render={({ field }) => (
                     <CKEditorWrapper
                       id="feedback-editor"
-                      initialData={field.value}
+                      initialData={field.value ?? ''}
                       onChange={field.onChange}
                       height={220}
                     />
@@ -540,7 +539,7 @@ export default function ProductForm({
                   render={({ field }) => (
                     <CKEditorWrapper
                       id="overview-editor"
-                      initialData={field.value}
+                      initialData={field.value ?? ''}
                       onChange={field.onChange}
                       height={260}
                     />
@@ -569,7 +568,7 @@ export default function ProductForm({
                   render={({ field }) => (
                     <CKEditorWrapper
                       id="challenges-editor"
-                      initialData={field.value}
+                      initialData={field.value ?? ''}
                       onChange={field.onChange}
                       height={260}
                     />
@@ -597,7 +596,7 @@ export default function ProductForm({
                   render={({ field }) => (
                     <CKEditorWrapper
                       id="approach-editor"
-                      initialData={field.value}
+                      initialData={field.value ?? ''}
                       onChange={field.onChange}
                       height={260}
                     />
@@ -623,7 +622,7 @@ export default function ProductForm({
                   render={({ field }) => (
                     <CKEditorWrapper
                       id="outcomes-editor"
-                      initialData={field.value}
+                      initialData={field.value ?? ''}
                       onChange={field.onChange}
                       height={260}
                     />

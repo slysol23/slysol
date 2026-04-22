@@ -1,11 +1,15 @@
 'use client';
 
-import DOMPurify from 'dompurify';
 import React, { useEffect, useState } from 'react';
 import MainHeading from '../MainHeading';
 import SubTitle from '../SubTitle';
-import { formatDate, getStringList, ProductItem } from 'hooks/useProducts';
+import { getStringList, ProductItem } from 'hooks/useProducts';
 import { getTechStackLabel } from '@/utils/techstack';
+import {
+  getVisibleTextFromHtml,
+  hasRichTextContent,
+  sanitizeRichText,
+} from './RichTextPreview';
 
 type TabKey =
   | 'description'
@@ -32,9 +36,10 @@ const tabs: Array<{ key: TabKey; label: string }> = [
 ];
 
 const renderRichText = (value: string, emptyMessage: string) => {
-  const sanitized = DOMPurify.sanitize(value || '');
+  const sanitized = sanitizeRichText(value);
+  const visibleText = getVisibleTextFromHtml(sanitized);
 
-  if (!sanitized.trim()) {
+  if (!visibleText) {
     return (
       <p className="text-sm leading-7 wrap-break-word text-mute">
         {emptyMessage}
@@ -44,7 +49,7 @@ const renderRichText = (value: string, emptyMessage: string) => {
 
   return (
     <div
-      className="ck-content prose prose-slate max-w-none wrap-break-word prose-headings:font-bold prose-headings:wrap-break-word prose-p:my-3 prose-p:wrap-break-word prose-li:my-1 prose-li:wrap-break-word prose-a:text-black prose-a:wrap-break-word prose-pre:whitespace-pre-wrap prose-pre:wrap-break-word prose-table:block prose-table:max-w-full prose-table:overflow-x-auto"
+      className="ck-content prose prose-slate max-w-none wrap-break-word prose-headings:my-2 prose-headings:font-bold prose-headings:leading-tight prose-headings:wrap-break-word prose-p:my-2 prose-p:wrap-break-word prose-li:my-1 prose-li:wrap-break-word prose-a:text-black prose-a:wrap-break-word prose-pre:whitespace-pre-wrap prose-pre:wrap-break-word prose-table:block prose-table:max-w-full prose-table:overflow-x-auto"
       dangerouslySetInnerHTML={{ __html: sanitized }}
     />
   );
@@ -86,8 +91,6 @@ const PortfolioTabs = ({ product, isLoading = false }: PortfolioTabsProps) => {
 
   const techStack = getStringList(product.techstack);
   const categoryLabel = product.productCategory?.name || product.category;
-  const activeTabLabel =
-    tabs.find((tab) => tab.key === activeTab)?.label || 'Overview';
 
   const overview = () => (
     <div className="space-y-4 overflow-hidden rounded-xl bg-white p-2 text-black">
@@ -131,33 +134,65 @@ const PortfolioTabs = ({ product, isLoading = false }: PortfolioTabsProps) => {
       </p>
     );
 
-  const tabContent = {
-    description: description(),
-    overview: overview(),
-    challenges: renderWhitePanel(
-      product.challenges,
-      'No challenges content has been added yet.',
-    ),
-    approach: renderWhitePanel(
-      product.approach,
-      'No approach content has been added yet.',
-    ),
-    outcomes: renderWhitePanel(
-      product.outcomes,
-      'No outcomes content has been added yet.',
-    ),
-    feedback: renderWhitePanel(
-      product.feedback,
-      'No feedback content has been added yet.',
-    ),
-    techstack: techstack(),
-  } satisfies Record<TabKey, React.ReactNode>;
+  const tabContent = [
+    { key: 'overview' as const, label: 'Overview', content: overview() },
+    {
+      key: 'description' as const,
+      label: 'Description',
+      content: description(),
+    },
+    {
+      key: 'challenges' as const,
+      label: 'Challenges',
+      content: renderWhitePanel(
+        product.challenges,
+        'No challenges content has been added yet.',
+      ),
+      visible: hasRichTextContent(product.challenges),
+    },
+    {
+      key: 'approach' as const,
+      label: 'Approach',
+      content: renderWhitePanel(
+        product.approach,
+        'No approach content has been added yet.',
+      ),
+      visible: hasRichTextContent(product.approach),
+    },
+    {
+      key: 'outcomes' as const,
+      label: 'Outcomes',
+      content: renderWhitePanel(
+        product.outcomes,
+        'No outcomes content has been added yet.',
+      ),
+      visible: hasRichTextContent(product.outcomes),
+    },
+    {
+      key: 'feedback' as const,
+      label: 'Feedback',
+      content: renderWhitePanel(
+        product.feedback,
+        'No feedback content has been added yet.',
+      ),
+      visible: hasRichTextContent(product.feedback),
+    },
+    { key: 'techstack' as const, label: 'Tech Stack', content: techstack() },
+  ].filter((tab) => tab.visible !== false);
+
+  const currentTab = tabContent.some((tab) => tab.key === activeTab)
+    ? activeTab
+    : tabContent[0]?.key || 'description';
+  const currentTabLabel =
+    tabContent.find((tab) => tab.key === currentTab)?.label || 'Overview';
+  const currentTabContent =
+    tabContent.find((tab) => tab.key === currentTab)?.content ?? null;
 
   return (
     <section className="rounded-4xl border border-slate-200 bg-white p-5 shadow-[0_30px_80px_rgba(15,23,42,0.08)] sm:p-6">
       <div className="flex flex-col gap-3">
         <SubTitle text="CASE STUDY DETAILS" />
-        <MainHeading text={activeTabLabel} className="mt-1" />
+        <MainHeading text={currentTabLabel} className="mt-1" />
 
         <div className="flex flex-wrap gap-2">
           <span className="rounded-full bg-slate px-3 py-1 text-xs font-semibold text-dark">
@@ -168,8 +203,8 @@ const PortfolioTabs = ({ product, isLoading = false }: PortfolioTabsProps) => {
 
       <div className="mt-6 overflow-x-auto pb-1">
         <div className="flex min-w-max gap-2">
-          {tabs.map((tab) => {
-            const active = tab.key === activeTab;
+          {tabContent.map((tab) => {
+            const active = tab.key === currentTab;
 
             return (
               <button
@@ -178,7 +213,7 @@ const PortfolioTabs = ({ product, isLoading = false }: PortfolioTabsProps) => {
                 onClick={() => setActiveTab(tab.key)}
                 className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
                   active
-                    ? 'bg-primary2 text-white shadow-lg shadow-primary2/20'
+                    ? 'bg-primary2 text-white'
                     : 'bg-slate text-dark hover:bg-white'
                 }`}
               >
@@ -189,8 +224,8 @@ const PortfolioTabs = ({ product, isLoading = false }: PortfolioTabsProps) => {
         </div>
       </div>
 
-      <div className="mt-6 rounded-3xl bg-slate p-5">
-        {tabContent[activeTab]}
+      <div className="mt-6 rounded-3xl bg-slate p-2 sm:p-4">
+        {currentTabContent}
       </div>
     </section>
   );

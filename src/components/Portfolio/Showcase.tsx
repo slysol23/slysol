@@ -337,8 +337,8 @@ const PortfolioShowcase = () => {
                     className="text-black"
                   />
                   <p className="text-sm leading-7 text-dark/70">
-                    Use the details panel to explore the overview, challenges,
-                    approach, outcomes, feedback, and technology stack.
+                    Use the details panel to explore the available project
+                    sections and technology stack.
                   </p>
                 </div>
 
