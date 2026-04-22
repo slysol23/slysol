@@ -15,11 +15,12 @@ const productSchema = z.object({
   imagesText: z.string(),
   techstackText: z.string(),
   description: z.string().min(1, 'Description is required'),
-  feedback: z.string().min(1, 'Feedback is required'),
+  feedback: z.string().trim().default(''),
   overview: z.string().min(1, 'Overview is required'),
-  challenges: z.string().min(1, 'Challenges are required'),
-  approach: z.string().min(1, 'Approach is required'),
-  outcomes: z.string().min(1, 'Outcomes are required'),
+  challenges: z.string().trim().default(''),
+  approach: z.string().trim().default(''),
+  outcomes: z.string().trim().default(''),
+  is_published: z.boolean().default(false),
 });
 
 export default function AddProductPage() {
@@ -39,20 +40,12 @@ export default function AddProductPage() {
       challenges: '',
       approach: '',
       outcomes: '',
+      is_published: false,
     },
   });
 
   const onSubmit = (data: ProductFormData) => {
-    // Transform data for API
-    const payload = {
-      ...data,
-      images: data.imagesText.split('\n').filter(Boolean),
-      techstack: data.techstackText.split('\n').filter(Boolean),
-      updated_by: 'Current User', // Get from auth context
-      is_published: false,
-    };
-
-    createProductMutation.mutate(payload);
+    createProductMutation.mutate(data);
   };
 
   const breadcrumb: BreadcrumbItem[] = [

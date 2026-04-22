@@ -17,10 +17,10 @@ export const productBaseFormShape = {
   title: z.string().trim().min(1, 'Title is required'),
   description: z.string().trim().min(1, 'Description is required'),
   overview: z.string().trim().min(1, 'Overview is required'),
-  challenges: z.string().trim().min(1, 'Challenges are required'),
-  approach: z.string().trim().min(1, 'Approach is required'),
-  outcomes: z.string().trim().min(1, 'Outcomes are required'),
-  feedback: z.string().trim().min(1, 'Feedback is required'),
+  challenges: z.string().trim().default(''),
+  approach: z.string().trim().default(''),
+  outcomes: z.string().trim().default(''),
+  feedback: z.string().trim().default(''),
   imagesText: z
     .string()
     .trim()
@@ -44,4 +44,4 @@ export const ProductCreateFormSchema = ProductEditFormSchema.extend({
 });
 
 export type ProductCreateForm = z.input<typeof ProductCreateFormSchema>;
-export type ProductEditForm = z.infer<typeof ProductEditFormSchema>;
+export type ProductEditForm = z.input<typeof ProductEditFormSchema>;
