@@ -114,16 +114,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const blogUrl = `${siteUrl}/blog/${b.slug}`;
 
-  // Use actual image URL for OpenGraph (not base64)
-  const imageUrl =
-    b.image && b.image.startsWith('http')
-      ? b.image
-      : b.image && !b.image.startsWith('data:')
-        ? `${siteUrl}${b.image}`
-        : `${siteUrl}/default-blog-image.jpg`;
+  const imageUrl = (() => {
+    if (!b.image) return `${siteUrl}/default-blog-image.jpg`;
 
-  // Always use logo for Twitter
-  const twitterImageUrl = `${siteUrl}https://res.cloudinary.com/dj6kzchpv/image/upload/v1776841363/slysol-logo_alxwpv.png`;
+    if (b.image.startsWith('http')) return b.image;
+
+    return b.image.startsWith('/')
+      ? `${siteUrl}${b.image}`
+      : `${siteUrl}/${b.image}`;
+  })();
 
   const authorNames = b.authors?.length
     ? b.authors.map((a) => `${a.firstName} ${a.lastName}`).join(', ')
@@ -154,7 +153,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       url: blogUrl,
       images: [
         {
-          url: twitterImageUrl,
+          url: imageUrl,
           width: 1200,
           height: 630,
           alt: b.title || 'Blog image',
@@ -170,7 +169,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       site: '@slysol',
       title: metaTitle,
       description: metaDescription,
-      images: [twitterImageUrl],
+      images: [imageUrl], // Use actual blog image
       creator: '@slysol',
     },
 
@@ -184,7 +183,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
   };
 }
-
 // Server Component that renders the client component
 export default async function BlogPage({ params }: Props) {
   const resolvedParams = await Promise.resolve(params);
