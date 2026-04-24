@@ -1,5 +1,6 @@
 'use client';
 
+import DOMPurify from 'dompurify';
 import React from 'react';
 
 interface RichTextPreviewProps {
@@ -9,7 +10,11 @@ interface RichTextPreviewProps {
   className?: string;
 }
 
-import DOMPurify from 'dompurify';
+interface RichTextHtmlBlockProps {
+  value?: string | null;
+  emptyMessage: string;
+  className?: string;
+}
 
 const normalizeVisibleText = (value: string) =>
   value
@@ -49,6 +54,30 @@ const LINE_CLAMP_CLASSES: Record<
   4: 'line-clamp-4',
   5: 'line-clamp-5',
   6: 'line-clamp-6',
+};
+
+export const RichTextHtmlBlock = ({
+  value,
+  emptyMessage,
+  className = '',
+}: RichTextHtmlBlockProps) => {
+  const sanitized = sanitizeRichText(value);
+  const visibleText = getVisibleTextFromHtml(sanitized);
+
+  if (!visibleText) {
+    return (
+      <p className={`text-sm leading-7 text-[#6a6d75] ${className}`.trim()}>
+        {emptyMessage}
+      </p>
+    );
+  }
+
+  return (
+    <div
+      className={`ck-content prose prose-slate max-w-none text-dark prose-headings:mt-0 prose-headings:mb-3 prose-p:my-3 prose-ul:my-3 prose-ol:my-3 prose-li:my-1 prose-strong:text-dark ${className}`.trim()}
+      dangerouslySetInnerHTML={{ __html: sanitized }}
+    />
+  );
 };
 
 const RichTextPreview = ({

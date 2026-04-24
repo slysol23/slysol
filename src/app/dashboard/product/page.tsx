@@ -11,13 +11,7 @@ import { BreadcrumbItem } from '@/components/breadCrum';
 import { ProductItem, getFirstImage, useProductsPage } from 'hooks/useProducts';
 import { DashboardTableColumn } from 'types/dashboard';
 import DashboardButton from '@/components/Button/DashboardButton';
-
-const hashUrl = (value: string) =>
-  value
-    .trim()
-    .replace(/['"`]/g, '')
-    .replace(/[^A-Za-z0-9]+/g, '_')
-    .replace(/^_+|_+$/g, '');
+import { createPortfolioHash } from '@/utils/portfolio';
 
 const ProductPage = () => {
   const {
@@ -117,7 +111,12 @@ const ProductPage = () => {
         <div className="flex items-center justify-center gap-3">
           {product.is_published && (
             <Link
-              href={`/portfolio#${encodeURIComponent(hashUrl(product.title))}`}
+              href={`/portfolio#${encodeURIComponent(
+                createPortfolioHash(
+                  product.productCategory?.id ?? product.categoryId,
+                  product.title,
+                ),
+              )}`}
               scroll={false}
               className="text-black hover:text-gray-600 transition"
               title="View Published"

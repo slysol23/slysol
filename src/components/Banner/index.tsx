@@ -9,18 +9,21 @@ import HeaderInfo from '../Header/HeaderInfo';
 
 interface BannerProps {
   text: string;
+  empty?: boolean;
 }
 
-const Banner = ({ text }: BannerProps) => {
+const Banner = ({ text, empty }: BannerProps) => {
+  const showImage = empty !== true;
+
   return (
     <>
-      <div className="md:h-auto h-[400px] bg-gradient-to-r from-[#CBFCD8] via-[#B9E6E6] to-[#96BCFD] relative">
+      <div className="md:h-auto h-75 bg-linear-to-r from-[#CBFCD8] via-[#B9E6E6] to-[#96BCFD] relative">
         <HeaderInfo />
         <Container hScreen={false}>
           <Header />
         </Container>
-        <div className="md:h-[500px] h-[300px] flex items-center justify-center relative">
-          <GradientText className="md:mb-[100px]">
+        <div className="md:h-100 h-50 flex items-center justify-center relative">
+          <GradientText className="md:mb-25">
             <Title text={text} />
           </GradientText>
           <div className="md:block hidden w-full absolute h-full bottom-0">
@@ -37,15 +40,17 @@ const Banner = ({ text }: BannerProps) => {
               <div className="p-1 bg-secondary rounded-full absolute bottom-1/2 right-1/4"></div>
             </BannerAnimation>
             <BannerAnimation duration={11}>
-              <div className="p-4 bg-secondary rounded-full absolute bottom-1/2 right-[10%] opacity-50 z-[1]"></div>
+              <div className="p-4 bg-secondary rounded-full absolute bottom-1/2 right-[10%] opacity-50 z-1]"></div>
             </BannerAnimation>
           </div>
-          <Image
-            src="https://res.cloudinary.com/dj6kzchpv/image/upload/v1776779137/banner-wave-line_mb5yef.svg"
-            className="w-full h-full bottom-0 z-[1] text-primary2"
-            fill
-            alt="banner-wave"
-          />
+          {showImage && (
+            <Image
+              src="https://res.cloudinary.com/dj6kzchpv/image/upload/v1776779137/banner-wave-line_mb5yef.svg"
+              className="w-full h-full bottom-0 z-1 text-primary2"
+              fill
+              alt="banner-wave"
+            />
+          )}
         </div>
       </div>
     </>

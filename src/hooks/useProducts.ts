@@ -140,6 +140,23 @@ export const fetchAllProductCategories = async (
   ];
 };
 
+export const fetchPublishedProducts = async (
+  limit = 100,
+): Promise<ProductItem[]> => {
+  const searchParams = new URLSearchParams({
+    page: '1',
+    limit: String(limit),
+    published: 'true',
+  });
+
+  const response = await fetch(`/api/product?${searchParams.toString()}`, {
+    cache: 'no-store',
+  });
+
+  const data = await readResponse<ProductApiResponse>(response);
+  return data.data ?? [];
+};
+
 const fetchProducts = async (page: number) => {
   const response = await fetch(`/api/product?page=${page}&limit=${PAGE_SIZE}`, {
     cache: 'no-store',
