@@ -19,12 +19,14 @@ import {
   FaExclamationTriangle,
   FaLightbulb,
   FaCheckCircle,
+  FaSearch,
 } from 'react-icons/fa';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 import DashboardButton from '../Button/DashboardButton';
 import {
   TECH_STACK_OPTIONS,
   getTechStackLabel,
+  normalizeTechStackKey,
   normalizeTechStackList,
   normalizeTechStackValue,
 } from '@/utils/techstack';
@@ -93,6 +95,7 @@ export default function ProductForm({
   const [imageFields, setImageFields] = React.useState<string[]>(initialImages);
   const [techStackDropdownOpen, setTechStackDropdownOpen] =
     React.useState(false);
+  const [techStackSearch, setTechStackSearch] = React.useState('');
   const normalizedInitialTechStacks = React.useMemo(
     () => normalizeTechStackList(initialTechStack),
     [initialTechStack],
@@ -163,23 +166,63 @@ export default function ProductForm({
     });
   };
 
+  const isMatchingTechStack = React.useCallback(
+    (firstValue: string, secondValue: string) =>
+      normalizeTechStackKey(normalizeTechStackValue(firstValue)) ===
+      normalizeTechStackKey(normalizeTechStackValue(secondValue)),
+    [],
+  );
+
+  const filteredTechStackOptions = React.useMemo(() => {
+    const searchKey = normalizeTechStackKey(techStackSearch);
+    if (!searchKey) return TECH_STACK_OPTIONS;
+
+    return TECH_STACK_OPTIONS.filter((option) =>
+      normalizeTechStackKey(`${option.label} ${option.value}`).includes(
+        searchKey,
+      ),
+    );
+  }, [techStackSearch]);
+
+  const canCreateTechStack = React.useMemo(() => {
+    const searchValue = techStackSearch.trim();
+    if (!searchValue) return false;
+
+    const existsInOptions = TECH_STACK_OPTIONS.some((option) =>
+      isMatchingTechStack(option.value, searchValue),
+    );
+    const existsInSelection = selectedTechStacks.some((value) =>
+      isMatchingTechStack(value, searchValue),
+    );
+
+    return !existsInOptions && !existsInSelection;
+  }, [isMatchingTechStack, selectedTechStacks, techStackSearch]);
+
   const handleToggleTechStack = (value: string) => {
     const normalizedValue = normalizeTechStackValue(value);
-    const nextValues = selectedTechStacks.some(
-      (item) => normalizeTechStackValue(item) === normalizedValue,
+    const nextValues = selectedTechStacks.some((item) =>
+      isMatchingTechStack(item, normalizedValue),
     )
       ? selectedTechStacks.filter(
-          (item) => normalizeTechStackValue(item) !== normalizedValue,
+          (item) => !isMatchingTechStack(item, normalizedValue),
         )
       : [...selectedTechStacks, normalizedValue];
     updateSelectedTechStacks(nextValues);
+  };
+
+  const handleAddCustomTechStack = () => {
+    const searchValue = techStackSearch.trim();
+    if (!searchValue) return;
+
+    updateSelectedTechStacks([...selectedTechStacks, searchValue]);
+    setTechStackSearch('');
   };
 
   const handleRemoveTechStack = (value: string) => {
     const normalizedValue = normalizeTechStackValue(value);
     updateSelectedTechStacks(
       selectedTechStacks.filter(
-        (item) => normalizeTechStackValue(item) !== normalizedValue,
+        (item) => !isMatchingTechStack(item, normalizedValue),
       ),
     );
   };
@@ -414,28 +457,69 @@ export default function ProductForm({
                 </button>
 
                 {techStackDropdownOpen && (
-                  <div className="absolute z-50 mt-2 max-h-64 w-full overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg left-0 right-0">
-                    {TECH_STACK_OPTIONS.map((option) => {
-                      const isSelected = selectedTechStacks.some(
-                        (item) =>
-                          normalizeTechStackValue(item) === option.value,
-                      );
-                      return (
+                  <div className="absolute z-50 mt-2 w-full rounded-lg border border-gray-200 bg-white shadow-lg left-0 right-0">
+                    <div className="relative border-b border-gray-100 p-2">
+                      <FaSearch
+                        size={13}
+                        className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"
+                      />
+                      <input
+                        type="text"
+                        value={techStackSearch}
+                        onChange={(e) => setTechStackSearch(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && canCreateTechStack) {
+                            e.preventDefault();
+                            handleAddCustomTechStack();
+                          }
+                        }}
+                        className="w-full rounded-md border border-gray-200 py-2 pl-8 pr-3 text-sm focus:outline-none focus:ring-0 focus:border-blue-500"
+                        placeholder="Search or add tech stack"
+                      />
+                    </div>
+
+                    <div className="max-h-56 overflow-y-auto py-1">
+                      {filteredTechStackOptions.map((option) => {
+                        const isSelected = selectedTechStacks.some((item) =>
+                          isMatchingTechStack(item, option.value),
+                        );
+                        return (
+                          <button
+                            key={option.value}
+                            type="button"
+                            onClick={() => handleToggleTechStack(option.value)}
+                            className={`flex w-full items-center justify-between px-3 py-2 text-left hover:bg-gray-100 ${isSelected ? 'bg-blue-50 text-blue-700' : ''}`}
+                          >
+                            <span className="wrap-break-word pr-2">
+                              {option.label}
+                            </span>
+                            {isSelected && (
+                              <FaCheck size={12} className="shrink-0" />
+                            )}
+                          </button>
+                        );
+                      })}
+
+                      {canCreateTechStack && (
                         <button
-                          key={option.value}
                           type="button"
-                          onClick={() => handleToggleTechStack(option.value)}
-                          className={`flex w-full items-center justify-between px-3 py-2 text-left hover:bg-gray-100 ${isSelected ? 'bg-blue-50 text-blue-700' : ''}`}
+                          onClick={handleAddCustomTechStack}
+                          className="flex w-full items-center justify-between px-3 py-2 text-left text-green-700 hover:bg-green-50"
                         >
                           <span className="wrap-break-word pr-2">
-                            {option.label}
+                            Create &quot;{techStackSearch.trim()}&quot;
                           </span>
-                          {isSelected && (
-                            <FaCheck size={12} className="shrink-0" />
-                          )}
+                          <FaPlus size={12} className="shrink-0" />
                         </button>
-                      );
-                    })}
+                      )}
+
+                      {filteredTechStackOptions.length === 0 &&
+                        !canCreateTechStack && (
+                          <div className="px-3 py-2 text-sm text-gray-500">
+                            No matching tech stacks found
+                          </div>
+                        )}
+                    </div>
                   </div>
                 )}
               </div>
