@@ -14,6 +14,7 @@ export const TECH_STACK_OPTIONS: TechStackOption[] = [
   { label: 'Angular', value: 'angular' },
   { label: 'Svelte', value: 'svelte' },
   { label: 'SvelteKit', value: 'sveltekit' },
+  { label: 'C++', value: 'c++' },
   { label: 'Astro', value: 'astro' },
   { label: 'TypeScript', value: 'typescript' },
   { label: 'JavaScript', value: 'javascript' },
@@ -85,6 +86,8 @@ export const normalizeTechStackKey = (value: string) =>
     .trim()
     .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
     .toLowerCase()
+    .replace(/\+/g, '-plus-')
+    .replace(/#/g, '-sharp')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/-+/g, '-')
     .replace(/^-+|-+$/g, '');
