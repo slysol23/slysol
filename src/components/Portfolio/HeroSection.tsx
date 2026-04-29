@@ -33,10 +33,10 @@ const PortfolioHero = ({
   return (
     <section id="portfolio-hero" className="w-full">
       <div className="overflow-hidden rounded-4xl border border-black/5 bg-white shadow-sm sm:rounded-[2.5rem]">
-        <div className="relative isolate min-h-[clamp(320px,50vh,540px)] sm:min-h-[clamp(360px,52vh,620px)] md:min-h-[clamp(380px,56vh,680px)] lg:min-h-[clamp(420px,60vh,720px)]">
+        <div className="relative isolate min-h-[clamp(200px,40vh,450px)] sm:min-h-[clamp(360px,52vh,620px)] md:min-h-[clamp(380px,56vh,680px)] lg:min-h-[clamp(420px,60vh,720px)]">
           {hasMultipleImages ? (
             <Carousal
-              className="absolute inset-0 z-0"
+              className="pt-4 sm:pt-8 md:pt-10"
               items={1}
               margin={0}
               loop
@@ -46,14 +46,12 @@ const PortfolioHero = ({
               autoplayHoverPause={true}
               nav
               navNodes={[
-                <FaChevronLeft
-                  className="h-5 w-5 text-blue-600"
-                  key="portfolio-prev"
-                />,
-                <FaChevronRight
-                  className="h-5 w-5 text-blue-600"
-                  key="portfolio-next"
-                />,
+                <div key="portfolio-prev" className="p-2 rounded-full bg-white">
+                  <FaChevronLeft className="h-5 w-5 text-blue-600" />
+                </div>,
+                <div key="portfolio-next" className="p-2 rounded-full bg-white">
+                  <FaChevronRight className="h-5 w-5 text-blue-600" />
+                </div>,
               ]}
             >
               {displayImages.map((src, index) => (
@@ -64,8 +62,7 @@ const PortfolioHero = ({
                     fill
                     unoptimized
                     priority={index === 0}
-                    sizes="100vw"
-                    className="object-contain"
+                    className="object-contain object-center"
                   />
                 </div>
               ))}
@@ -78,13 +75,10 @@ const PortfolioHero = ({
                 fill
                 unoptimized
                 priority
-                sizes="100vw"
                 className="object-cover"
               />
             </div>
           )}
-          <div className="pointer-events-none absolute inset-0 z-10 bg-[linear-gradient(180deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0.18)_45%,rgba(247,244,239,0.82)_82%,rgba(247,244,239,1)_100%)]" />
-          <div className="pointer-events-none absolute inset-0 z-10 bg-[radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.7),transparent_42%)]" />
 
           {sidebarCollapsed && onToggleSidebar && (
             <button
@@ -98,8 +92,8 @@ const PortfolioHero = ({
             </button>
           )}
 
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10">
-            <div className="mx-auto max-w-6xl px-4 pb-6 sm:px-6 sm:pb-8 lg:px-12 lg:pb-10">
+          <div>
+            <div className="p-4 sm:p-5 lg:p-10">
               <span className="inline-flex rounded-full bg-white/90 px-3 py-1.5 text-xs font-semibold text-dark shadow-sm backdrop-blur sm:px-4 sm:py-2 sm:text-sm">
                 {categoryLabel}
               </span>

@@ -81,7 +81,7 @@ export default function Carousal({
                   disableOnInteraction: false,
                   pauseOnMouseEnter: autoplayHoverPause,
                 }
-              : true
+              : false
           }
           speed={smartSpeed ?? autoplaySpeed}
           breakpoints={breakpoints}
