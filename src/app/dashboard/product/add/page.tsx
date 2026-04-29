@@ -2,19 +2,33 @@
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import ProductForm, {
   ProductFormData,
 } from '../../../../components/Form/ProductForm';
 import { useAddProduct } from 'hooks/useAddProduct';
 import { BreadcrumbItem } from '@/components/breadCrum';
-import { ProductCreateFormSchema } from '@/utils/productForm';
+
+const productSchema = z.object({
+  category_id: z.string().min(1, 'Category is required'),
+  title: z.string().min(1, 'Title is required'),
+  imagesText: z.string(),
+  techstackText: z.string(),
+  description: z.string().min(1, 'Description is required'),
+  feedback: z.string().trim().default(''),
+  overview: z.string().min(1, 'Overview is required'),
+  challenges: z.string().trim().default(''),
+  approach: z.string().trim().default(''),
+  outcomes: z.string().trim().default(''),
+  is_published: z.boolean().default(false),
+});
 
 export default function AddProductPage() {
   const { categories, categoriesLoading, createProductMutation } =
     useAddProduct();
 
   const form = useForm<ProductFormData>({
-    resolver: zodResolver(ProductCreateFormSchema),
+    resolver: zodResolver(productSchema),
     defaultValues: {
       category_id: '',
       title: '',
@@ -28,7 +42,6 @@ export default function AddProductPage() {
       outcomes: '',
       is_published: false,
     },
-    mode: 'onChange',
   });
 
   const onSubmit = (data: ProductFormData) => {

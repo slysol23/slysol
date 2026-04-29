@@ -83,7 +83,7 @@ const PortfolioHero = ({
               />
             </div>
           )}
-          <div className="pointer-events-none absolute inset-0 z-10 bg-[linear-gradient(180deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0.18)_45%,rgba(247,244,239,0.82)_82%,rgba(247,244,239,1)_100%)] opacity-50" />
+          <div className="pointer-events-none absolute inset-0 z-10 bg-[linear-gradient(180deg,rgba(255,255,255,0.08)_0%,rgba(255,255,255,0.18)_45%,rgba(247,244,239,0.82)_82%,rgba(247,244,239,1)_100%)]" />
           <div className="pointer-events-none absolute inset-0 z-10 bg-[radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.7),transparent_42%)]" />
 
           {sidebarCollapsed && onToggleSidebar && (

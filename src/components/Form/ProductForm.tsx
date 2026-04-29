@@ -184,9 +184,9 @@ export default function ProductForm({
     );
   }, [techStackSearch]);
 
-  const typedTechStack = React.useMemo(() => {
+  const canCreateTechStack = React.useMemo(() => {
     const searchValue = techStackSearch.trim();
-    if (!searchValue) return null;
+    if (!searchValue) return false;
 
     const existsInOptions = TECH_STACK_OPTIONS.some((option) =>
       isMatchingTechStack(option.value, searchValue),
@@ -194,14 +194,8 @@ export default function ProductForm({
     const existsInSelection = selectedTechStacks.some((value) =>
       isMatchingTechStack(value, searchValue),
     );
-    const value = normalizeTechStackValue(searchValue);
 
-    return {
-      existsInOptions,
-      existsInSelection,
-      label: getTechStackLabel(value),
-      value,
-    };
+    return !existsInOptions && !existsInSelection;
   }, [isMatchingTechStack, selectedTechStacks, techStackSearch]);
 
   const handleToggleTechStack = (value: string) => {
@@ -216,10 +210,11 @@ export default function ProductForm({
     updateSelectedTechStacks(nextValues);
   };
 
-  const handleAddTypedTechStack = () => {
-    if (!typedTechStack || typedTechStack.existsInSelection) return;
+  const handleAddCustomTechStack = () => {
+    const searchValue = techStackSearch.trim();
+    if (!searchValue) return;
 
-    updateSelectedTechStacks([...selectedTechStacks, typedTechStack.value]);
+    updateSelectedTechStacks([...selectedTechStacks, searchValue]);
     setTechStackSearch('');
   };
 
@@ -472,11 +467,10 @@ export default function ProductForm({
                         type="text"
                         value={techStackSearch}
                         onChange={(e) => setTechStackSearch(e.target.value)}
-                        autoFocus
                         onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
+                          if (e.key === 'Enter' && canCreateTechStack) {
                             e.preventDefault();
-                            handleAddTypedTechStack();
+                            handleAddCustomTechStack();
                           }
                         }}
                         className="w-full rounded-md border border-gray-200 py-2 pl-8 pr-3 text-sm focus:outline-none focus:ring-0 focus:border-blue-500"
@@ -484,56 +478,48 @@ export default function ProductForm({
                       />
                     </div>
 
-                    {typedTechStack && !typedTechStack.existsInSelection && (
-                      <button
-                        type="button"
-                        onClick={handleAddTypedTechStack}
-                        className="flex w-full items-center justify-between border-b border-green-100 px-3 py-2 text-left text-green-700 hover:bg-green-50"
-                      >
-                        <span className="wrap-break-word pr-2">
-                          {typedTechStack.existsInOptions
-                            ? 'Add'
-                            : 'Create'}{' '}
-                          &quot;{typedTechStack.label}&quot;
-                        </span>
-                        <FaPlus size={12} className="shrink-0" />
-                      </button>
-                    )}
+                    <div className="max-h-56 overflow-y-auto py-1">
+                      {filteredTechStackOptions.map((option) => {
+                        const isSelected = selectedTechStacks.some((item) =>
+                          isMatchingTechStack(item, option.value),
+                        );
+                        return (
+                          <button
+                            key={option.value}
+                            type="button"
+                            onClick={() => handleToggleTechStack(option.value)}
+                            className={`flex w-full items-center justify-between px-3 py-2 text-left hover:bg-gray-100 ${isSelected ? 'bg-blue-50 text-blue-700' : ''}`}
+                          >
+                            <span className="wrap-break-word pr-2">
+                              {option.label}
+                            </span>
+                            {isSelected && (
+                              <FaCheck size={12} className="shrink-0" />
+                            )}
+                          </button>
+                        );
+                      })}
 
-                    {(filteredTechStackOptions.length > 0 ||
-                      !typedTechStack ||
-                      typedTechStack.existsInSelection) && (
-                      <div className="max-h-56 overflow-y-auto py-1">
-                        {filteredTechStackOptions.map((option) => {
-                          const isSelected = selectedTechStacks.some((item) =>
-                            isMatchingTechStack(item, option.value),
-                          );
-                          return (
-                            <button
-                              key={option.value}
-                              type="button"
-                              onClick={() =>
-                                handleToggleTechStack(option.value)
-                              }
-                              className={`flex w-full items-center justify-between px-3 py-2 text-left hover:bg-gray-100 ${isSelected ? 'bg-blue-50 text-blue-700' : ''}`}
-                            >
-                              <span className="wrap-break-word pr-2">
-                                {option.label}
-                              </span>
-                              {isSelected && (
-                                <FaCheck size={12} className="shrink-0" />
-                              )}
-                            </button>
-                          );
-                        })}
+                      {canCreateTechStack && (
+                        <button
+                          type="button"
+                          onClick={handleAddCustomTechStack}
+                          className="flex w-full items-center justify-between px-3 py-2 text-left text-green-700 hover:bg-green-50"
+                        >
+                          <span className="wrap-break-word pr-2">
+                            Create &quot;{techStackSearch.trim()}&quot;
+                          </span>
+                          <FaPlus size={12} className="shrink-0" />
+                        </button>
+                      )}
 
-                        {filteredTechStackOptions.length === 0 && (
+                      {filteredTechStackOptions.length === 0 &&
+                        !canCreateTechStack && (
                           <div className="px-3 py-2 text-sm text-gray-500">
                             No matching tech stacks found
                           </div>
                         )}
-                      </div>
-                    )}
+                    </div>
                   </div>
                 )}
               </div>
