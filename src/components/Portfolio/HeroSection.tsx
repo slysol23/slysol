@@ -46,7 +46,10 @@ const PortfolioHero = ({
               autoplayHoverPause={true}
               nav
               navNodes={[
-                <div key="portfolio-prev" className="p-2 rounded-full bg-white">
+                <div
+                  key="portfolio-prev"
+                  className="p-2 rounded-full bg-white hidden xs:block"
+                >
                   <FaChevronLeft className="h-5 w-5 text-blue-600" />
                 </div>,
                 <div key="portfolio-next" className="p-2 rounded-full bg-white">
