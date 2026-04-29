@@ -13,6 +13,7 @@ import { BlogApiResponse, IBlog, IAuthor } from 'lib/type';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 import { getBlogImageSrc } from 'lib/blog/image';
 import Image from 'next/image';
+import Banner from '@/components/Banner';
 
 export default function BlogPage() {
   const [page, setPage] = useState(1);
@@ -64,10 +65,13 @@ export default function BlogPage() {
 
   return (
     <div>
+      <Banner text="Blogs" empty />
       <Container hScreen={false}>
-        <Header />
-        <Title text="Blogs" className="py-5" />
-        <Breadcrumb items={breadCrumb} />
+        {/* <Header /> */}
+        {/* <Title text="Blogs" className="py-5" /> */}
+        <div className="pt-10">
+          <Breadcrumb items={breadCrumb} />
+        </div>
 
         {!blogs.length ? (
           <p className="text-center text-gray-400">No published blogs found.</p>
@@ -84,7 +88,7 @@ export default function BlogPage() {
                       <Image
                         src={getBlogImageSrc(b.image) ?? ''}
                         alt={b.title}
-                        className="w-full h-48 sm:h-56 object-cover rounded-2xl"
+                        className="w-full h-48 sm:h-56 object-fill rounded-2xl"
                         loading="lazy"
                         decoding="async"
                         height={224}
@@ -161,7 +165,7 @@ export default function BlogPage() {
             </div>
 
             {/* Pagination */}
-            {/* <div className="flex justify-center items-center gap-4 pb-20">
+            <div className="flex justify-center items-center gap-4 pb-20">
               <button
                 onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
                 disabled={page === 1 || blogQuery.isFetching}
@@ -183,7 +187,7 @@ export default function BlogPage() {
               >
                 →
               </button>
-            </div> */}
+            </div>
           </>
         )}
       </Container>
