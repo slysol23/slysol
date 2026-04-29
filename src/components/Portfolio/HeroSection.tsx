@@ -33,7 +33,7 @@ const PortfolioHero = ({
   return (
     <section id="portfolio-hero" className="w-full">
       <div className="overflow-hidden rounded-4xl border border-black/5 bg-white shadow-sm sm:rounded-[2.5rem]">
-        <div className="relative isolate min-h-[clamp(200px,40vh,450px)] sm:min-h-[clamp(360px,52vh,620px)] md:min-h-[clamp(380px,56vh,680px)] lg:min-h-[clamp(420px,60vh,720px)]">
+        <div className="relative isolate min-h-[clamp(200px,20vh,300px)] sm:min-h-[clamp(360px,52vh,620px)] md:min-h-[clamp(380px,56vh,680px)] lg:min-h-[clamp(420px,60vh,720px)]">
           {hasMultipleImages ? (
             <Carousal
               className="pt-4 sm:pt-8 md:pt-10"
@@ -52,7 +52,10 @@ const PortfolioHero = ({
                 >
                   <FaChevronLeft className="h-5 w-5 text-blue-600" />
                 </div>,
-                <div key="portfolio-next" className="p-2 rounded-full bg-white">
+                <div
+                  key="portfolio-next"
+                  className="p-2 rounded-full bg-white hidden xs:block"
+                >
                   <FaChevronRight className="h-5 w-5 text-blue-600" />
                 </div>,
               ]}
