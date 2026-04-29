@@ -184,9 +184,9 @@ export default function ProductForm({
     );
   }, [techStackSearch]);
 
-  const canCreateTechStack = React.useMemo(() => {
+  const typedTechStack = React.useMemo(() => {
     const searchValue = techStackSearch.trim();
-    if (!searchValue) return false;
+    if (!searchValue) return null;
 
     const existsInOptions = TECH_STACK_OPTIONS.some((option) =>
       isMatchingTechStack(option.value, searchValue),
@@ -194,8 +194,13 @@ export default function ProductForm({
     const existsInSelection = selectedTechStacks.some((value) =>
       isMatchingTechStack(value, searchValue),
     );
-
-    return !existsInOptions && !existsInSelection;
+    const value = normalizeTechStackValue(searchValue);
+    return {
+      existsInOptions,
+      existsInSelection,
+      label: getTechStackLabel(value),
+      value,
+    };
   }, [isMatchingTechStack, selectedTechStacks, techStackSearch]);
 
   const handleToggleTechStack = (value: string) => {
@@ -210,11 +215,9 @@ export default function ProductForm({
     updateSelectedTechStacks(nextValues);
   };
 
-  const handleAddCustomTechStack = () => {
-    const searchValue = techStackSearch.trim();
-    if (!searchValue) return;
-
-    updateSelectedTechStacks([...selectedTechStacks, searchValue]);
+  const handleAddTypedTechStack = () => {
+    if (!typedTechStack || typedTechStack.existsInSelection) return;
+    updateSelectedTechStacks([...selectedTechStacks, typedTechStack.value]);
     setTechStackSearch('');
   };
 
@@ -468,9 +471,9 @@ export default function ProductForm({
                         value={techStackSearch}
                         onChange={(e) => setTechStackSearch(e.target.value)}
                         onKeyDown={(e) => {
-                          if (e.key === 'Enter' && canCreateTechStack) {
+                          if (e.key === 'Enter') {
                             e.preventDefault();
-                            handleAddCustomTechStack();
+                            handleAddTypedTechStack();
                           }
                         }}
                         className="w-full rounded-md border border-gray-200 py-2 pl-8 pr-3 text-sm focus:outline-none focus:ring-0 focus:border-blue-500"
@@ -500,25 +503,27 @@ export default function ProductForm({
                         );
                       })}
 
-                      {canCreateTechStack && (
+                      {typedTechStack && !typedTechStack.existsInSelection && (
                         <button
                           type="button"
-                          onClick={handleAddCustomTechStack}
+                          onClick={handleAddTypedTechStack}
                           className="flex w-full items-center justify-between px-3 py-2 text-left text-green-700 hover:bg-green-50"
                         >
                           <span className="wrap-break-word pr-2">
-                            Create &quot;{techStackSearch.trim()}&quot;
+                            {typedTechStack.existsInOptions ? 'Add' : 'Create'}
+                            &quot;{typedTechStack.label}&quot;
                           </span>
                           <FaPlus size={12} className="shrink-0" />
                         </button>
                       )}
 
-                      {filteredTechStackOptions.length === 0 &&
-                        !canCreateTechStack && (
-                          <div className="px-3 py-2 text-sm text-gray-500">
-                            No matching tech stacks found
-                          </div>
-                        )}
+                      {((filteredTechStackOptions.length === 0 &&
+                        !typedTechStack) ||
+                        typedTechStack?.existsInSelection) && (
+                        <div className="px-3 py-2 text-sm text-gray-500">
+                          No matching tech stacks found
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
