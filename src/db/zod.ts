@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { PRODUCT_CATEGORY_PAGE_SIZE } from '@/utils/product-category';
 
 const jsonStringArraySchema = z.union([
   z.array(z.string().min(1)),
@@ -36,15 +37,25 @@ export const productGetQuerySchema = z.object({
   limit: z.coerce.number().int().positive().max(100).default(10),
 });
 
+export const productCategoryGetQuerySchema = z.object({
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce
+    .number()
+    .int()
+    .positive()
+    .max(100)
+    .default(PRODUCT_CATEGORY_PAGE_SIZE),
+});
+
 export const productPostSchema = z.object({
   category_id: z.string().trim().min(1, 'category is required'),
   title: z.string().trim().min(1, 'title is required'),
   images: jsonStringArraySchema,
   overview: z.string().trim().min(1, 'overview is required'),
-  challenges: z.string().trim().min(1, 'challenges is required'),
-  approach: z.string().trim().min(1, 'approach is required'),
-  outcomes: z.string().trim().min(1, 'outcomes is required'),
-  feedback: z.string().trim().min(1, 'feedback is required'),
+  challenges: z.string().trim().default(''),
+  approach: z.string().trim().default(''),
+  outcomes: z.string().trim().default(''),
+  feedback: z.string().trim().default(''),
   techstack: jsonStringArraySchema,
   description: z.string().trim().min(1, 'description is required'),
   updated_by: z.string().trim().min(1, 'updated_by is required'),
@@ -83,6 +94,9 @@ export const productCategoryPatchSchema = z
   });
 
 export type ProductGetQueryInput = z.infer<typeof productGetQuerySchema>;
+export type ProductCategoryGetQueryInput = z.infer<
+  typeof productCategoryGetQuerySchema
+>;
 export type ProductPostInput = z.infer<typeof productPostSchema>;
 export type ProductPatchInput = z.infer<typeof productPatchSchema>;
 export type ProductCategoryPostInput = z.infer<

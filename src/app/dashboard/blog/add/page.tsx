@@ -13,8 +13,8 @@ import BlogForm, {
 } from '@/components/Form/BlogForm';
 import { BreadcrumbItem } from '@/components/breadCrum';
 import { useUser } from 'providers/UserProvider';
-import { toast } from 'react-toastify';
 import DashboardButton from '@/components/Button/DashboardButton';
+import { showDashboardError } from '@/utils/dashboard-alert';
 
 export default function AddBlogPage() {
   const router = useRouter();
@@ -46,7 +46,7 @@ export default function AddBlogPage() {
     },
     onError: (error) => {
       console.error('Error creating blog:', error);
-      toast.error('Failed to create blog');
+      void showDashboardError('Failed to create blog');
     },
   });
 

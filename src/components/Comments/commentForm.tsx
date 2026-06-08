@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
-import toast from 'react-hot-toast';
+import Swal from 'sweetalert2';
 
 interface CommentFormProps {
   blogId: number;
@@ -25,6 +25,22 @@ const CommentForm: React.FC<CommentFormProps> = ({
   const [email, setEmail] = useState('');
   const [comment, setComment] = useState('');
 
+  const showAlert = (
+    icon: 'success' | 'error' | 'warning' | 'info' | 'question',
+    title: string,
+  ) => {
+    void Swal.fire({
+      toast: true,
+      position: 'bottom-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+      backdrop: false,
+      icon,
+      title,
+    });
+  };
+
   const commentMutation = useMutation({
     mutationFn: async (data: {
       blogId: number;
@@ -45,23 +61,32 @@ const CommentForm: React.FC<CommentFormProps> = ({
       setComment('');
 
       if (isReply) {
-        toast.success('Your reply has been sent to the publisher for review');
+        showAlert(
+          'success',
+          'Your reply has been sent to the publisher for review',
+        );
       } else {
-        toast.success('Your comment has been sent to the publisher for review');
+        showAlert(
+          'success',
+          'Your comment has been sent to the publisher for review',
+        );
       }
 
       if (onCancel) onCancel();
     },
 
     onError: (error: any) => {
-      toast.error(error.response?.data?.error || 'Failed to post comment');
+      showAlert(
+        'error',
+        error.response?.data?.error || 'Failed to post comment',
+      );
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !comment.trim()) {
-      toast.error('Name and comment are required');
+      showAlert('error', 'Name and comment are required');
       return;
     }
 

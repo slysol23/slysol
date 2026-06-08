@@ -11,6 +11,7 @@ import { BreadcrumbItem } from '@/components/breadCrum';
 import { ProductItem, getFirstImage, useProductsPage } from 'hooks/useProducts';
 import { DashboardTableColumn } from 'types/dashboard';
 import DashboardButton from '@/components/Button/DashboardButton';
+import { createPortfolioHash } from '@/utils/portfolio';
 
 const ProductPage = () => {
   const {
@@ -110,7 +111,13 @@ const ProductPage = () => {
         <div className="flex items-center justify-center gap-3">
           {product.is_published && (
             <Link
-              href={`/dashboard/product/edit/${product.id}`}
+              href={`/portfolio#${encodeURIComponent(
+                createPortfolioHash(
+                  product.productCategory?.id ?? product.categoryId,
+                  product.title,
+                ),
+              )}`}
+              scroll={false}
               className="text-black hover:text-gray-600 transition"
               title="View Published"
             >
@@ -119,7 +126,7 @@ const ProductPage = () => {
           )}
           <button
             onClick={() =>
-              handleTogglePublish(product.id, product.is_published)
+              void handleTogglePublish(product.id, product.is_published)
             }
             disabled={publishMutation.isPending}
             className={`transition-colors disabled:opacity-40 ${
@@ -139,7 +146,7 @@ const ProductPage = () => {
             <FaPen />
           </Link>
           <button
-            onClick={() => handleDelete(product.id)}
+            onClick={() => void handleDelete(product.id)}
             disabled={deleteMutation.isPending}
             className="text-red-500 hover:text-red-700 transition-colors disabled:opacity-40"
             title="Delete product"

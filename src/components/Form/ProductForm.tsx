@@ -19,12 +19,14 @@ import {
   FaExclamationTriangle,
   FaLightbulb,
   FaCheckCircle,
+  FaSearch,
 } from 'react-icons/fa';
 import Breadcrumb, { BreadcrumbItem } from '@/components/breadCrum';
 import DashboardButton from '../Button/DashboardButton';
 import {
   TECH_STACK_OPTIONS,
   getTechStackLabel,
+  normalizeTechStackKey,
   normalizeTechStackList,
   normalizeTechStackValue,
 } from '@/utils/techstack';
@@ -40,11 +42,11 @@ export interface ProductFormData {
   imagesText: string;
   techstackText: string;
   description: string;
-  feedback: string;
+  feedback?: string;
   overview: string;
-  challenges: string;
-  approach: string;
-  outcomes: string;
+  challenges?: string;
+  approach?: string;
+  outcomes?: string;
   is_published?: boolean;
 }
 
@@ -87,13 +89,13 @@ export default function ProductForm({
     handleSubmit,
     control,
     setValue,
-    watch,
     formState: { errors },
   } = form;
 
   const [imageFields, setImageFields] = React.useState<string[]>(initialImages);
   const [techStackDropdownOpen, setTechStackDropdownOpen] =
     React.useState(false);
+  const [techStackSearch, setTechStackSearch] = React.useState('');
   const normalizedInitialTechStacks = React.useMemo(
     () => normalizeTechStackList(initialTechStack),
     [initialTechStack],
@@ -164,23 +166,66 @@ export default function ProductForm({
     });
   };
 
+  const isMatchingTechStack = React.useCallback(
+    (firstValue: string, secondValue: string) =>
+      normalizeTechStackKey(normalizeTechStackValue(firstValue)) ===
+      normalizeTechStackKey(normalizeTechStackValue(secondValue)),
+    [],
+  );
+
+  const filteredTechStackOptions = React.useMemo(() => {
+    const searchKey = normalizeTechStackKey(techStackSearch);
+    if (!searchKey) return TECH_STACK_OPTIONS;
+
+    return TECH_STACK_OPTIONS.filter((option) =>
+      normalizeTechStackKey(`${option.label} ${option.value}`).includes(
+        searchKey,
+      ),
+    );
+  }, [techStackSearch]);
+
+  const typedTechStack = React.useMemo(() => {
+    const searchValue = techStackSearch.trim();
+    if (!searchValue) return null;
+
+    const existsInOptions = TECH_STACK_OPTIONS.some((option) =>
+      isMatchingTechStack(option.value, searchValue),
+    );
+    const existsInSelection = selectedTechStacks.some((value) =>
+      isMatchingTechStack(value, searchValue),
+    );
+    const value = normalizeTechStackValue(searchValue);
+    return {
+      existsInOptions,
+      existsInSelection,
+      label: getTechStackLabel(value),
+      value,
+    };
+  }, [isMatchingTechStack, selectedTechStacks, techStackSearch]);
+
   const handleToggleTechStack = (value: string) => {
     const normalizedValue = normalizeTechStackValue(value);
-    const nextValues = selectedTechStacks.some(
-      (item) => normalizeTechStackValue(item) === normalizedValue,
+    const nextValues = selectedTechStacks.some((item) =>
+      isMatchingTechStack(item, normalizedValue),
     )
       ? selectedTechStacks.filter(
-          (item) => normalizeTechStackValue(item) !== normalizedValue,
+          (item) => !isMatchingTechStack(item, normalizedValue),
         )
       : [...selectedTechStacks, normalizedValue];
     updateSelectedTechStacks(nextValues);
+  };
+
+  const handleAddTypedTechStack = () => {
+    if (!typedTechStack || typedTechStack.existsInSelection) return;
+    updateSelectedTechStacks([...selectedTechStacks, typedTechStack.value]);
+    setTechStackSearch('');
   };
 
   const handleRemoveTechStack = (value: string) => {
     const normalizedValue = normalizeTechStackValue(value);
     updateSelectedTechStacks(
       selectedTechStacks.filter(
-        (item) => normalizeTechStackValue(item) !== normalizedValue,
+        (item) => !isMatchingTechStack(item, normalizedValue),
       ),
     );
   };
@@ -283,7 +328,7 @@ export default function ProductForm({
               <input
                 type="text"
                 {...register('title')}
-                className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 box-border"
+                className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-0 focus:border-blue-500 box-border"
                 placeholder="Enter project title"
               />
               {errors.title && (
@@ -306,7 +351,7 @@ export default function ProductForm({
                   onChange={handleCategoryInputChange}
                   onFocus={() => setCategoryDropdownOpen(true)}
                   disabled={categoriesLoading}
-                  className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 box-border"
+                  className="w-full p-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-0 focus:border-blue-500 disabled:bg-gray-100 box-border"
                   placeholder={
                     categoriesLoading
                       ? 'Loading categories...'
@@ -371,7 +416,7 @@ export default function ProductForm({
                       type="text"
                       value={image}
                       onChange={(e) => handleImageChange(index, e.target.value)}
-                      className="w-full rounded-lg border border-gray-300 p-3 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500 box-border"
+                      className="w-full rounded-lg border border-gray-300 p-3 pr-10 focus:outline-none focus:ring-0 focus:border-blue-500 box-border"
                       placeholder="Enter image URL or path"
                     />
                     {index > 0 && (
@@ -403,7 +448,7 @@ export default function ProductForm({
                 <button
                   type="button"
                   onClick={() => setTechStackDropdownOpen((p) => !p)}
-                  className="flex w-full items-center justify-between rounded-lg border border-gray-300 bg-white p-3 text-left focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="flex w-full items-center justify-between rounded-lg border border-gray-300 bg-white p-3 text-left focus:outline-none focus:ring-0 focus:border-blue-500"
                 >
                   <span className="truncate text-gray-700">
                     {techStackSummary}
@@ -415,27 +460,71 @@ export default function ProductForm({
                 </button>
 
                 {techStackDropdownOpen && (
-                  <div className="absolute z-50 mt-2 max-h-64 w-full overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-lg left-0 right-0">
-                    {TECH_STACK_OPTIONS.map((option) => {
-                      const isSelected = selectedTechStacks.some(
-                        (item) => normalizeTechStackValue(item) === option.value,
-                      );
-                      return (
+                  <div className="absolute z-50 mt-2 w-full rounded-lg border border-gray-200 bg-white shadow-lg left-0 right-0">
+                    <div className="relative border-b border-gray-100 p-2">
+                      <FaSearch
+                        size={13}
+                        className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"
+                      />
+                      <input
+                        type="text"
+                        value={techStackSearch}
+                        onChange={(e) => setTechStackSearch(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleAddTypedTechStack();
+                          }
+                        }}
+                        className="w-full rounded-md border border-gray-200 py-2 pl-8 pr-3 text-sm focus:outline-none focus:ring-0 focus:border-blue-500"
+                        placeholder="Search or add tech stack"
+                      />
+                    </div>
+
+                    <div className="max-h-56 overflow-y-auto py-1">
+                      {filteredTechStackOptions.map((option) => {
+                        const isSelected = selectedTechStacks.some((item) =>
+                          isMatchingTechStack(item, option.value),
+                        );
+                        return (
+                          <button
+                            key={option.value}
+                            type="button"
+                            onClick={() => handleToggleTechStack(option.value)}
+                            className={`flex w-full items-center justify-between px-3 py-2 text-left hover:bg-gray-100 ${isSelected ? 'bg-blue-50 text-blue-700' : ''}`}
+                          >
+                            <span className="wrap-break-word pr-2">
+                              {option.label}
+                            </span>
+                            {isSelected && (
+                              <FaCheck size={12} className="shrink-0" />
+                            )}
+                          </button>
+                        );
+                      })}
+
+                      {typedTechStack && !typedTechStack.existsInSelection && (
                         <button
-                          key={option.value}
                           type="button"
-                          onClick={() => handleToggleTechStack(option.value)}
-                          className={`flex w-full items-center justify-between px-3 py-2 text-left hover:bg-gray-100 ${isSelected ? 'bg-blue-50 text-blue-700' : ''}`}
+                          onClick={handleAddTypedTechStack}
+                          className="flex w-full items-center justify-between px-3 py-2 text-left text-green-700 hover:bg-green-50"
                         >
                           <span className="wrap-break-word pr-2">
-                            {option.label}
+                            {typedTechStack.existsInOptions ? 'Add' : 'Create'}
+                            &quot;{typedTechStack.label}&quot;
                           </span>
-                          {isSelected && (
-                            <FaCheck size={12} className="shrink-0" />
-                          )}
+                          <FaPlus size={12} className="shrink-0" />
                         </button>
-                      );
-                    })}
+                      )}
+
+                      {((filteredTechStackOptions.length === 0 &&
+                        !typedTechStack) ||
+                        typedTechStack?.existsInSelection) && (
+                        <div className="px-3 py-2 text-sm text-gray-500">
+                          No matching tech stacks found
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
@@ -485,7 +574,7 @@ export default function ProductForm({
                   render={({ field }) => (
                     <CKEditorWrapper
                       id="description-editor"
-                      initialData={field.value}
+                      initialData={field.value ?? ''}
                       onChange={field.onChange}
                       height={220}
                     />
@@ -511,7 +600,7 @@ export default function ProductForm({
                   render={({ field }) => (
                     <CKEditorWrapper
                       id="feedback-editor"
-                      initialData={field.value}
+                      initialData={field.value ?? ''}
                       onChange={field.onChange}
                       height={220}
                     />
@@ -539,7 +628,7 @@ export default function ProductForm({
                   render={({ field }) => (
                     <CKEditorWrapper
                       id="overview-editor"
-                      initialData={field.value}
+                      initialData={field.value ?? ''}
                       onChange={field.onChange}
                       height={260}
                     />
@@ -568,7 +657,7 @@ export default function ProductForm({
                   render={({ field }) => (
                     <CKEditorWrapper
                       id="challenges-editor"
-                      initialData={field.value}
+                      initialData={field.value ?? ''}
                       onChange={field.onChange}
                       height={260}
                     />
@@ -596,7 +685,7 @@ export default function ProductForm({
                   render={({ field }) => (
                     <CKEditorWrapper
                       id="approach-editor"
-                      initialData={field.value}
+                      initialData={field.value ?? ''}
                       onChange={field.onChange}
                       height={260}
                     />
@@ -622,7 +711,7 @@ export default function ProductForm({
                   render={({ field }) => (
                     <CKEditorWrapper
                       id="outcomes-editor"
-                      initialData={field.value}
+                      initialData={field.value ?? ''}
                       onChange={field.onChange}
                       height={260}
                     />

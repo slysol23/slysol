@@ -10,7 +10,6 @@ import Link from 'next/link';
 import { useUser } from '../../../providers/UserProvider';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import { toast } from 'react-toastify';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { BreadcrumbItem } from '@/components/breadCrum';
 import DashboardListTable from '@/components/dashboard/DashboardListTable';
@@ -18,6 +17,11 @@ import { getBlogImageSrc } from 'lib/blog/image';
 import { DashboardTableColumn } from 'types/dashboard';
 import DashboardButton from '@/components/Button/DashboardButton';
 import Image from 'next/image';
+import {
+  confirmDashboardAction,
+  showDashboardError,
+  showDashboardSuccess,
+} from '@/utils/dashboard-alert';
 
 export default function BlogDashboardPage() {
   const searchParams = useSearchParams();
@@ -30,38 +34,23 @@ export default function BlogDashboardPage() {
     const created = searchParams?.get('created');
 
     if (created === 'true') {
-      toast.success('Blog created successfully!', {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardSuccess('Blog created successfully!');
       router.replace('/dashboard/blog', { scroll: false });
     }
     if (updated === 'true') {
-      toast.success('Blog updated successfully!', {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardSuccess('Blog updated successfully!');
       router.replace('/dashboard/blog', { scroll: false });
     }
     if (published === 'true') {
-      toast.success('Blog published successfully!', {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardSuccess('Blog published successfully!');
       router.replace('/dashboard/blog', { scroll: false });
     }
     if (published === 'false') {
-      toast.success('Blog unpublished successfully!', {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardSuccess('Blog unpublished successfully!');
       router.replace('/dashboard/blog', { scroll: false });
     }
     if (deleted === 'true') {
-      toast.success('Blog deleted successfully!', {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardSuccess('Blog deleted successfully!');
       router.replace('/dashboard/blog', { scroll: false });
     }
   }, [searchParams, router]);
@@ -105,10 +94,9 @@ export default function BlogDashboardPage() {
       router.push('/dashboard/blog?deleted=true');
     },
     onError: (mutationError) => {
-      toast.error(`Failed to delete blog: ${mutationError.message}`, {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardError(
+        `Failed to delete blog: ${mutationError.message}`,
+      );
     },
   });
 
@@ -124,21 +112,31 @@ export default function BlogDashboardPage() {
       router.push(`/dashboard/blog?published=${variables.nextPublished}`);
     },
     onError: (mutationError) => {
-      toast.error(`Failed to update publish status: ${mutationError.message}`, {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardError(
+        `Failed to update publish status: ${mutationError.message}`,
+      );
     },
   });
 
-  const handleDelete = (id: number) => {
-    if (!confirm('Are you sure you want to delete this blog?')) return;
+  const handleDelete = async (id: number) => {
+    const confirmed = await confirmDashboardAction({
+      title: 'Delete blog?',
+      text: 'Are you sure you want to delete this blog?',
+    });
+
+    if (!confirmed) return;
     deleteMutation.mutate(id);
   };
 
-  const handleTogglePublish = (id: number, currentStatus: boolean) => {
+  const handleTogglePublish = async (id: number, currentStatus: boolean) => {
     const action = currentStatus ? 'unpublish' : 'publish';
-    if (!confirm(`Are you sure you want to ${action} this blog?`)) return;
+    const confirmed = await confirmDashboardAction({
+      title: `${action.charAt(0).toUpperCase() + action.slice(1)} blog?`,
+      text: `Are you sure you want to ${action} this blog?`,
+      confirmButtonText: action === 'publish' ? 'Publish' : 'Unpublish',
+    });
+
+    if (!confirmed) return;
 
     publishMutation.mutate({
       id,
@@ -279,7 +277,7 @@ export default function BlogDashboardPage() {
             </Link>
             <button
               onClick={() =>
-                handleTogglePublish(blogItem.id, blogItem.is_published)
+                void handleTogglePublish(blogItem.id, blogItem.is_published)
               }
               disabled={publishMutation.isPending}
               className={`transition-colors disabled:opacity-40 ${
@@ -303,7 +301,7 @@ export default function BlogDashboardPage() {
               <FaPen size={15} />
             </Link>
             <button
-              onClick={() => handleDelete(blogItem.id)}
+              onClick={() => void handleDelete(blogItem.id)}
               disabled={deleteMutation.isPending}
               className="text-red-500 hover:text-red-400 transition disabled:opacity-40"
               title="Delete"

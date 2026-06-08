@@ -20,15 +20,16 @@ interface CarouselProps {
   dots?: boolean;
   loop?: boolean;
   navText?: string[];
+  navNodes?: [ReactNode, ReactNode];
   slideBy?: number;
   smartSpeed?: number;
 }
 
 export default function Carousal({
-  autoplay = false,
-  autoplayTimeout = 5000,
-  autoplaySpeed = 5000,
-  autoplayHoverPause = false,
+  autoplay = true,
+  autoplayTimeout = 2000,
+  autoplaySpeed = 2000,
+  autoplayHoverPause = true,
   children,
   className = '',
   center = false,
@@ -39,12 +40,14 @@ export default function Carousal({
   dots = false,
   loop = true,
   navText = [],
+  navNodes,
   slideBy = 1,
   smartSpeed,
 }: CarouselProps) {
   const slides = React.Children.toArray(children);
   const swiperRef = useRef<SwiperType | null>(null);
-  const useCustomNavigation = nav && navText.length === 2;
+  const useCustomNavigation =
+    nav && ((navNodes?.length ?? 0) === 2 || navText.length === 2);
 
   const breakpoints = Object.fromEntries(
     Object.entries(responsive).map(([key, value]) => [
@@ -94,14 +97,22 @@ export default function Carousal({
               aria-label="Previous slide"
               onClick={() => swiperRef.current?.slidePrev()}
             >
-              <span dangerouslySetInnerHTML={{ __html: navText[0] }} />
+              {navNodes ? (
+                navNodes[0]
+              ) : (
+                <span dangerouslySetInnerHTML={{ __html: navText[0] }} />
+              )}
             </button>
             <button
               type="button"
               aria-label="Next slide"
               onClick={() => swiperRef.current?.slideNext()}
             >
-              <span dangerouslySetInnerHTML={{ __html: navText[1] }} />
+              {navNodes ? (
+                navNodes[1]
+              ) : (
+                <span dangerouslySetInnerHTML={{ __html: navText[1] }} />
+              )}
             </button>
           </div>
         ) : null}

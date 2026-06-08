@@ -88,7 +88,7 @@ module.exports = {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic':
           'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
-        'modern-tech': `url('/images/home/modern-tech.webp')`,
+        'modern-tech': `url('https://res.cloudinary.com/dj6kzchpv/image/upload/v1776839553/modern-tech_11zon_sqau5y.webp')`,
       },
     },
   },

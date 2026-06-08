@@ -11,25 +11,25 @@ import Title from '@/components/Title';
 export default function Slider() {
   const images = [
     {
-      src: '/images/home/client1.webp',
+      src: 'https://res.cloudinary.com/dj6kzchpv/image/upload/v1776837523/client1_mawykz.webp',
       alt: 'alignerbase',
       text: `What an amazing experience working with this company! Their expertise in integrating our client's external features and ensuring top-notch code quality was truly impressive. The outcome of the project was flawless, and we are genuinely grateful for their invaluable assistance. Without a doubt, we'll be reaching out to them for our upcoming projects.`,
       name: 'Alignerbase',
     },
     {
-      src: '/images/home/client2.png',
+      src: 'https://res.cloudinary.com/dj6kzchpv/image/upload/v1776838118/client2_yi2lv6.webp',
       alt: 'orange-shine',
       text: `Working alongside this company was an absolute pleasure! Their adeptness at seamlessly incorporating our client's external feature while upholding impeccable code standards was remarkable. We extend our heartfelt gratitude for their pivotal role in making this project a success. We're eagerly looking forward to collaborating with them again in our future endeavors.`,
       name: 'Orange Shine',
     },
     {
-      src: '/images/home/client3.png',
+      src: 'https://res.cloudinary.com/dj6kzchpv/image/upload/v1776837835/client3_11zon_dynmzf.png',
       alt: 'cubed-software',
       text: `Great company to work with! They helped us to integrate our client's external feature and code quality, the work was perfect and we appreciate to their help on this project Will hire him again for the future projects.`,
       name: 'Cubed Software',
     },
     {
-      src: '/images/home/client4.png',
+      src: 'https://res.cloudinary.com/dj6kzchpv/image/upload/v1776837740/client4_morm4z.png',
       alt: 'mk-eng',
       text: `We're extremely pleased with the services provided by this company! Their exceptional work speaks volumes about their commitment to excellence. The project was executed flawlessly, and their assistance was invaluable. Without a doubt, we'll be reaching out to collaborate on future projects.`,
       name: 'MK Engineering',

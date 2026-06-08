@@ -165,7 +165,7 @@ export default function EditProductPage() {
       }
       headerActions={
         <DashboardButton
-          onClick={togglePublish}
+          onClick={() => void togglePublish()}
           disabled={publishProductMutation.isPending}
         >
           {publishProductMutation.isPending

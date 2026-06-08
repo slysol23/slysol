@@ -1,7 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    webpack: (config, {webpack}) =>
-  {
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+      },
+    ],
+  },
+  webpack: (config, { webpack }) => {
     config.plugins.push(
       new webpack.ProvidePlugin({
         $: "jquery",
@@ -11,7 +18,6 @@ const nextConfig = {
     );
     return config;
   },
-  };
-  
-  module.exports = nextConfig;
-  
+};
+
+module.exports = nextConfig;

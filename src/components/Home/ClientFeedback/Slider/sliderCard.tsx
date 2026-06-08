@@ -10,7 +10,7 @@ interface SliderCardProps {
 
 const SliderCard = ({ src, alt, text, companyName }: SliderCardProps) => {
   return (
-    <div className=" text-white text-justify p-5 rounded-xl shadow-[0px_0px_9px_-5px_black] transform transition-all duration-300 flex flex-col items-center gap-7 justify-between mb-5 mt-[60px]">
+    <div className="relative text-white text-justify p-5 rounded-xl shadow-[0px_0px_9px_-5px_black] transform transition-all duration-300 flex flex-col items-center gap-7 justify-between mb-5 mt-[60px]">
       <div className="h-[100px] w-[100px] absolute flex items-center justify-center shadow-[0px_0px_9px_-5px_black] rounded-full bg-white overflow-hidden p-2 -top-[50px] left-1/2 -translate-x-1/2">
         <Image
           src={src}

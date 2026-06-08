@@ -3,10 +3,9 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
-import { toast } from 'react-toastify';
 import { useUser } from 'hooks/useUser';
 import {
-  ProductCategoryResponse,
+  fetchAllProductCategories,
   ProductItem,
   ProductResponse,
   getStringList,
@@ -19,14 +18,13 @@ import {
   parseTechStackList,
 } from '@/utils/productForm';
 import { normalizeCategoryName } from '@/utils/product-category';
+import {
+  confirmDashboardAction,
+  showDashboardError,
+} from '@/utils/dashboard-alert';
 
 const fetchCategories = async () => {
-  const response = await fetch('/api/product-category', {
-    cache: 'no-store',
-  });
-
-  const data = await readResponse<ProductCategoryResponse>(response);
-  return data.data ?? [];
+  return fetchAllProductCategories();
 };
 
 const fetchProduct = async (productId: number) => {
@@ -70,10 +68,10 @@ export const useEditProduct = () => {
         title: data.title.trim(),
         images: parseMultilineList(data.imagesText),
         overview: data.overview.trim(),
-        challenges: data.challenges.trim(),
-        approach: data.approach.trim(),
-        outcomes: data.outcomes.trim(),
-        feedback: data.feedback.trim(),
+        challenges: data.challenges?.trim() ?? '',
+        approach: data.approach?.trim() ?? '',
+        outcomes: data.outcomes?.trim() ?? '',
+        feedback: data.feedback?.trim() ?? '',
         techstack: parseTechStackList(data.techstackText),
         description: data.description.trim(),
         updated_by:
@@ -98,10 +96,9 @@ export const useEditProduct = () => {
       router.push('/dashboard/product?updated=true');
     },
     onError: (mutationError: Error) => {
-      toast.error(`Failed to update product: ${mutationError.message}`, {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardError(
+        `Failed to update product: ${mutationError.message}`,
+      );
     },
   });
 
@@ -125,10 +122,9 @@ export const useEditProduct = () => {
       router.push(`/dashboard/product?published=${nextIsPublished}`);
     },
     onError: (mutationError: Error) => {
-      toast.error(`Failed to update publish status: ${mutationError.message}`, {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardError(
+        `Failed to update publish status: ${mutationError.message}`,
+      );
     },
   });
 
@@ -170,7 +166,7 @@ export const useEditProduct = () => {
     updateProductMutation.mutate(data);
   };
 
-  const togglePublish = () => {
+  const togglePublish = async () => {
     if (!product) return;
 
     const nextIsPublished = !product.is_published;
@@ -178,7 +174,13 @@ export const useEditProduct = () => {
       ? 'publish this product'
       : 'move this product to draft';
 
-    if (!confirm(`Are you sure you want to ${action}?`)) return;
+    const confirmed = await confirmDashboardAction({
+      title: `${nextIsPublished ? 'Publish' : 'Unpublish'} product?`,
+      text: `Are you sure you want to ${action}?`,
+      confirmButtonText: nextIsPublished ? 'Publish' : 'Unpublish',
+    });
+
+    if (!confirmed) return;
     publishProductMutation.mutate(nextIsPublished);
   };
 

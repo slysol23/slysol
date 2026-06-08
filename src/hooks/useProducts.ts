@@ -1,11 +1,19 @@
 import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { toast } from 'react-toastify';
+import { PRODUCT_CATEGORY_PAGE_SIZE } from '@/utils/product-category';
+import {
+  confirmDashboardAction,
+  showDashboardError,
+  showDashboardSuccess,
+} from '@/utils/dashboard-alert';
 
 export interface ProductCategory {
   id: string;
   name: string;
+  is_published: boolean;
+  createdAt: string;
+  updatedAt: string;
   updatedBy: string | null;
 }
 
@@ -43,7 +51,16 @@ export interface ProductResponse {
   data: ProductItem;
 }
 
+export interface ProductCategoryMeta {
+  records: number;
+  page: number;
+  limit: number;
+  total_pages: number;
+}
+
 export interface ProductCategoryResponse {
+  message: string;
+  meta: ProductCategoryMeta;
   data: ProductCategory[];
 }
 
@@ -75,7 +92,7 @@ export const formatDate = (value?: string | null) => {
   });
 };
 
-export const readResponse = async <T,>(response: Response): Promise<T> => {
+export const readResponse = async <T>(response: Response): Promise<T> => {
   const payload = (await response.json().catch(() => null)) as
     | (T & ApiErrorPayload)
     | null;
@@ -87,13 +104,63 @@ export const readResponse = async <T,>(response: Response): Promise<T> => {
   return payload as T;
 };
 
-const fetchProducts = async (page: number) => {
+export const categoriesPage = async (
+  page = 1,
+  limit = PRODUCT_CATEGORY_PAGE_SIZE,
+) => {
   const response = await fetch(
-    `/api/product?page=${page}&limit=${PAGE_SIZE}`,
+    `/api/product-category?page=${page}&limit=${limit}`,
     {
       cache: 'no-store',
     },
   );
+
+  return readResponse<ProductCategoryResponse>(response);
+};
+
+export const fetchAllProductCategories = async (
+  limit = PRODUCT_CATEGORY_PAGE_SIZE,
+): Promise<ProductCategory[]> => {
+  const firstPage = await categoriesPage(1, limit);
+  const totalPages = firstPage.meta?.total_pages ?? 0;
+
+  if (totalPages <= 1) {
+    return firstPage.data ?? [];
+  }
+
+  const remainingPages = await Promise.all(
+    Array.from({ length: totalPages - 1 }, (_, index) =>
+      categoriesPage(index + 2, limit),
+    ),
+  );
+
+  return [
+    ...(firstPage.data ?? []),
+    ...remainingPages.flatMap((page) => page.data ?? []),
+  ];
+};
+
+export const fetchPublishedProducts = async (
+  limit = 100,
+): Promise<ProductItem[]> => {
+  const searchParams = new URLSearchParams({
+    page: '1',
+    limit: String(limit),
+    published: 'true',
+  });
+
+  const response = await fetch(`/api/product?${searchParams.toString()}`, {
+    cache: 'no-store',
+  });
+
+  const data = await readResponse<ProductApiResponse>(response);
+  return data.data ?? [];
+};
+
+const fetchProducts = async (page: number) => {
+  const response = await fetch(`/api/product?page=${page}&limit=${PAGE_SIZE}`, {
+    cache: 'no-store',
+  });
 
   return readResponse<ProductApiResponse>(response);
 };
@@ -119,34 +186,22 @@ export const useProductsPage = () => {
     let shouldReplace = false;
 
     if (created === 'true') {
-      toast.success('Product created successfully!', {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardSuccess('Product created successfully!');
       shouldReplace = true;
     }
 
     if (updated === 'true') {
-      toast.success('Product updated successfully!', {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardSuccess('Product updated successfully!');
       shouldReplace = true;
     }
 
     if (published === 'true') {
-      toast.success('Product published successfully!', {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardSuccess('Product published successfully!');
       shouldReplace = true;
     }
 
     if (published === 'false') {
-      toast.success('Product moved to draft successfully!', {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardSuccess('Product moved to draft successfully!');
       shouldReplace = true;
     }
 
@@ -167,16 +222,10 @@ export const useProductsPage = () => {
     mutationFn: deleteProduct,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['products'] });
-      toast.success('Product deleted successfully!', {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardSuccess('Product deleted successfully!');
     },
     onError: (mutationError: Error) => {
-      toast.error(`Failed to delete product: ${mutationError.message}`, {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardError(`Failed to delete product: ${mutationError.message}`);
     },
   });
 
@@ -205,23 +254,34 @@ export const useProductsPage = () => {
       router.push(`/dashboard/product?published=${variables.nextPublished}`);
     },
     onError: (mutationError: Error) => {
-      toast.error(`Failed to update publish status: ${mutationError.message}`, {
-        autoClose: 3000,
-        position: 'bottom-right',
-      });
+      void showDashboardError(
+        `Failed to update publish status: ${mutationError.message}`,
+      );
     },
   });
 
-  const handleDelete = (id: number) => {
-    if (!confirm('Are you sure you want to delete this product?')) return;
+  const handleDelete = async (id: number) => {
+    const confirmed = await confirmDashboardAction({
+      title: 'Delete product?',
+      text: 'Are you sure you want to delete this product?',
+      confirmButtonText: 'Delete',
+    });
+
+    if (!confirmed) return;
     deleteMutation.mutate(id);
   };
 
-  const handleTogglePublish = (id: number, currentStatus: boolean) => {
+  const handleTogglePublish = async (id: number, currentStatus: boolean) => {
     const action = currentStatus
       ? 'unpublish this product'
       : 'publish this product';
-    if (!confirm(`Are you sure you want to ${action}?`)) return;
+    const confirmed = await confirmDashboardAction({
+      title: `${currentStatus ? 'Unpublish' : 'Publish'} product?`,
+      text: `Are you sure you want to ${action}?`,
+      confirmButtonText: currentStatus ? 'Unpublish' : 'Publish',
+    });
+
+    if (!confirmed) return;
 
     publishMutation.mutate({
       id,

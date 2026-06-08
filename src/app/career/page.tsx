@@ -13,27 +13,39 @@ import React from 'react';
 const Career = () => {
   const perksBenefits = [
     {
-      src: '/images/career/competitive-salary.svg',
+      src: 'https://res.cloudinary.com/dj6kzchpv/image/upload/v1776779974/competitive-salary_ehuser.svg',
       title: 'Competitive Salary',
     },
-    { src: '/images/career/provident-fund.svg', title: 'Provident Fund' },
     {
-      src: '/images/career/inpatient-medical.svg',
+      src: 'https://res.cloudinary.com/dj6kzchpv/image/upload/v1776780953/provident-fund_t8r6sw.svg',
+      title: 'Provident Fund',
+    },
+    {
+      src: 'https://res.cloudinary.com/dj6kzchpv/image/upload/v1776780038/inpatient-medical_fzhmiu.svg',
       title: 'Inpatient Medical Facility',
     },
-    { src: '/images/career/work-life.svg', title: 'Work/life Balance' },
     {
-      src: '/images/career/outpatent-medical.svg',
+      src: 'https://res.cloudinary.com/dj6kzchpv/image/upload/v1776780962/work-life_hfa7t4.svg',
+      title: 'Work/life Balance',
+    },
+    {
+      src: 'https://res.cloudinary.com/dj6kzchpv/image/upload/v1776781055/outpatent-medical_usc2ws.svg',
       title: 'Outpatient Medical Facility',
     },
-    { src: '/images/career/remote-work.svg', title: 'Remote Work When Needed' },
-    { src: '/images/career/subzidized-lunch.svg', title: 'Subsidized Lunch' },
     {
-      src: '/images/career/conference-traning.svg',
+      src: 'https://res.cloudinary.com/dj6kzchpv/image/upload/v1776780956/remote-work_ps4tiq.svg',
+      title: 'Remote Work When Needed',
+    },
+    {
+      src: 'https://res.cloudinary.com/dj6kzchpv/image/upload/v1776780957/subzidized-lunch_j4wwnl.svg',
+      title: 'Subsidized Lunch',
+    },
+    {
+      src: 'https://res.cloudinary.com/dj6kzchpv/image/upload/v1776780163/conference-traning_twwfa8.svg',
       title: 'Conferences & Training',
     },
     {
-      src: '/images/career/transportation.svg',
+      src: 'https://res.cloudinary.com/dj6kzchpv/image/upload/v1776780959/transportation_l6nofq.svg',
       title: 'Transportation Allowance for Females',
     },
   ];
@@ -41,7 +53,7 @@ const Career = () => {
     <>
       <div className="relative md:h-[600px] h-[400px]">
         <Image
-          src="/images/career/career-bg.webp"
+          src="https://res.cloudinary.com/dj6kzchpv/image/upload/v1776779325/career-bg_11zon_ug3bo4.webp"
           alt="Slysol team meeting on project"
           fill
           className="w-full h-auto object-cover object-top"
@@ -103,14 +115,14 @@ const Career = () => {
           <div className="grid gap-5">
             <div className="grid grid-cols-2 gap-5">
               <Image
-                src="/images/career/perks-1.webp"
+                src="https://res.cloudinary.com/dj6kzchpv/image/upload/v1776779895/perks-1_11zon_atcy30.webp"
                 alt="subsidized meals at slysol"
                 height={300}
                 width={400}
                 className="w-full h-auto rounded-lg"
               />
               <Image
-                src="/images/career/perks-3.webp"
+                src="https://res.cloudinary.com/dj6kzchpv/image/upload/v1776779924/perks-3_tpnafg.webp"
                 alt="subsidized meals at slysol"
                 height={300}
                 width={400}
@@ -118,7 +130,7 @@ const Career = () => {
               />
             </div>
             <Image
-              src="/images/career/perks-2.webp"
+              src="https://res.cloudinary.com/dj6kzchpv/image/upload/v1776779922/perks-2_huyasw.webp"
               alt="subsidized meals at slysol"
               height={600}
               width={400}

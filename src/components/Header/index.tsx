@@ -115,7 +115,7 @@ export default function Header({ classes }: HeaderProps) {
       >
         <div className="relative">
           <Image
-            src="/icons/slysol.svg"
+            src="https://res.cloudinary.com/dj6kzchpv/image/upload/v1776841477/slysol_samjbc.svg"
             height={50}
             width={100}
             alt="slysol logo"

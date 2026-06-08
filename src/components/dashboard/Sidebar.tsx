@@ -125,7 +125,7 @@ const Sidebar = () => {
           <Image
             height={32}
             width={32}
-            src="/icons/slysol-white.svg"
+            src="https://res.cloudinary.com/dj6kzchpv/image/upload/v1776843572/slysol-white_akxphu.svg"
             alt="Slysol"
             priority
             className="h-8 w-auto"
@@ -185,7 +185,9 @@ const Sidebar = () => {
               height={80}
               width={80}
               src={
-                isCollapsed ? '/icons/S-logo.png' : '/icons/slysol-white.svg'
+                isCollapsed
+                  ? 'https://res.cloudinary.com/dj6kzchpv/image/upload/v1776841405/S-logo_11zon_kd8fqa.png'
+                  : 'https://res.cloudinary.com/dj6kzchpv/image/upload/v1776843572/slysol-white_akxphu.svg'
               }
               alt="Slysol"
               priority

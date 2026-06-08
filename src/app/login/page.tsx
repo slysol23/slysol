@@ -69,7 +69,9 @@ export default function LoginPage() {
         <Link href="/">
           <div className="flex justify-center">
             <Image
-              src={'/icons/slysol.svg'}
+              src={
+                'https://res.cloudinary.com/dj6kzchpv/image/upload/v1776841477/slysol_samjbc.svg'
+              }
               alt="Slysol Logo"
               width={80}
               height={50}

@@ -1,26 +1,63 @@
 import { NextResponse } from 'next/server';
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import { auth } from 'auth';
 
 import { db } from '../../../db';
 import { productCategorySchema } from '../../../db/schema';
-import { productCategoryPostSchema } from '../../../db/zod';
+import {
+  productCategoryGetQuerySchema,
+  productCategoryPostSchema,
+} from '../../../db/zod';
 import {
   normalizeCategoryId,
   normalizeCategoryName,
 } from '../../../utils/product-category';
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
+    const { searchParams } = new URL(req.url);
+
+    const parsedQuery = productCategoryGetQuerySchema.safeParse({
+      page: searchParams.get('page') ?? undefined,
+      limit: searchParams.get('limit') ?? undefined,
+    });
+
+    if (!parsedQuery.success) {
+      return NextResponse.json(
+        {
+          message: 'Validation failed',
+          errors: parsedQuery.error.issues,
+        },
+        { status: 400 },
+      );
+    }
+
+    const { page, limit } = parsedQuery.data;
+    const offset = (page - 1) * limit;
+
+    const [{ count }] = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(productCategorySchema);
+
+    const records = Number(count);
+    const totalPages = Math.ceil(records / limit);
+
     const categories = await db
       .select()
       .from(productCategorySchema)
-      .orderBy(desc(productCategorySchema.createdAt));
+      .orderBy(desc(productCategorySchema.createdAt))
+      .limit(limit)
+      .offset(offset);
 
     return NextResponse.json(
       {
         message: 'Product categories fetched successfully',
-        count: categories.length,
+        meta: {
+          records,
+          page,
+          limit,
+          total_pages: totalPages,
+        },
         data: categories,
       },
       { status: 200 },
@@ -68,8 +105,7 @@ export async function POST(req: Request) {
     if (!normalizedId) {
       return NextResponse.json(
         {
-          message:
-            'Invalid category name. Please use at least one letter.',
+          message: 'Invalid category name. Please use at least one letter.',
         },
         { status: 400 },
       );
@@ -83,7 +119,7 @@ export async function POST(req: Request) {
 
     if (existingCategory) {
       return NextResponse.json(
-        { message: 'Product category with this id already exists' },
+        { message: 'Product category with this name already exists' },
         { status: 409 },
       );
     }

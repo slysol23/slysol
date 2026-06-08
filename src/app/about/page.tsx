@@ -21,14 +21,14 @@ const About = () => {
         <div className="grid grid-cols-[40%_60%] md:gap-5 max-w-fit place-items-center relative">
           <div className="flex flex-col md:gap-5 mr-3 md:mr-0">
             <Image
-              src="/images/about/welcome-to-company1.jpg"
+              src="https://res.cloudinary.com/dj6kzchpv/image/upload/v1776778139/welcome-to-company1_fsgw47.jpg"
               alt="welcome to company"
               className="w-full rounded-md h-full mb-3 md:mb-0"
               width={200}
               height={0}
             />
             <Image
-              src="/images/about/welcome-to-company2.jpg"
+              src="https://res.cloudinary.com/dj6kzchpv/image/upload/v1776778147/welcome-to-company2_ipblqq.jpg"
               alt="welcome to company"
               className="w-full rounded-md h-full"
               width={200}
@@ -37,7 +37,7 @@ const About = () => {
           </div>
           <div>
             <Image
-              src="/images/about/welcome-to-company3.webp"
+              src="https://res.cloudinary.com/dj6kzchpv/image/upload/v1776778151/welcome-to-company3_pesd69.webp"
               alt="welcome to company"
               className="w-full rounded-xl h-full object-cover"
               width={200}
@@ -110,7 +110,7 @@ const About = () => {
               </div>
               <div>
                 <Image
-                  src="/images/about/solution-provider-01.webp"
+                  src="https://res.cloudinary.com/dj6kzchpv/image/upload/v1776776852/solution-provider-01_ikeplz.webp"
                   width={600}
                   height={400}
                   alt="solution providers"
