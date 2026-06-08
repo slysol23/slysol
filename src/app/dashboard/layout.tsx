@@ -32,7 +32,7 @@ export default function DashboardLayout({
   if (!user) return null;
 
   return (
-    <div className="flex h-dvh bg-gray-50">
+    <div className="dashboard-shell flex h-dvh bg-gray-50">
       <Sidebar />
       <main className="flex-1 bg-gray-50 max-h-dvh overflow-y-auto overflow-x-hidden">
         <div className="lg:hidden h-16 shrink-0 flex-row-reverse" />

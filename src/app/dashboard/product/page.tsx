@@ -165,7 +165,10 @@ const ProductPage = () => {
         breadcrumbs={breadCrumb}
         headerActions={
           <div className="flex items-center gap-3">
-            <DashboardButton onClick={() => setIsCategoryModalOpen(true)}>
+            <DashboardButton
+              onClick={() => setIsCategoryModalOpen(true)}
+              className="cursor-pointer"
+            >
               <FaPlus />
               Add Categories
             </DashboardButton>

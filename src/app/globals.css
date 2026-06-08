@@ -1,8 +1,8 @@
-@import "tailwindcss";
-@import "swiper/css/bundle";
+@import 'tailwindcss';
+@import 'swiper/css/bundle';
 @config "../../tailwind.config.js";
 @config "../../tailwind.config.js";
-@import "tailwindcss";
+@import 'tailwindcss';
 
 html,
 body {
@@ -12,6 +12,22 @@ body {
   overflow-x: clip;
   position: static !important;
   top: 0 !important;
+}
+
+.dashboard-shell button:not(:disabled),
+.dashboard-shell input[type='button']:not(:disabled),
+.dashboard-shell input[type='submit']:not(:disabled),
+.dashboard-shell input[type='reset']:not(:disabled),
+.dashboard-shell [role='button']:not([aria-disabled='true']) {
+  cursor: pointer;
+}
+
+.dashboard-shell button:disabled,
+.dashboard-shell input[type='button']:disabled,
+.dashboard-shell input[type='submit']:disabled,
+.dashboard-shell input[type='reset']:disabled,
+.dashboard-shell [aria-disabled='true'] {
+  cursor: not-allowed;
 }
 
 iframe.skiptranslate {
@@ -105,10 +121,12 @@ iframe.skiptranslate {
 
 .gradient-border {
   border-image-slice: 1;
-  border-image-source: linear-gradient(0deg,
-      rgba(15, 171, 246, 0.5),
-      rgba(69, 90, 181, 0.5),
-      rgba(235, 87, 123, 0.5));
+  border-image-source: linear-gradient(
+    0deg,
+    rgba(15, 171, 246, 0.5),
+    rgba(69, 90, 181, 0.5),
+    rgba(235, 87, 123, 0.5)
+  );
 }
 
 @media screen and (max-width: 768px) {
@@ -227,8 +245,6 @@ iframe.skiptranslate {
   overflow-x: auto;
 }
 
-
-
 /* Blockquotes */
 blockquote {
   border-left: 4px solid #ccc;
@@ -253,5 +269,3 @@ ol {
   /* optional to prevent overflow */
   height: auto;
 }
-
-
