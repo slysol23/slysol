@@ -22,7 +22,7 @@ const DashboardButton = ({
   const content = children ?? text;
 
   const baseClasses =
-    'inline-flex items-center justify-center gap-2 transition-colors duration-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2';
+    'inline-flex cursor-pointer items-center justify-center gap-2 transition-colors duration-200 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2';
 
   const variantClasses = href
     ? 'px-2 sm:px-4 py-1 sm:py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm sm:text-base whitespace-nowrap'
