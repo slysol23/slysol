@@ -21,13 +21,7 @@ export const productBaseFormShape = {
   approach: z.string().trim().default(''),
   outcomes: z.string().trim().default(''),
   feedback: z.string().trim().default(''),
-  imagesText: z
-    .string()
-    .trim()
-    .refine(
-      (value) => parseMultilineList(value).length > 0,
-      'Add at least one image URL or path',
-    ),
+  imagesText: z.string().trim(),
   techstackText: z
     .string()
     .trim()
