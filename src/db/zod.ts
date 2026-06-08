@@ -50,7 +50,7 @@ export const productCategoryGetQuerySchema = z.object({
 export const productPostSchema = z.object({
   category_id: z.string().trim().min(1, 'category is required'),
   title: z.string().trim().min(1, 'title is required'),
-  images: jsonStringArraySchema,
+  images: jsonStringArraySchema.default([]),
   overview: z.string().trim().min(1, 'overview is required'),
   challenges: z.string().trim().default(''),
   approach: z.string().trim().default(''),

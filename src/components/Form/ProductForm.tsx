@@ -92,7 +92,13 @@ export default function ProductForm({
     formState: { errors },
   } = form;
 
-  const [imageFields, setImageFields] = React.useState<string[]>(initialImages);
+  const normalizedInitialImages = React.useMemo(
+    () => (initialImages.length > 0 ? initialImages : ['']),
+    [initialImages],
+  );
+  const [imageFields, setImageFields] = React.useState<string[]>(
+    normalizedInitialImages,
+  );
   const [techStackDropdownOpen, setTechStackDropdownOpen] =
     React.useState(false);
   const [techStackSearch, setTechStackSearch] = React.useState('');
@@ -105,7 +111,7 @@ export default function ProductForm({
   );
   const [categorySearch, setCategorySearch] = React.useState(initialCategoryId);
   const [categoryDropdownOpen, setCategoryDropdownOpen] = React.useState(false);
-  const initialImagesRef = React.useRef(initialImages);
+  const initialImagesRef = React.useRef(normalizedInitialImages);
   const initialTechStackRef = React.useRef(normalizedInitialTechStacks);
   const initialCategoryIdRef = React.useRef(initialCategoryId);
 
@@ -398,7 +404,7 @@ export default function ProductForm({
               <div className="mb-2 flex items-center justify-between gap-2">
                 <label className="text-black font-medium flex items-center gap-2">
                   <FaImage className="text-gray-500 shrink-0" size={16} />
-                  Images
+                  Images (optional)
                 </label>
                 <button
                   type="button"
